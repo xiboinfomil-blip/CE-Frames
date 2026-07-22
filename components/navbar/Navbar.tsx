@@ -1,18 +1,18 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Image from "next/image";
+import Link from 'next/link';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import { signOut } from 'next-auth/react';
 import { useAuthCheck } from "@/hooks/useAuthCheck"; 
 import { useNavData } from "@/hooks/useNavData"; 
 import { usePathname } from 'next/navigation';
-import CustomLink from '../CustomLinks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFlagCheckered } from 'react-icons/fa';
 
 import DropdownMenu from './DropdownMenu';
 import MobileMenu from './MobileMenu';
-import NavbarSkeleton from '../NavbarSkeleton'; 
+import NavbarSkeleton from './NavbarSkeleton'; 
 import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar'; 
 
 // Helper component for Desktop Links to keep main JSX clean
@@ -21,10 +21,10 @@ const DesktopLink = ({ item, isActive, href }: { item: any, isActive: boolean, h
     ${isActive ? 'text-red-500 bg-red-50 dark:bg-red-900/20' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50'}`;
 
   return (
-    <CustomLink href={href} passHref className={linkClasses} data-cursor="hover">
+    <Link href={href} className={linkClasses} data-cursor="hover">
       {item.label}
       <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-300 ${isActive ? 'w-3/4 opacity-100' : 'w-0 opacity-0 group-hover:w-3/4 group-hover:opacity-100'}`} />
-    </CustomLink>
+    </Link>
   );
 };
 
@@ -95,7 +95,7 @@ export default function Navbar() {
           
           {/* Logo */}
           <div className="flex-shrink-0">
-            <CustomLink href="/" passHref className="flex items-center space-x-3 group" data-cursor="hover">
+            <Link href="/" className="flex items-center space-x-3 group" data-cursor="hover">
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
@@ -113,7 +113,7 @@ export default function Navbar() {
                   Motorsport Media
                 </span>
               </div>
-            </CustomLink>
+            </Link>
           </div>
 
           {/* Desktop Menu */}
@@ -166,13 +166,13 @@ export default function Navbar() {
             {/* Auth Buttons */}
             <div className="flex items-center space-x-3">
               {!isAuthenticated ? (
-                <CustomLink href={AUTH_ITEMS.login.href} passHref data-cursor="hover" className="group relative px-5 py-2 rounded-lg text-sm font-bold uppercase tracking-wider italic text-white bg-gradient-to-r from-red-600 to-orange-600 shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
+                <Link href={AUTH_ITEMS.login.href} data-cursor="hover" className="group relative px-5 py-2 rounded-lg text-sm font-bold uppercase tracking-wider italic text-white bg-gradient-to-r from-red-600 to-orange-600 shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   <span className="relative z-10 flex items-center gap-2">
                     <FaFlagCheckered className="text-xs" />
                     {AUTH_ITEMS.login.label}
                   </span>
-                </CustomLink>
+                </Link>
               ) : (
                 <motion.button 
                   whileTap={{ scale: 0.95 }} 

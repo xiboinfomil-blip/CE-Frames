@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import GalleryGrid from './components/GalleryGrid';
 import CreateGalleryModal from '@/app/manage-gallery/components/CreateGalleryModal';
-import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/manageHeader';
+import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import { VISIBILITY_STATUSES } from '@/db/schema';

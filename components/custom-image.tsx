@@ -15,7 +15,7 @@ const CustomImage = ({
   className = '', 
   onLoad,
   onError,
-  ...props 
+  ...props // This now correctly includes 'priority' from the parent
 }: CustomImageProps) => {
   const [imgError, setImgError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -27,26 +27,26 @@ const CustomImage = ({
     onLoad?.(e);
   };
 
-  const handleError = () => {
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (!imgError) {
       setImgError(true);
     }
-    onError?.();
+    onError?.(e); // Pass the event up to the parent
   };
 
   return (
     <div className="relative h-full w-full overflow-hidden">
-        <Image
+      <Image
         src={imageSrc}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
+        alt={alt || 'Image'} // Fallback alt to satisfy Next.js requirements
+        // REMOVED: loading="lazy" (Next.js handles this automatically based on the 'priority' prop)
+        // REMOVED: decoding="async" (Next.js handles this optimally by default)
         fill
         className={`object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105 will-change-transform ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
         onLoad={handleLoad}
         onError={handleError}
-        {...props}
-        />
+        {...props} // 'priority' is passed through here
+      />
     </div>
   );
 };

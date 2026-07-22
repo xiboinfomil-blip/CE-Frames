@@ -1,5 +1,7 @@
 'use client';
-import CustomLink from '../CustomLinks';
+
+import Link from 'next/link';
+import { HiChevronDown } from 'react-icons/hi';
 
 export default function DropdownMenu({ title, categories, loading, error, basePath }: any) {
   // Filter to only show categories marked as visible
@@ -58,16 +60,15 @@ export default function DropdownMenu({ title, categories, loading, error, basePa
             <div className="space-y-1 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-red-300 dark:scrollbar-thumb-red-700">
               {visibleCategories.map((categoryObj: any) => (
                 <div key={categoryObj.name} className="group/item relative flex items-center rounded-lg hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 transition-all duration-200">
-                  <CustomLink
+                  <Link
                     href={`${basePath}?for=${encodeURIComponent(categoryObj.name)}`}
-                    passHref
                     className="flex-1 flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-red-500 dark:hover:text-red-400"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500/40 group-hover/item:bg-red-500 group-hover/item:shadow-[0_0_6px_rgba(239,68,68,0.6)] transition-all" />
                     <span className="capitalize truncate">{categoryObj.name}</span>
                     {/* Racing stripe underline on hover */}
                     <div className="absolute bottom-0 left-3 right-3 h-[1px] bg-gradient-to-r from-red-500 to-orange-500 scale-x-0 group-hover/item:scale-x-100 transition-transform duration-300 origin-left" />
-                  </CustomLink>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -84,6 +85,3 @@ export default function DropdownMenu({ title, categories, loading, error, basePa
     </div>
   );
 }
-
-// Import icon locally to keep component self-contained or ensure it's passed
-import { HiChevronDown } from 'react-icons/hi';

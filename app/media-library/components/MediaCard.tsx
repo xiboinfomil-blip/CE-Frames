@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, memo } from 'react';
+import { useCallback, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import Swal from 'sweetalert2';
 import { MEDIA_TYPES } from '@/db/schema';
@@ -16,7 +16,7 @@ export interface MediaSchema {
   width: number | null;
   height: number | null;
   durationSeconds: number | null;
-  exifData: Record<string, any> | null;
+  exifData: Record<string, unknown> | null;
   caption: string | null;
   locationName: string | null;
   coordinates: [number, number] | null;
@@ -26,10 +26,11 @@ export interface MediaSchema {
 interface MediaCardProps {
   media: MediaSchema;
   onDelete: (id: string) => void;
+  onOpenLightbox: () => void;
   isDeleting?: boolean;
+  priority?: boolean;
 }
 
-// Helper moved outside to prevent recreation on every render
 const formatDuration = (seconds: number | null): string | null => {
   if (!seconds) return null;
   const mins = Math.floor(seconds / 60);
@@ -37,13 +38,28 @@ const formatDuration = (seconds: number | null): string | null => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false }: MediaCardProps) {
+// Helper to safely convert unknown EXIF values to strings for rendering
+const getExifString = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+  return String(value);
+};
+
+const MediaCard = memo(function MediaCard({ 
+  media, 
+  onDelete, 
+  onOpenLightbox, 
+  isDeleting = false,
+  priority = false
+}: MediaCardProps) {
   const exif = media.exifData || {};
-  const iso = exif.ISO || exif.iso;
-  const aperture = exif.FNumber || exif.fNumber;
-  const shutter = exif.ExposureTime || exif.exposureTime;
+  
+  // Extract and cast EXIF values to ensure they are treated as renderable types
+  const iso = exif.ISO ?? exif.iso;
+  const aperture = exif.FNumber ?? exif.fNumber;
+  const shutter = exif.ExposureTime ?? exif.exposureTime;
   const cameraModel = exif.model;
-  const hasTechnicalData = iso || aperture || shutter || cameraModel;
+  
+  const hasTechnicalData = !!iso || !!aperture || !!shutter || !!cameraModel;
   const resolution = media.width && media.height ? `${media.width}×${media.height}` : null;
 
   const handleDeleteClick = useCallback(async (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -71,17 +87,23 @@ const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false 
     if (result.isConfirmed) {
       onDelete(media.id);
     }
-  }, [isDeleting, onDelete, media.id]);
+  }, [isDeleting, onDelete, media.id, media.originalFilename]);
 
   return (
     <figure 
       className="group relative flex flex-col w-full bg-white rounded-2xl border border-slate-200/60 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] hover:border-slate-300 hover:-translate-y-1 overflow-hidden will-change-transform"
     >
-      {/* Animated Racing Gradient Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
 
-      {/* --- Media Viewport --- */}
-      <div className="relative aspect-[4/3] bg-slate-50 overflow-hidden">
+      {/* --- Media Viewport Wrapper (Clickable for Lightbox) --- */}
+      <div 
+        className="relative aspect-4/3 bg-slate-50 overflow-hidden cursor-zoom-in"
+        onClick={onOpenLightbox}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onOpenLightbox(); }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Open ${media.originalFilename || 'media asset'} in lightbox`}
+      >
         <MediaViewport
           mediaType={media.type}
           fullResUrl={media.fullResUrl}
@@ -89,10 +111,11 @@ const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false 
           caption={media.caption}
           originalFilename={media.originalFilename}
           className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+          priority={priority}
         />
 
         {/* Top Badges (Glassmorphism) */}
-        <div className="absolute top-3 left-3 z-10 flex gap-2">
+        <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">
           <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/20 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm">
             {media.type === 'video' && (
               <svg className="w-3 h-3 text-purple-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -103,7 +126,7 @@ const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false 
           </span>
           
           {media.locationName && (
-            <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/20 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm max-w-[150px]">
+            <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/20 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm max-w-37.5">
               <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               </svg>
@@ -139,7 +162,7 @@ const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false 
 
         {/* Duration Badge for Video */}
         {media.type === 'video' && media.durationSeconds && (
-          <div className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-mono font-bold text-white shadow-sm">
+          <div className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-mono font-bold text-white shadow-sm pointer-events-none">
             {formatDuration(media.durationSeconds)}
           </div>
         )}
@@ -162,25 +185,25 @@ const MediaCard = memo(function MediaCard({ media, onDelete, isDeleting = false 
               {cameraModel && (
                 <div className="col-span-2 flex items-center justify-between text-[10px] pb-1 border-b border-slate-50 mb-1">
                   <span className="uppercase tracking-widest font-bold text-slate-400">Camera</span>
-                  <span className="font-mono font-semibold text-slate-700">{cameraModel}</span>
+                  <span className="font-mono font-semibold text-slate-700">{getExifString(cameraModel)}</span>
                 </div>
               )}
               {iso && (
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">ISO</span>
-                  <span className="font-mono text-xs font-semibold text-slate-700">{iso}</span>
+                  <span className="font-mono text-xs font-semibold text-slate-700">{getExifString(iso)}</span>
                 </div>
               )}
               {aperture && (
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Aperture</span>
-                  <span className="font-mono text-xs font-semibold text-slate-700">f/{aperture}</span>
+                  <span className="font-mono text-xs font-semibold text-slate-700">f/{getExifString(aperture)}</span>
                 </div>
               )}
               {shutter && (
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Shutter</span>
-                  <span className="font-mono text-xs font-semibold text-slate-700">{shutter}s</span>
+                  <span className="font-mono text-xs font-semibold text-slate-700">{getExifString(shutter)}s</span>
                 </div>
               )}
               {resolution && (

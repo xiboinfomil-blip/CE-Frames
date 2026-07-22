@@ -26,44 +26,42 @@ export async function GET(req: Request) {
     // 1. Get media items associated with this gallery
     const existingItems = await galleryMediaHelpers.getGalleryMediaWithDetails(galleryId);
     
-    // DEBUG: Check the structure of the first item if you are still having issues
-    // console.log("Sample Item:", existingItems[0]);
-
-    let filteredMedia = existingItems.map(item => {
+    let filteredMedia = existingItems.map((item: any) => {
       // DRIZZLE JOIN FIX: 
-      // Depending on your helper, the media data might be nested in 'item.media' 
-      // or flat on 'item'. We check both to be safe.
+      // Cast to any to bypass incomplete helper return types.
+      // The media data might be nested in 'item.media' or flat on 'item'.
       const mediaData = item.media || item; 
       
       return {
         id: mediaData.id,
-        // Ensure we get the string URL. Fallback to empty string if missing.
         thumbnailUrl: mediaData.thumbnailUrl || '',
         fullResUrl: mediaData.fullResUrl || '',
+        // Safely access originalFilename, fallback to caption or 'Untitled'
         title: mediaData.originalFilename || mediaData.caption || 'Untitled',
         type: mediaData.type,
-        uploadedAt: mediaData.uploadedAt,
-        originalFilename: mediaData.originalFilename,
+        // Safely access uploadedAt, fallback to current date if missing
+        uploadedAt: mediaData.uploadedAt || new Date().toISOString(),
+        originalFilename: mediaData.originalFilename || null,
         caption: mediaData.caption
       };
     });
 
     // Apply Type Filter
     if (type) {
-      filteredMedia = filteredMedia.filter(m => m.type === type);
+      filteredMedia = filteredMedia.filter((m: any) => m.type === type);
     }
 
     // Apply Search Filter
     if (search) {
       const lowerSearch = search.toLowerCase();
-      filteredMedia = filteredMedia.filter(m => 
+      filteredMedia = filteredMedia.filter((m: any) => 
         (m.originalFilename && m.originalFilename.toLowerCase().includes(lowerSearch)) ||
         (m.caption && m.caption.toLowerCase().includes(lowerSearch))
       );
     }
 
     // Apply Sorting
-    filteredMedia.sort((a, b) => {
+    filteredMedia.sort((a: any, b: any) => {
       const dateA = new Date(a.uploadedAt).getTime();
       const dateB = new Date(b.uploadedAt).getTime();
       

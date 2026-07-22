@@ -57,7 +57,7 @@ const FloatingActionButton = memo(function FloatingActionButton({
         fixed bottom-6 sm:bottom-8 ${positionClasses} z-50
         flex items-center justify-center
         w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18
-        bg-gradient-to-br from-white via-slate-50 to-slate-100
+        bg-linear-to-br from-white via-slate-50 to-slate-100
         text-slate-800
         rounded-full
         shadow-[0_8px_30px_rgb(0,0,0,0.12)]
@@ -77,7 +77,7 @@ const FloatingActionButton = memo(function FloatingActionButton({
     >
       {/* Racing stripe accent */}
       <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-full bg-gradient-to-b from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-full bg-linear-to-b from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
       {/* Icon container with rotation */}

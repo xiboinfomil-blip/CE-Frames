@@ -2,16 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, useSession } from "next-auth/react"; // Import useSession
+import { signIn, useSession } from "next-auth/react";
 import { FiUser, FiLock, FiEye, FiEyeOff, FiCheck } from "react-icons/fi";
-import RaceTextField from "@/components/login/RaceTextField";
-import RaceButton from "@/components/login/RaceButton";
+
+// Update these paths if you placed the components in your /login folder instead of /ui
+import { CustomTextfield } from "@/components/ui/CustomTextfield";
+import { CustomButton } from "@/components/ui/CustomButton";
 import styles from "./Login.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession(); // Get session data and status
+  const { data: session, status } = useSession();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,14 +21,12 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect to / if already logged in
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/");
     }
   }, [status, router]);
 
-  // Handle errors from URL params (when redirect: true)
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam === "CredentialsSignin") {
@@ -42,20 +42,16 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      // Use next-auth/react signIn directly
-      // Set callbackUrl to '/' to redirect to home page after login
       const result = await signIn("credentials", {
         email,
         password,
-        callbackUrl: "/", // Redirect to / after successful login
+        callbackUrl: "/",
         redirect: true, 
       });
 
-      // If signIn returns without redirecting, it means there was an error
       if (result?.error) {
         setError("Invalid email or password.");
       }
-      // If successful, NextAuth will automatically redirect to the callback URL (/)
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
@@ -63,12 +59,20 @@ export default function LoginForm() {
     }
   };
 
-  // Optionally, show a loading state while checking session
+  // Telemetry-style loading state
   if (status === "loading") {
-    return <div>Loading...</div>; // Or your custom loading component
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-500 animate-pulse">
+            Initializing Telemetry...
+          </span>
+        </div>
+      </div>
+    );
   }
 
-  // If authenticated, don't render the form (redirect will happen via useEffect)
   if (status === "authenticated") {
     return null;
   }
@@ -83,53 +87,47 @@ export default function LoginForm() {
         </header>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          {/* Upgraded Telemetry Error Message */}
           {error && (
-            <div style={{ color: "#ef4444", marginBottom: "1rem", textAlign: "center", fontSize: "0.9rem", fontWeight: 500 }}>
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-[11px] font-mono font-medium flex items-center gap-2 mb-2 animate-in fade-in slide-in-from-top-1 duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
               {error}
             </div>
           )}
 
           <div className={styles.field}>
-            <RaceTextField
+            <CustomTextfield
               label="Email"
               name="email"
               type="email"
               placeholder="admin@oramacreativ.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              variant="outlined"
-              color="red"
-              size="md"
-              startIcon={<FiUser size={18} />}
-              fullWidth
+              leftIcon={<FiUser size={18} />}
               autoComplete="email"
               required
             />
           </div>
 
           <div className={styles.field}>
-            <RaceTextField
+            <CustomTextfield
               label="Password"
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              variant="outlined"
-              color="red"
-              size="md"
-              startIcon={<FiLock size={18} />}
-              endIcon={
+              leftIcon={<FiLock size={18} />}
+              rightIcon={
                 <button
                   type="button"
-                  className={styles.eyeToggle}
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50 text-inherit"
                 >
                   {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               }
-              fullWidth
               autoComplete="current-password"
               required
             />
@@ -147,17 +145,18 @@ export default function LoginForm() {
           </div>
 
           <div className={styles.submit}>
-            <RaceButton
+            <CustomButton
               type="submit"
-              variant="gradient"
-              color="red"
+              variant="continue"
               size="lg"
-              fullWidth
-              startIcon={<FiCheck size={18} />}
+              leftIcon={<FiCheck size={18} />}
               disabled={isLoading}
+              isLoading={isLoading}
+              className="w-full"
+              shortcut="↵"
             >
-              {isLoading ? "Authenticating..." : "Access Dashboard"}
-            </RaceButton>
+              Access Dashboard
+            </CustomButton>
           </div>
         </form>
 

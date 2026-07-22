@@ -5,19 +5,30 @@ import { memo } from 'react';
 import Swal from 'sweetalert2';
 import { Gallery } from '@/types/gallery';
 import { VisibilityBadge } from './VisibilityBadge';
-import { VISIBILITY_STATUSES } from '@/db/schema';
+import { VISIBILITY_STATUSES, MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport'; 
 
 interface GalleryCardProps {
   gallery: Gallery;
   onEdit: () => void;
   onDelete: () => void;
+  priority?: boolean;
+}
+
+// Define the shape of the nested media object to avoid 'any'
+interface GalleryMediaItem {
+  media?: {
+    url?: string;
+    thumbnailUrl?: string;
+    type?: string;
+  };
 }
 
 export const GalleryCard = memo(function GalleryCard({ 
   gallery, 
   onEdit, 
-  onDelete 
+  onDelete,
+  priority = false
 }: GalleryCardProps) {
   
   const handleDeleteClick = async () => {
@@ -26,8 +37,8 @@ export const GalleryCard = memo(function GalleryCard({
       html: `<span class="text-slate-600">You are about to permanently delete <strong class="text-slate-900">${gallery.title}</strong>. This action cannot be undone.</span>`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444', // Tailwind red-500
-      cancelButtonColor: '#cbd5e1', // Tailwind slate-300
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#cbd5e1',
       confirmButtonText: 'Yes, purge it',
       cancelButtonText: 'Cancel',
       background: '#ffffff',
@@ -45,13 +56,28 @@ export const GalleryCard = memo(function GalleryCard({
   };
 
   const getMediaInfo = () => {
+    // Use type assertion with the specific interface defined above
+    const galleryWithMedia = gallery as Gallery & {
+      randomMedia?: {
+        url?: string;
+        thumbnailUrl?: string;
+        type?: string;
+      };
+      coverMedia?: {
+        url?: string;
+        thumbnailUrl?: string;
+        type?: string;
+      };
+      galleryMedia?: GalleryMediaItem[];
+    };
+
     // Priority: Random Media -> Cover Media -> First Item in Gallery
-    const media = (gallery as any).randomMedia || gallery.coverMedia || (gallery.galleryMedia?.[0]?.media ?? null);
+    const media = galleryWithMedia.randomMedia || galleryWithMedia.coverMedia || (galleryWithMedia.galleryMedia?.[0]?.media ?? null);
     
     if (!media) return { sourceUrl: null, posterUrl: null, mediaType: null };
 
     return {
-      sourceUrl: media.url || media.thumbnailUrl,
+      sourceUrl: media.thumbnailUrl,
       posterUrl: media.thumbnailUrl,
       mediaType: media.type
     };
@@ -59,7 +85,12 @@ export const GalleryCard = memo(function GalleryCard({
 
   const { sourceUrl, posterUrl, mediaType } = getMediaInfo();
   const hasMedia = !!sourceUrl;
-  const mediaCount = gallery.galleryMedia?.length || 0;
+  
+  // Safely access galleryMedia with the specific interface
+  const galleryWithMedia = gallery as Gallery & {
+    galleryMedia?: GalleryMediaItem[];
+  };
+  const mediaCount = galleryWithMedia.galleryMedia?.length || 0;
   
   const createdDate = new Date(gallery.createdAt);
   const formattedDate = createdDate.toLocaleDateString('en-US', { 
@@ -68,32 +99,35 @@ export const GalleryCard = memo(function GalleryCard({
     year: '2-digit' 
   });
 
-  // Safe access for user details
-  const ownerName = gallery.user?.name || gallery.user?.email?.split('@')[0] || 'Unknown';
+  // Safe access for user details - use username instead of name/email
+  const user = gallery.user as { username?: string; avatarUrl?: string | null } | undefined;
+  const ownerName = user?.username || 'Unknown';
   const initial = ownerName.charAt(0).toUpperCase();
 
   return (
     <article className="group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-200/60 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] hover:border-slate-300 transition-all duration-300 h-full">
       
       {/* Animated Racing Gradient Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
       
       {/* --- Media Area --- */}
       <Link 
         href={`/manage-gallery/${gallery.id}`} 
-        className="block relative aspect-[4/3] bg-slate-50 overflow-hidden shrink-0 focus:outline-none"
+        className="block relative aspect-4/3 bg-slate-50 overflow-hidden shrink-0 focus:outline-none"
         aria-label={`Manage gallery: ${gallery.title}`}
       >
         {hasMedia && mediaType ? (
           <>
             <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
               <MediaViewport
-                mediaType={mediaType as any}
+                // Assert mediaType to satisfy the union type requirement
+                mediaType={mediaType as typeof MEDIA_TYPES[number]}
                 fullResUrl={sourceUrl!}
                 thumbnailUrl={posterUrl || sourceUrl!}
                 caption={gallery.title}
                 originalFilename={null}
                 className="w-full h-full object-cover"
+                priority={priority}
               />
             </div>
             
@@ -138,7 +172,7 @@ export const GalleryCard = memo(function GalleryCard({
       </Link>
 
       {/* --- Content Area --- */}
-      <div className="flex flex-col flex-grow p-5">
+      <div className="flex flex-col grow p-5">
         
         {/* Header: Title & Date */}
         <div className="mb-3">
@@ -156,11 +190,11 @@ export const GalleryCard = memo(function GalleryCard({
 
         {/* Description */}
         {gallery.description ? (
-          <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed flex-grow font-normal">
+          <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed grow font-normal">
             {gallery.description}
           </p>
         ) : (
-          <div className="flex-grow" />
+          <div className="grow" />
         )}
 
         {/* Footer: Actions & Telemetry */}
@@ -173,7 +207,7 @@ export const GalleryCard = memo(function GalleryCard({
              </div>
              <div className="flex flex-col">
                 <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Owner</span>
-                <span className="text-xs text-slate-700 font-medium truncate max-w-[100px]">{ownerName}</span>
+                <span className="text-xs text-slate-700 font-medium truncate max-w-25">{ownerName}</span>
              </div>
           </div>
 

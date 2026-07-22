@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import CustomLink from '../CustomLinks';
+import Link from 'next/link';
 import { FaFlagCheckered } from 'react-icons/fa';
 import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar';
 
@@ -40,16 +40,15 @@ const itemVariants = {
 const CategoryLink = ({ category, config, theme, onClick }: any) => {
   return (
     <div className="group/item relative flex items-center rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
-      <CustomLink 
+      <Link 
         href={`${config.basePath}?for=${encodeURIComponent(category.name)}`} 
-        passHref
         className={`flex-1 group relative flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-zinc-600 dark:text-zinc-300 ${theme.hoverText} transition-all duration-200`}
         onClick={onClick}
       >
         <span className={`w-1.5 h-1.5 rounded-full ${theme.dot} transition-all`} />
         <span className="capitalize font-medium">{category.name}</span>
         <div className={`absolute bottom-0 left-4 right-4 h-[1px] bg-gradient-to-r ${theme.underline} scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
-      </CustomLink>
+      </Link>
     </div>
   );
 };
@@ -94,9 +93,8 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
               
               return (
                 <motion.li key={item.id} variants={itemVariants}>
-                  <CustomLink 
+                  <Link 
                     href={item.href} 
-                    passHref
                     className={`group relative block px-4 py-3 rounded-xl text-base font-bold uppercase tracking-wider italic transition-all duration-200
                       ${isActive ? 'bg-red-50 dark:bg-red-900/20 text-red-500 font-black' : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-red-500'}`}
                     onClick={closeMenu}
@@ -110,7 +108,7 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
                       />
                     )}
                     <div className="absolute bottom-1 left-4 right-4 h-[2px] bg-gradient-to-r from-red-500 to-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                  </CustomLink>
+                  </Link>
                 </motion.li>
               );
             })}
@@ -181,10 +179,9 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
                     ));
                   
                   return (
-                    <CustomLink 
+                    <Link 
                       key={item.id}
                       href={item.href} 
-                      passHref
                       className={`group relative block px-4 py-3 rounded-xl text-base font-bold uppercase tracking-wider italic transition-all duration-200
                         ${isActive ? 'bg-red-50 dark:bg-red-900/20 text-red-500 font-black' : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-red-500'}`}
                       onClick={closeMenu}
@@ -198,7 +195,7 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
                         />
                       )}
                       <div className="absolute bottom-1 left-4 right-4 h-[2px] bg-gradient-to-r from-red-500 to-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                    </CustomLink>
+                    </Link>
                   );
                 }
                 return null;
@@ -218,9 +215,8 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
 
           {!authenticated ? (
             <motion.div variants={itemVariants}>
-              <CustomLink 
+              <Link 
                 href={AUTH_ITEMS.login.href} 
-                passHref
                 className="group relative flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-black uppercase tracking-wider italic shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-200 overflow-hidden"
                 onClick={closeMenu}
               >
@@ -230,7 +226,7 @@ export default function MobileMenu({ authenticated, imagesFor, loading, error, h
                 <svg className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </CustomLink>
+              </Link>
             </motion.div>
           ) : (
             <motion.div variants={itemVariants} className="space-y-2">

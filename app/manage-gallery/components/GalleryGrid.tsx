@@ -18,12 +18,13 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {galleries.map((gallery) => (
+      {galleries.map((gallery, index) => (
         <GalleryCard 
           key={gallery.id} 
           gallery={gallery} 
           onEdit={() => onEdit(gallery)}
           onDelete={() => onDelete(gallery.id, gallery.title)}
+          priority={index === 0} // <-- Only the first card gets eager-loaded for LCP
         />
       ))}
     </div>

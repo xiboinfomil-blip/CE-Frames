@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import PasswordGate from '@/components/PasswordGate';
-import GalleryHeader from '@/components/GalleryHeader';
+import GalleryHeader from '@/app/gallery/[id]/components/GalleryHeader';
 import PhotoGrid from '@/app/gallery/[id]/components/PhotoGrid';
-import GalleryLightbox from '@/app/gallery/[id]/components/GalleryLightbox';
+import GalleryLightbox from '@/components/GalleryLightbox';
 
 // Types (Ideally move these to a shared types file)
 interface MediaItem {

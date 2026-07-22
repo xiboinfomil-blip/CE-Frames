@@ -46,14 +46,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ─── Branding Panel ────────────────────────────────────────── */
@@ -117,9 +111,7 @@
   opacity: 0.7;
 }
 
-.bigNumber {
-  display: none;
-}
+.bigNumber { display: none; }
 
 .brandingContent {
   text-align: center;
@@ -150,9 +142,7 @@
   transition: transform 0.3s ease;
 }
 
-.logoBadge:hover {
-  transform: scale(1.05);
-}
+.logoBadge:hover { transform: scale(1.05); }
 
 .logoNumber {
   font-family: var(--font-display);
@@ -185,12 +175,8 @@
 }
 
 @keyframes badgePulse {
-  0%, 100% {
-    box-shadow: 0 2px 6px var(--race-red-glow), 0 0 0 2px #ffffff;
-  }
-  50% {
-    box-shadow: 0 2px 12px var(--race-red-glow), 0 0 0 2px #ffffff, 0 0 20px var(--race-red-glow);
-  }
+  0%, 100% { box-shadow: 0 2px 6px var(--race-red-glow), 0 0 0 2px #ffffff; }
+  50% { box-shadow: 0 2px 12px var(--race-red-glow), 0 0 0 2px #ffffff, 0 0 20px var(--race-red-glow); }
 }
 
 .brandTitle {
@@ -283,9 +269,7 @@
 }
 
 /* ─── Form Header ───────────────────────────────────────────── */
-.formHeader {
-  margin-bottom: 24px;
-}
+.formHeader { margin-bottom: 24px; }
 
 .formHeaderTag {
   display: inline-block;
@@ -325,31 +309,7 @@
   gap: 16px;
 }
 
-.field {
-  position: relative;
-}
-
-/* Eye toggle */
-.eyeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.eyeToggle:hover {
-  color: var(--race-red);
-  background: var(--race-red-soft);
-}
+.field { position: relative; }
 
 /* ─── Options ───────────────────────────────────────────────── */
 .options {
@@ -388,9 +348,7 @@
   flex-shrink: 0;
 }
 
-.checkbox:hover .checkboxMark {
-  border-color: var(--race-red);
-}
+.checkbox:hover .checkboxMark { border-color: var(--race-red); }
 
 .checkboxInput:checked + .checkboxMark {
   background: var(--race-red);
@@ -418,20 +376,13 @@
   align-items: center;
 }
 
-.forgotLink:hover {
-  color: #c00500;
-}
+.forgotLink:hover { color: #c00500; }
 
 /* ─── Submit ────────────────────────────────────────────────── */
-.submit {
-  margin-top: 4px;
-}
+.submit { margin-top: 4px; }
 
 /* ─── Form Footer ───────────────────────────────────────────── */
-.formFooter {
-  margin-top: 28px;
-  text-align: center;
-}
+.formFooter { margin-top: 28px; text-align: center; }
 
 .formFooterLine {
   width: 100%;
@@ -449,367 +400,94 @@
 }
 
 /* ─── Responsive Breakpoints ────────────────────────────────── */
-
-/* Small phones (320px - 374px) */
 @media (max-width: 374px) {
-  .page {
-    padding: 12px;
-  }
-
-  .container {
-    border-radius: 12px;
-  }
-
-  .brandingPanel {
-    padding: 24px 20px;
-  }
-
-  .logoBadge {
-    width: 56px;
-    height: 56px;
-  }
-
-  .logoNumber {
-    font-size: 1.2rem;
-  }
-
-  .logoRacingBadge {
-    width: 20px;
-    height: 20px;
-    font-size: 0.6rem;
-  }
-
-  .brandTitle {
-    font-size: 1.4rem;
-  }
-
-  .brandTagline {
-    font-size: 0.65rem;
-  }
-
-  .statsCard {
-    gap: 8px;
-    padding: 10px 12px;
-  }
-
-  .statValue {
-    font-size: 0.95rem;
-  }
-
-  .statLabel {
-    font-size: 0.45rem;
-  }
-
-  .formPanel {
-    padding: 24px 20px;
-  }
-
-  .formTitle {
-    font-size: 1.3rem;
-  }
-
-  .options {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .forgotLink {
-    justify-content: center;
-  }
+  .page { padding: 12px; }
+  .container { border-radius: 12px; }
+  .brandingPanel { padding: 24px 20px; }
+  .logoBadge { width: 56px; height: 56px; }
+  .logoNumber { font-size: 1.2rem; }
+  .logoRacingBadge { width: 20px; height: 20px; font-size: 0.6rem; }
+  .brandTitle { font-size: 1.4rem; }
+  .brandTagline { font-size: 0.65rem; }
+  .statsCard { gap: 8px; padding: 10px 12px; }
+  .statValue { font-size: 0.95rem; }
+  .statLabel { font-size: 0.45rem; }
+  .formPanel { padding: 24px 20px; }
+  .formTitle { font-size: 1.3rem; }
+  .options { flex-direction: column; align-items: stretch; gap: 8px; }
+  .forgotLink { justify-content: center; }
 }
 
-/* Standard phones (375px - 479px) */
 @media (min-width: 375px) and (max-width: 479px) {
-  .options {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .forgotLink {
-    justify-content: center;
-  }
+  .options { flex-direction: column; align-items: stretch; gap: 8px; }
+  .forgotLink { justify-content: center; }
 }
 
-/* Large phones / Small tablets (480px - 767px) */
 @media (min-width: 480px) and (max-width: 767px) {
-  .page {
-    padding: 20px;
-  }
-
-  .container {
-    max-width: 520px;
-  }
-
-  .brandingPanel {
-    padding: 40px 32px;
-  }
-
-  .logoBadge {
-    width: 72px;
-    height: 72px;
-  }
-
-  .logoNumber {
-    font-size: 1.5rem;
-  }
-
-  .logoRacingBadge {
-    width: 28px;
-    height: 28px;
-    font-size: 0.75rem;
-  }
-
-  .brandTitle {
-    font-size: 1.8rem;
-  }
-
-  .brandTagline {
-    font-size: 0.75rem;
-  }
-
-  .statsCard {
-    margin-top: 24px;
-    padding: 14px 18px;
-    gap: 14px;
-  }
-
-  .statValue {
-    font-size: 1.2rem;
-  }
-
-  .formPanel {
-    padding: 36px 32px;
-  }
-
-  .formTitle {
-    font-size: 1.6rem;
-  }
+  .page { padding: 20px; }
+  .container { max-width: 520px; }
+  .brandingPanel { padding: 40px 32px; }
+  .logoBadge { width: 72px; height: 72px; }
+  .logoNumber { font-size: 1.5rem; }
+  .logoRacingBadge { width: 28px; height: 28px; font-size: 0.75rem; }
+  .brandTitle { font-size: 1.8rem; }
+  .brandTagline { font-size: 0.75rem; }
+  .statsCard { margin-top: 24px; padding: 14px 18px; gap: 14px; }
+  .statValue { font-size: 1.2rem; }
+  .formPanel { padding: 36px 32px; }
+  .formTitle { font-size: 1.6rem; }
 }
 
-/* Tablets (768px - 1023px) */
 @media (min-width: 768px) {
-  .page {
-    padding: 24px;
-  }
-
-  .container {
-    grid-template-columns: 1fr 1.2fr;
-    max-width: 900px;
-    border-radius: 20px;
-  }
-
-  .brandingPanel {
-    padding: 48px 40px;
-    border-right: 1px solid var(--border-color);
-    border-bottom: none;
-  }
-
-  .racingStripe {
-    top: 0;
-    left: 0;
-    right: auto;
-    bottom: 0;
-    width: 4px;
-    height: auto;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      var(--race-red) 30%,
-      var(--race-red) 70%,
-      transparent 100%
-    );
-  }
-
-  .bigNumber {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: -20px;
-    transform: translateY(-50%);
-    font-family: var(--font-display);
-    font-size: 16rem;
-    font-weight: 900;
-    color: var(--race-red);
-    opacity: 0.03;
-    line-height: 1;
-    letter-spacing: -0.05em;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  .logo {
-    margin-bottom: 28px;
-  }
-
-  .logoBadge {
-    width: 80px;
-    height: 80px;
-  }
-
-  .logoNumber {
-    font-size: 1.7rem;
-  }
-
-  .logoRacingBadge {
-    width: 32px;
-    height: 32px;
-    font-size: 0.85rem;
-  }
-
-  .brandTitle {
-    font-size: 2rem;
-  }
-
-  .brandTagline {
-    font-size: 0.8rem;
-  }
-
-  .accentLine {
-    width: 60px;
-    margin-top: 24px;
-  }
-
-  .statsCard {
-    margin-top: 28px;
-    padding: 16px 20px;
-    gap: 16px;
-  }
-
-  .statValue {
-    font-size: 1.3rem;
-  }
-
-  .statLabel {
-    font-size: 0.55rem;
-  }
-
-  .formPanel {
-    padding: 48px 40px;
-  }
-
-  .formHeader {
-    margin-bottom: 32px;
-  }
-
-  .formHeaderTag {
-    font-size: 0.65rem;
-    padding: 4px 10px;
-    margin-bottom: 16px;
-  }
-
-  .formTitle {
-    font-size: 1.75rem;
-  }
-
-  .formSubtitle {
-    font-size: 0.8rem;
-  }
-
-  .form {
-    gap: 20px;
-  }
-
-  .options {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .forgotLink {
-    justify-content: flex-start;
-  }
-
-  .formFooter {
-    margin-top: 36px;
-  }
-
-  .formFooterLine {
-    margin-bottom: 16px;
-  }
-
-  .formFooterText {
-    font-size: 0.7rem;
-  }
+  .page { padding: 24px; }
+  .container { grid-template-columns: 1fr 1.2fr; max-width: 900px; border-radius: 20px; }
+  .brandingPanel { padding: 48px 40px; border-right: 1px solid var(--border-color); border-bottom: none; }
+  .racingStripe { top: 0; left: 0; right: auto; bottom: 0; width: 4px; height: auto; background: linear-gradient(180deg, transparent 0%, var(--race-red) 30%, var(--race-red) 70%, transparent 100%); }
+  .bigNumber { display: block; position: absolute; top: 50%; right: -20px; transform: translateY(-50%); font-family: var(--font-display); font-size: 16rem; font-weight: 900; color: var(--race-red); opacity: 0.03; line-height: 1; letter-spacing: -0.05em; pointer-events: none; user-select: none; }
+  .logo { margin-bottom: 28px; }
+  .logoBadge { width: 80px; height: 80px; }
+  .logoNumber { font-size: 1.7rem; }
+  .logoRacingBadge { width: 32px; height: 32px; font-size: 0.85rem; }
+  .brandTitle { font-size: 2rem; }
+  .brandTagline { font-size: 0.8rem; }
+  .accentLine { width: 60px; margin-top: 24px; }
+  .statsCard { margin-top: 28px; padding: 16px 20px; gap: 16px; }
+  .statValue { font-size: 1.3rem; }
+  .statLabel { font-size: 0.55rem; }
+  .formPanel { padding: 48px 40px; }
+  .formHeader { margin-bottom: 32px; }
+  .formHeaderTag { font-size: 0.65rem; padding: 4px 10px; margin-bottom: 16px; }
+  .formTitle { font-size: 1.75rem; }
+  .formSubtitle { font-size: 0.8rem; }
+  .form { gap: 20px; }
+  .options { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
+  .forgotLink { justify-content: flex-start; }
+  .formFooter { margin-top: 36px; }
+  .formFooterLine { margin-bottom: 16px; }
+  .formFooterText { font-size: 0.7rem; }
 }
 
-/* Desktop (1024px+) */
 @media (min-width: 1024px) {
-  .container {
-    max-width: 960px;
-  }
-
-  .brandingPanel {
-    padding: 60px 48px;
-  }
-
-  .bigNumber {
-    font-size: 20rem;
-  }
-
-  .logoBadge {
-    width: 90px;
-    height: 90px;
-  }
-
-  .logoNumber {
-    font-size: 1.8rem;
-  }
-
-  .brandTitle {
-    font-size: 2.2rem;
-  }
-
-  .formPanel {
-    padding: 60px 48px;
-  }
+  .container { max-width: 960px; }
+  .brandingPanel { padding: 60px 48px; }
+  .bigNumber { font-size: 20rem; }
+  .logoBadge { width: 90px; height: 90px; }
+  .logoNumber { font-size: 1.8rem; }
+  .brandTitle { font-size: 2.2rem; }
+  .formPanel { padding: 60px 48px; }
 }
 
-/* Landscape orientation on mobile */
 @media (max-height: 600px) and (orientation: landscape) {
-  .page {
-    align-items: flex-start;
-    padding: 12px;
-  }
-
-  .container {
-    margin: 12px 0;
-  }
-
-  .brandingPanel {
-    padding: 24px 20px;
-  }
-
-  .logo {
-    margin-bottom: 16px;
-  }
-
-  .statsCard {
-    margin-top: 16px;
-    padding: 10px 14px;
-  }
-
-  .formPanel {
-    padding: 24px 20px;
-  }
-
-  .formHeader {
-    margin-bottom: 20px;
-  }
-
-  .form {
-    gap: 14px;
-  }
+  .page { align-items: flex-start; padding: 12px; }
+  .container { margin: 12px 0; }
+  .brandingPanel { padding: 24px 20px; }
+  .logo { margin-bottom: 16px; }
+  .statsCard { margin-top: 16px; padding: 10px 14px; }
+  .formPanel { padding: 24px 20px; }
+  .formHeader { margin-bottom: 20px; }
+  .form { gap: 14px; }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .container,
-  .logoBadge,
-  .logoRacingBadge {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  .container, .logoBadge, .logoRacingBadge { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

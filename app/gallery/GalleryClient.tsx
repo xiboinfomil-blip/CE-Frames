@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { Gallery } from '@/types/gallery';
 
 // Your Custom Components
-import MediaLibraryHeader from '@/components/manageHeader';
+import MediaLibraryHeader from '@/components/SearchSortFilter';
 import GalleryGrid from '@/components/gallery/GalleryGrid';
 import EmptyState from '@/components/gallery/EmptyState';
 import Pagination from '@/components/Pagination'; 

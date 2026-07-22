@@ -24,14 +24,17 @@ export const VISIBILITY_STATUSES = [
   'password_protected', 
   'private'
 ] as const;
+export const LAYOUT_STYLES = ['column', 'row', 'masonry'] as const; // Updated
 
 // Derive TypeScript types from the constants
 export type MediaType = typeof MEDIA_TYPES[number];
 export type VisibilityStatus = typeof VISIBILITY_STATUSES[number];
+export type LayoutStyle = typeof LAYOUT_STYLES[number]; // Updated
 
 // Derive Drizzle enums from the same constants
 export const mediaTypeEnum = pgEnum('media_type', [...MEDIA_TYPES]);
 export const visibilityEnum = pgEnum('visibility_status', [...VISIBILITY_STATUSES]);
+export const layoutStyleEnum = pgEnum('layout_style', [...LAYOUT_STYLES]); // Updated
 
 // ==========================================
 // 2. TABLES
@@ -83,7 +86,9 @@ export const galleries = pgTable('galleries', {
   passwordHash: varchar('password_hash', { length: 255 }), // For password_protected
   
   coverMediaId: uuid('cover_media_id').references(() => media.id, { onDelete: 'set null' }),
-  layoutStyle: varchar('layout_style', { length: 50 }).default('masonry'), // masonry, grid, slideshow
+  
+  // Updated to use the strict enum instead of varchar
+  layoutStyle: layoutStyleEnum('layout_style').default('masonry').notNull(), 
   
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
@@ -92,7 +97,7 @@ export const galleries = pgTable('galleries', {
 export const galleryMedia = pgTable('gallery_media', {
   galleryId: uuid('gallery_id').references(() => galleries.id, { onDelete: 'cascade' }).notNull(),
   mediaId: uuid('media_id').references(() => media.id, { onDelete: 'cascade' }).notNull(),
-  position: integer('position').notNull().unique(), // Handles the drag-and-drop order
+  position: integer('position').notNull(), // Removed .unique() so multiple media can exist in the same gallery at different positions
 }, (table) => ({
   pk: primaryKey({ columns: [table.galleryId, table.mediaId] }),
 }));

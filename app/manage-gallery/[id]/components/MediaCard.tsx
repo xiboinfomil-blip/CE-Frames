@@ -1,8 +1,8 @@
 'use client';
 
 import { memo, useCallback } from 'react';
-import MediaViewport from '@/components/media-viewport';
-import { MEDIA_TYPES } from '@/db/schema';
+import MediaViewport from '@/components/media-viewport'; // Adjust path if needed
+import { MEDIA_TYPES } from '@/db/schema'; // Adjust path if needed
 
 interface MediaData {
   id: string;
@@ -17,15 +17,15 @@ interface MediaData {
 interface MediaCardProps {
   media: MediaData;
   onRemove?: (mediaId: string) => void;
+  priority?: boolean;
 }
 
-const MediaCard = memo(function MediaCard({ media, onRemove }: MediaCardProps) {
+const MediaCard = memo(function MediaCard({ media, onRemove, priority = false }: MediaCardProps) {
   const handleRemove = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onRemove?.(media.id);
   }, [onRemove, media.id]);
 
-  // Determine badge config - Modern & Light
   const getBadgeConfig = (type: string) => {
     switch (type) {
       case 'video':
@@ -61,24 +61,21 @@ const MediaCard = memo(function MediaCard({ media, onRemove }: MediaCardProps) {
       className="group relative flex flex-col h-full w-full overflow-hidden rounded-2xl bg-white border border-slate-200/60 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] hover:border-slate-300 hover:-translate-y-1 focus-within:ring-2 focus-within:ring-purple-500/20 focus-within:border-purple-500/50"
       aria-label={`Media asset: ${media.title || 'Untitled'}`}
     >
-      {/* Animated Racing Gradient Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
 
-      {/* Image/Media Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-50">
-        
-        {/* Media Viewport with Zoom Effect */}
+      {/* 🚨 CHANGED: Removed aspect-[4/3], using h-full to respect react-photo-album's calculated height */}
+      <div className="relative w-full h-full overflow-hidden bg-slate-50 flex-1">
         <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
           <MediaViewport
-            mediaType={media.type as any}
+            mediaType={media.type as typeof MEDIA_TYPES[number]}
             fullResUrl={media.fullResUrl || media.thumbnailUrl}
             thumbnailUrl={media.thumbnailUrl}
             caption={media.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover aspect-auto!" // 🚨 CHANGED: Force fill the album's dimensions
+            priority={priority}
           />
         </div>
         
-        {/* Type Badge - Glassmorphism Pill */}
         <div className="absolute top-3 right-3 z-10">
           <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md ${badge.className}`}>
             {badge.icon}
@@ -86,8 +83,7 @@ const MediaCard = memo(function MediaCard({ media, onRemove }: MediaCardProps) {
           </span>
         </div>
 
-        {/* Remove Action - Floating Button */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/20 to-transparent pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-t from-black/20 to-transparent pointer-events-none">
           <button 
             onClick={handleRemove}
             className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-slate-600 shadow-lg ring-1 ring-black/5 transition-all duration-200 hover:bg-red-50 hover:text-red-600 hover:scale-110 hover:ring-red-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -101,7 +97,6 @@ const MediaCard = memo(function MediaCard({ media, onRemove }: MediaCardProps) {
         </div>
       </div>
 
-      {/* Footer Info - Telemetry / Spec Sheet Style */}
       <div className="flex flex-col flex-1 p-4 bg-white">
         <h3 
           className="truncate text-sm font-bold text-slate-900 leading-tight group-hover:text-purple-600 transition-colors mb-3" 
@@ -127,5 +122,4 @@ const MediaCard = memo(function MediaCard({ media, onRemove }: MediaCardProps) {
 });
 
 MediaCard.displayName = 'MediaCard';
-
 export default MediaCard;

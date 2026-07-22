@@ -1,23 +1,28 @@
 // components/Skeleton.jsx
-export default function Skeleton({ 
-  className = 'w-24 h-6', 
-  isCircle = false, 
-  rounded = 'rounded-lg' // 'rounded-none', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-full'
+import React from 'react';
+
+export default function Skeleton({
+  width = 'w-full',
+  height = 'h-4',
+  rounded = 'rounded-md',
+  className = '',
+  animate = true,
+  variant = 'shimmer', // 'shimmer' | 'pulse'
 }) {
+  const baseClasses = 
+    'bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700';
+  
+  const animationClasses = animate
+    ? variant === 'pulse'
+      ? 'animate-pulse'
+      : 'bg-[length:200%_100%] animate-shimmer'
+    : '';
+
   return (
-    <div 
-      aria-hidden="true"
-      className={`
-        relative overflow-hidden bg-zinc-100
-        ${isCircle ? 'rounded-full' : rounded}
-        ${className}
-      `}
-    >
-      {/* The Shimmer Effect */}
-      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite_linear] bg-gradient-to-r from-transparent via-zinc-200/80 to-transparent w-full h-full" />
-      
-      {/* Base Color Fallback (if animation fails or for preference) */}
-      <div className="absolute inset-0 bg-zinc-100 -z-10" />
-    </div>
+    <div
+      className={`${width} ${height} ${rounded} ${baseClasses} ${animationClasses} ${className}`}
+      aria-busy="true"
+      aria-label="Loading content"
+    />
   );
 }

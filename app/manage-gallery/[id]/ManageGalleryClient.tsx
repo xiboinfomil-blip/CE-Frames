@@ -3,11 +3,28 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-import MediaCard from './components/MediaCard';
-import AddMediaModal from './components/AddMediaModal';
-import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/manageHeader';
+import MediaCard from './components/MediaCard'; // Adjust path if needed
+import AddMediaModal from './components/AddMediaModal'; // Adjust path if needed
+import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
+import PhotoAlbum from "react-photo-album";
+import "react-photo-album/styles.css";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  arrayMove,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface GalleryData {
   id: string;
@@ -15,6 +32,7 @@ interface GalleryData {
   description?: string | null;
   visibility: string;
   slug: string;
+  layoutStyle?: 'masonry' | 'row' | 'column';
 }
 
 interface MediaItem {
@@ -37,7 +55,7 @@ interface AvailableMediaItem {
   thumbnailUrl: string;
   fullResUrl: string;
   title: string;
-  type: string;
+  type: 'image' | 'video' | 'gif';
   uploadedAt: string | Date;
 }
 
@@ -63,7 +81,6 @@ interface ManageGalleryClientProps {
   };
 }
 
-// Hoisted static configuration to prevent recreation on every render
 const TYPE_FILTERS: FilterOption[] = [
   { value: 'all', label: 'All Assets' },
   { value: 'image', label: 'Images' },
@@ -78,6 +95,76 @@ const SORT_OPTIONS: SortOption[] = [
   { value: 'name', label: 'Name A-Z' }
 ];
 
+// --- DND Photo Components ---
+function SortablePhoto({ 
+  id, 
+  item, 
+  onRemove, 
+  priority,
+  wrapperStyle
+}: { 
+  id: string; 
+  item: MediaItem; 
+  onRemove: (mediaId: string) => void; 
+  priority?: boolean;
+  wrapperStyle?: React.CSSProperties;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    ...wrapperStyle,
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : "auto",
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="group relative w-full h-full">
+      {/* Drag Handle */}
+      <div 
+        {...attributes} 
+        {...listeners}
+        className="absolute top-3 left-3 z-20 p-2 bg-slate-900/80 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing backdrop-blur-sm shadow-lg"
+        title="Drag to reorder"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+        </svg>
+      </div>
+      
+      <div className="w-full h-full">
+        <MediaCard media={item.media} onRemove={onRemove} priority={priority} />
+      </div>
+    </div>
+  );
+}
+
+function StaticPhoto({ 
+  item, 
+  onRemove, 
+  priority,
+  wrapperStyle
+}: { 
+  item: MediaItem; 
+  onRemove: (mediaId: string) => void; 
+  priority?: boolean;
+  wrapperStyle?: React.CSSProperties;
+}) {
+  return (
+    <div style={wrapperStyle} className="group relative w-full h-full">
+      <MediaCard media={item.media} onRemove={onRemove} priority={priority} />
+    </div>
+  );
+}
+
 export default function ManageGalleryClient({ 
   gallery, 
   galleryMediaItems,
@@ -90,18 +177,74 @@ export default function ManageGalleryClient({
   const searchParams = useSearchParams();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [localMediaItems, setLocalMediaItems] = useState(galleryMediaItems);
   
-  // Local state for inputs before submitting to URL
   const [gallerySearchInput, setGallerySearchInput] = useState(initialFilters.gallerySearch);
   const [modalSearchInput, setModalSearchInput] = useState(initialFilters.search);
 
-  // Sync local input state if URL changes externally (e.g., browser back button)
+  // Sync local state with prop changes (e.g., after server action / URL update)
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setGallerySearchInput(initialFilters.gallerySearch);
     setModalSearchInput(initialFilters.search);
-  }, [initialFilters.gallerySearch, initialFilters.search]);
+    setLocalMediaItems(galleryMediaItems);
+  }, [initialFilters.gallerySearch, initialFilters.search, galleryMediaItems]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
-  // --- Server-Driven Filter Updates for Main List ---
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  );
+
+  const isCustomOrder = initialFilters.sortBy === 'position';
+
+  const albumLayout: 'masonry' | 'rows' | 'columns' = 
+    gallery.layoutStyle === 'row' ? 'rows' : 
+    gallery.layoutStyle === 'column' ? 'columns' : 
+    'masonry';
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = localMediaItems.findIndex((item) => item.mediaId === active.id);
+      const newIndex = localMediaItems.findIndex((item) => item.mediaId === over.id);
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newItems = arrayMove(localMediaItems, oldIndex, newIndex);
+        setLocalMediaItems(newItems);
+        
+        try {
+          const res = await fetch('/api/gallery-media/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              galleryId: gallery.id, 
+              orderedMediaIds: newItems.map(item => item.mediaId) 
+            }),
+          });
+          if (!res.ok) throw new Error('Failed to reorder');
+          
+          router.refresh();
+        } catch (error) {
+          console.error('Failed to reorder media', error);
+          setLocalMediaItems(galleryMediaItems);
+          Swal.fire({
+            icon: 'error',
+            title: 'Reorder Failed',
+            text: 'An error occurred while saving the new order.',
+            background: '#ffffff',
+            customClass: { 
+              popup: 'rounded-xl shadow-2xl border border-slate-200',
+              title: 'font-black text-slate-900 uppercase tracking-tight'
+            }
+          });
+        }
+      }
+    }
+  };
+
   const updateMainFilters = useCallback((updates: {
     gallerySearch?: string;
     type?: 'all' | 'image' | 'video' | 'gif';
@@ -114,7 +257,7 @@ export default function ManageGalleryClient({
     if (updates.page !== undefined) {
       params.set('page', updates.page.toString());
     } else if (isFilterChange) {
-      params.delete('page'); // Reset to page 1 on filter change
+      params.delete('page');
     }
 
     if (updates.gallerySearch !== undefined) {
@@ -135,7 +278,6 @@ export default function ManageGalleryClient({
     router.push(`?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
 
-  // --- Server-Driven Filter Updates for Modal ---
   const updateModalFilters = useCallback((updates: {
     search?: string;
     type?: 'all' | 'image' | 'video' | 'gif';
@@ -169,17 +311,16 @@ export default function ManageGalleryClient({
     router.push(`?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
 
-  // --- Handlers ---
   const handleMainSearchSubmit = useCallback(() => {
     updateMainFilters({ gallerySearch: gallerySearchInput, page: 1 });
   }, [gallerySearchInput, updateMainFilters]);
 
-  const handleMainTypeFilter = useCallback((type: 'all' | 'image' | 'video' | 'gif') => {
-    updateMainFilters({ type, page: 1 });
+  const handleMainTypeFilter = useCallback((type: string) => {
+    updateMainFilters({ type: type as 'all' | 'image' | 'video' | 'gif', page: 1 });
   }, [updateMainFilters]);
 
-  const handleMainSortChange = useCallback((sortBy: 'newest' | 'oldest' | 'name' | 'position') => {
-    updateMainFilters({ sortBy, page: 1 });
+  const handleMainSortChange = useCallback((sortBy: string) => {
+    updateMainFilters({ sortBy: sortBy as 'newest' | 'oldest' | 'name' | 'position', page: 1 });
   }, [updateMainFilters]);
 
   const handleMainPageChange = useCallback((page: number) => {
@@ -191,12 +332,12 @@ export default function ManageGalleryClient({
     updateModalFilters({ search: modalSearchInput, page: 1 });
   }, [modalSearchInput, updateModalFilters]);
 
-  const handleModalTypeFilter = useCallback((type: 'all' | 'image' | 'video' | 'gif') => {
-    updateModalFilters({ type, page: 1 });
+  const handleModalTypeFilter = useCallback((type: string) => {
+    updateModalFilters({ type: type as 'all' | 'image' | 'video' | 'gif', page: 1 });
   }, [updateModalFilters]);
 
-  const handleModalSortChange = useCallback((sortBy: 'newest' | 'oldest' | 'name') => {
-    updateModalFilters({ sortBy, page: 1 });
+  const handleModalSortChange = useCallback((sortBy: string) => {
+    updateModalFilters({ sortBy: sortBy as 'newest' | 'oldest' | 'name', page: 1 });
   }, [updateModalFilters]);
 
   const handleModalPageChange = useCallback((page: number) => {
@@ -292,10 +433,18 @@ export default function ManageGalleryClient({
     router.refresh();
   }, [router]);
 
+  const albumPhotos = localMediaItems.map((item) => ({
+    id: item.mediaId,
+    src: item.media.thumbnailUrl,
+    width: item.media.width || 400,
+    height: item.media.height || 300,
+    title: item.media.title || "",
+    item,
+  }));
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-red-600 selection:text-white relative">
       
-      {/* Subtle Telemetry Grid Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.4]" 
         style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }} 
@@ -304,13 +453,9 @@ export default function ManageGalleryClient({
 
       <div className="relative z-10 flex flex-col min-h-screen">
         
-        {/* --- Sticky Dashboard Control Panel --- */}
         <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <MediaLibraryHeader
-              title={gallery.title}
-              subtitle={`ID: ${gallery.slug.toUpperCase()} • VISIBILITY: ${gallery.visibility.replace('_', ' ').toUpperCase()}`}
-              searchPlaceholder="Search current assets..."
               searchValue={gallerySearchInput}
               onSearchChange={setGallerySearchInput}
               onSearchSubmit={handleMainSearchSubmit}
@@ -323,24 +468,21 @@ export default function ManageGalleryClient({
               totalItems={mainPagination.total}
               currentPage={mainPagination.currentPage}
               totalPages={mainPagination.totalPages}
-              onPageChange={handleMainPageChange}
             />
           </div>
         </header>
 
-        {/* Sleek Technical Finish-Line Divider */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-red-500/40 to-transparent" aria-hidden="true" />
+        <div className="h-px w-full bg-linear-to-r from-transparent via-red-500/40 to-transparent" aria-hidden="true" />
 
-        {/* --- Main Content Area --- */}
         <main className="flex-1 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
           <div className="sr-only" aria-live="polite" aria-atomic="true">
-            Showing {galleryMediaItems.length} of {mainPagination.total} assets.
+            Showing {localMediaItems.length} of {mainPagination.total} assets.
           </div>
 
-          {galleryMediaItems.length === 0 ? (
+          {localMediaItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden animate-fadeInUp">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-60"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-red-600 to-transparent opacity-60"></div>
               
               <div className="w-24 h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 relative shadow-sm">
                 <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -366,17 +508,82 @@ export default function ManageGalleryClient({
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 animate-fadeInUp">
-                {galleryMediaItems.map((item) => (
-                  <MediaCard 
-                    key={item.mediaId} 
-                    media={item.media} 
-                    onRemove={handleRemoveMedia}
-                  />
-                ))}
+              {!isCustomOrder && (
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-sm font-medium flex items-start gap-3 shadow-sm animate-fadeInUp">
+                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <p className="font-bold">Drag and drop is currently disabled.</p>
+                    <p className="mt-1">
+                      Switch to <span className="font-black">{'"Custom Order"'}</span> in the sort dropdown to enable drag-and-drop reordering.{' '}
+                      <button onClick={() => handleMainSortChange('position')} className="underline font-bold hover:text-amber-900 transition-colors">
+                        Switch now
+                      </button>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="animate-fadeInUp w-full">
+                {isCustomOrder ? (
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
+                      <div className="w-full">
+                        <PhotoAlbum
+                          layout={albumLayout}
+                          photos={albumPhotos}
+                          spacing={24}
+                          columns={(containerWidth) => {
+                            if (containerWidth < 640) return 2;
+                            if (containerWidth < 1024) return 3;
+                            if (containerWidth < 1280) return 4;
+                            if (containerWidth < 1536) return 5;
+                            return 6;
+                          }}
+                          render={{
+                            wrapper: (props, { photo, index }) => (
+                              <SortablePhoto 
+                                id={photo.id} 
+                                item={photo.item} 
+                                onRemove={handleRemoveMedia} 
+                                priority={index === 0}
+                                wrapperStyle={props.style}
+                              />
+                            )
+                          }}
+                        />
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                ) : (
+                  <div className="w-full">
+                    <PhotoAlbum
+                      layout={albumLayout}
+                      photos={albumPhotos}
+                      spacing={24}
+                      columns={(containerWidth) => {
+                        if (containerWidth < 640) return 2;
+                        if (containerWidth < 1024) return 3;
+                        if (containerWidth < 1280) return 4;
+                        if (containerWidth < 1536) return 5;
+                        return 6;
+                      }}
+                      render={{
+                        wrapper: (props, { photo, index }) => (
+                          <StaticPhoto 
+                            item={photo.item} 
+                            onRemove={handleRemoveMedia} 
+                            priority={index === 0}
+                            wrapperStyle={props.style}
+                          />
+                        )
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               
-              {/* Premium Pagination Component */}
               {mainPagination.totalPages > 1 && (
                 <Pagination 
                   currentPage={mainPagination.currentPage}
@@ -392,13 +599,11 @@ export default function ManageGalleryClient({
 
         </main>
 
-        {/* --- Floating Action Button (FAB) --- */}
         <FloatingActionButton 
           onClick={() => setIsAddModalOpen(true)}
           label="Add Asset"
         />
 
-        {/* --- Add Media Modal --- */}
         <AddMediaModal 
           isOpen={isAddModalOpen}
           onClose={handleCloseModal}
@@ -419,7 +624,6 @@ export default function ManageGalleryClient({
         />
       </div>
 
-      {/* Inline Styles for Snappy, Racecar-Inspired Animations */}
       <style jsx>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(16px); }

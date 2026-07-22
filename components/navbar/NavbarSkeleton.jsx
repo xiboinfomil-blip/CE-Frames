@@ -1,5 +1,6 @@
 // components/NavbarSkeleton.jsx
 import { motion } from 'framer-motion';
+import Skeleton from '../Skeleton'; // Adjust path if necessary
 
 export default function NavbarSkeleton() {
   return (
@@ -17,10 +18,10 @@ export default function NavbarSkeleton() {
           
           {/* Logo Skeleton */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer" />
+            <Skeleton width="w-10" height="h-10" rounded="rounded-xl" />
             <div className="flex flex-col space-y-1.5">
-              <div className="w-36 h-5 rounded-md bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer" />
-              <div className="w-24 h-2.5 rounded-md bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer hidden sm:block" />
+              <Skeleton width="w-36" height="h-5" rounded="rounded-md" />
+              <Skeleton width="w-24" height="h-2.5" rounded="rounded-md" className="hidden sm:block" />
             </div>
           </div>
 
@@ -28,20 +29,17 @@ export default function NavbarSkeleton() {
           <div className="hidden lg:flex items-center space-x-10">
             <div className="flex items-center space-x-1">
               {[...Array(4)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="w-20 h-8 rounded-lg bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer" 
-                />
+                <Skeleton key={i} width="w-20" height="h-8" rounded="rounded-lg" />
               ))}
             </div>
             
             {/* Auth Button Skeleton */}
-            <div className="w-28 h-9 rounded-lg bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer" />
+            <Skeleton width="w-28" height="h-9" rounded="rounded-lg" />
           </div>
 
           {/* Mobile Menu Button Skeleton */}
           <div className="lg:hidden flex items-center">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100] animate-shimmer" />
+            <Skeleton width="w-10" height="h-10" rounded="rounded-xl" />
           </div>
 
         </div>

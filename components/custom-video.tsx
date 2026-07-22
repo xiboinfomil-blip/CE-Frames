@@ -13,41 +13,35 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
     hoverPlay = true, 
     className = '', 
     onLoadedData,
+    onError,
     ...props 
   }, ref) => {
-    const [isHovered, setIsHovered] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const handleMouseEnter = useCallback(() => {
-      if (!hoverPlay) return;
-      setIsHovered(true);
-      
-      const videoElement = ref && typeof ref !== 'function' ? ref.current : null;
-      if (videoElement) {
-        // Check if ready to play to avoid errors
-        if (videoElement.readyState >= 2) {
-            videoElement.play().catch(() => {});
-        } else {
-            // If not ready, try playing anyway, browser will handle queue
-            videoElement.play().catch(() => {});
-        }
-      }
-    }, [hoverPlay, ref]);
-
-    const handleMouseLeave = useCallback(() => {
-      if (!hoverPlay) return;
-      setIsHovered(false);
-      
-      const videoElement = ref && typeof ref !== 'function' ? ref.current : null;
-      if (videoElement) {
-        videoElement.pause();
-      }
-    }, [hoverPlay, ref]);
-
-    const handleLoadedData = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
+    // CRITICAL FIX: Unified handler for both metadata and data loaded.
+    const handleReady = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
       setIsLoaded(true);
       onLoadedData?.(e);
     }, [onLoadedData]);
+
+    const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
+      if (!hoverPlay) return;
+      e.currentTarget.play().catch(() => {
+        // Ignore autoplay prevention errors
+      });
+    }, [hoverPlay]);
+
+    const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
+      if (!hoverPlay) return;
+      e.currentTarget.pause();
+      e.currentTarget.currentTime = 0; // Reset to show poster again
+    }, [hoverPlay]);
+
+    const handleError = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+      console.error('Video failed to load:', props.src);
+      setIsLoaded(true); // Force opacity-100 so poster/error is visible
+      onError?.(e);
+    }, [onError, props.src]);
 
     return (
       <div className="relative h-full w-full overflow-hidden">
@@ -57,15 +51,15 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
           muted
           loop
           playsInline
-          preload="metadata" // Better UX than 'none', lighter than 'auto'
+          preload="metadata"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onLoadedData={handleLoadedData}
-          className={`h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105 will-change-transform ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+          onLoadedMetadata={handleReady} // 🚨 CRITICAL: Fires even if loadedData stalls
+          onLoadedData={handleReady}
+          onError={handleError}
+          className={`h-full w-full object-cover transition-opacity duration-500 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
           {...props}
         />
-        
-        {/* Subtle Vignette for Cinematic Feel */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)]" />
       </div>
     );
@@ -73,5 +67,4 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
 );
 
 CustomVideo.displayName = 'CustomVideo';
-
 export default CustomVideo;

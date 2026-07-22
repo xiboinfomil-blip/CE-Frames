@@ -11,7 +11,7 @@ interface GalleryGridProps {
 const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {galleries.map((gallery) => {
+      {galleries.map((gallery, index) => {
         // Use coverMedia if available, otherwise use randomMedia
         const displayMedia = gallery.coverMedia || gallery.randomMedia;
         
@@ -21,7 +21,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
             <div
               key={gallery.id}
               onClick={() => onGalleryClick(gallery)}
-              className="group relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-700 shadow-xl cursor-pointer transition-all duration-300 hover:ring-red-500 hover:shadow-2xl hover:-translate-y-1"
+              className="group relative aspect-4/3 w-full overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-700 shadow-xl cursor-pointer transition-all duration-300 hover:ring-red-500 hover:shadow-2xl hover:-translate-y-1"
             >
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center p-4">
@@ -44,7 +44,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
               </div>
               
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
               {/* Gallery Info */}
               <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
@@ -75,6 +75,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
               caption={gallery.title}
               originalFilename={null}
               className="transition-all duration-300 hover:ring-red-500 hover:shadow-2xl hover:-translate-y-1"
+              priority={index === 0} // <-- Eager load ONLY the first item for LCP optimization
             />
             
             {/* Gallery Info - positioned outside MediaViewport for better control */}
@@ -93,7 +94,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
                 
                 {/* Visibility Badge */}
                 {gallery.visibility === 'password_protected' && (
-                  <div className="flex-shrink-0 mt-1">
+                  <div className="shrink-0 mt-1">
                     <div className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
                         <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />

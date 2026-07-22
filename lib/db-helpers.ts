@@ -5,7 +5,9 @@ import {
   users,
   media,
   galleries,
-  galleryMedia
+  galleryMedia,
+  VISIBILITY_STATUSES,
+  type VisibilityStatus
 } from '@/db/schema';
 
 // ==========================================
@@ -187,7 +189,7 @@ export const galleryHelpers = {
     return await db.query.galleries.findFirst({
       where: eq(galleries.slug, slug),
       with: {
-        user: { columns: { username: true } }, // Removed avatarUrl
+        user: { columns: { username: true } },
         coverMedia: { 
           columns: { id: true, thumbnailUrl: true, type: true } 
         },
@@ -207,7 +209,6 @@ export const galleryHelpers = {
           },
           orderBy: [asc(galleryMedia.position)]
         }
-        // Removed comments
       }
     });
   },
@@ -216,7 +217,7 @@ export const galleryHelpers = {
     return await db.query.galleries.findFirst({
       where: eq(galleries.id, id),
       with: { 
-        user: { columns: { username: true } }, // Removed avatarUrl
+        user: { columns: { username: true } },
         coverMedia: { columns: { id: true, thumbnailUrl: true } },
         galleryMedia: { 
           with: { 
@@ -250,7 +251,7 @@ export const galleryHelpers = {
         description: true,
         visibility: true,
         coverMediaId: true,
-        layoutStyle: true,
+        layoutStyle: true, // Included for the new enum
         createdAt: true
       },
       with: {
@@ -271,7 +272,7 @@ export const galleryHelpers = {
     offset?: number; 
     search?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
-    visibility?: 'public' | 'private' | 'password_protected';
+    visibility?: VisibilityStatus;
   }) => {
     const { limit = 50, offset = 0, search, sortBy = 'newest', visibility } = options || {};
     
@@ -302,7 +303,6 @@ export const galleryHelpers = {
         break;
     }
 
-    // First, get the galleries
     const items = await db.query.galleries.findMany({
       where: whereClause,
       limit,
@@ -315,7 +315,7 @@ export const galleryHelpers = {
         description: true,
         visibility: true,
         coverMediaId: true,
-        layoutStyle: true,
+        layoutStyle: true, // Included for the new enum
         createdAt: true
       },
       with: {
@@ -323,19 +323,15 @@ export const galleryHelpers = {
       }
     });
 
-    // Get count for pagination
     const countResult = await db.select({ count: count() })
       .from(galleries)
       .where(whereClause);
       
     const total = Number(countResult[0]?.count) || 0;
 
-    // If we have galleries, fetch one random media for each
     if (items.length > 0) {
       const galleryIds = items.map(g => g.id);
       
-      // For each gallery, fetch one random media item
-      // We'll do this efficiently by getting all media for these galleries and picking one randomly per gallery
       const allGalleryMedia = await db.query.galleryMedia.findMany({
         where: inArray(galleryMedia.galleryId, galleryIds),
         with: {
@@ -349,7 +345,6 @@ export const galleryHelpers = {
         }
       });
       
-      // Group by gallery and pick one random media per gallery
       const mediaByGallery = new Map();
       const galleryMediaMap = new Map();
       
@@ -360,7 +355,6 @@ export const galleryHelpers = {
         galleryMediaMap.get(gm.galleryId).push(gm.media);
       });
       
-      // Pick one random media per gallery
       galleryIds.forEach(galleryId => {
         const medias = galleryMediaMap.get(galleryId);
         if (medias && medias.length > 0) {
@@ -371,13 +365,12 @@ export const galleryHelpers = {
         }
       });
       
-      // Attach the random media to each gallery
       items.forEach(gallery => {
-        gallery.randomMedia = mediaByGallery.get(gallery.id) || null;
+        (gallery as any).randomMedia = mediaByGallery.get(gallery.id) || null;
       });
     } else {
       items.forEach(gallery => {
-        gallery.randomMedia = null;
+        (gallery as any).randomMedia = null;
       });
     }
 
@@ -388,143 +381,135 @@ export const galleryHelpers = {
     };
   },
 
-findPublic: async (options?: { 
-  limit?: number; 
-  offset?: number;
-  search?: string;
-  sortBy?: 'newest' | 'oldest' | 'title';
-  visibility?: typeof VISIBILITY_STATUSES[number] | 'all';
-}) => {
-  const { 
-    limit = 12, 
-    offset = 0,
-    search, 
-    sortBy = 'newest', 
-    visibility = 'all'
-  } = options || {};
+  findPublic: async (options?: { 
+    limit?: number; 
+    offset?: number;
+    search?: string;
+    sortBy?: 'newest' | 'oldest' | 'title';
+    visibility?: VisibilityStatus | 'all';
+  }) => {
+    const { 
+      limit = 12, 
+      offset = 0,
+      search, 
+      sortBy = 'newest', 
+      visibility = 'all'
+    } = options || {};
 
-  // Base condition: Must be public or password protected
-  const conditions: any[] = [
-    or(
-      eq(galleries.visibility, 'public'),
-      eq(galleries.visibility, 'password_protected')
-    )
-  ];
+    const conditions: any[] = [];
 
-  // 1. Filter by specific visibility if provided
-  if (visibility && visibility !== 'all') {
-    conditions.pop(); // Remove the OR condition
-    conditions.push(eq(galleries.visibility, visibility));
-  }
-
-  // 2. Search by Title or Description
-  if (search && search.trim()) {
-    const searchTerm = `%${search.trim()}%`;
-    conditions.push(
-      or(
-        ilike(galleries.title, searchTerm),
-        galleries.description ? ilike(galleries.description, searchTerm) : undefined
-      )
-    );
-  }
-
-  const whereClause = and(...conditions);
-
-  // 3. Sorting Logic
-  let orderByClause;
-  switch (sortBy) {
-    case 'oldest':
-      orderByClause = [asc(galleries.createdAt)];
-      break;
-    case 'title':
-      orderByClause = [asc(galleries.title)];
-      break;
-    case 'newest':
-    default:
-      orderByClause = [desc(galleries.createdAt)];
-      break;
-  }
-
-  // 4. Fetch Items
-  const items = await db.query.galleries.findMany({
-    where: whereClause,
-    limit,
-    offset,
-    orderBy: orderByClause,
-    columns: {
-      id: true,
-      title: true,
-      slug: true,
-      description: true,
-      visibility: true,
-      createdAt: true
-    },
-    with: {
-      user: { columns: { username: true } },
-      coverMedia: { columns: { id: true, thumbnailUrl: true, type: true } }
+    // Clean if/else instead of array mutation (.pop)
+    if (visibility && visibility !== 'all') {
+      conditions.push(eq(galleries.visibility, visibility));
+    } else {
+      conditions.push(
+        or(
+          eq(galleries.visibility, 'public'),
+          eq(galleries.visibility, 'password_protected')
+        )
+      );
     }
-  });
 
-  // 5. Fetch Total Count for Pagination
-  const countResult = await db.select({ count: count() })
-    .from(galleries)
-    .where(whereClause);
-  
-  const total = Number(countResult[0]?.count) || 0;
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      conditions.push(
+        or(
+          ilike(galleries.title, searchTerm),
+          galleries.description ? ilike(galleries.description, searchTerm) : undefined
+        )
+      );
+    }
 
-  // 6. Fetch random media for each gallery
-  if (items.length > 0) {
-    const galleryIds = items.map(g => g.id);
-    
-    // Get all media for these galleries
-    const allGalleryMedia = await db.query.galleryMedia.findMany({
-      where: inArray(galleryMedia.galleryId, galleryIds),
+    const whereClause = and(...conditions);
+
+    let orderByClause;
+    switch (sortBy) {
+      case 'oldest':
+        orderByClause = [asc(galleries.createdAt)];
+        break;
+      case 'title':
+        orderByClause = [asc(galleries.title)];
+        break;
+      case 'newest':
+      default:
+        orderByClause = [desc(galleries.createdAt)];
+        break;
+    }
+
+    const items = await db.query.galleries.findMany({
+      where: whereClause,
+      limit,
+      offset,
+      orderBy: orderByClause,
+      columns: {
+        id: true,
+        title: true,
+        slug: true,
+        description: true,
+        visibility: true,
+        layoutStyle: true, // Included for the new enum
+        createdAt: true
+      },
       with: {
-        media: {
-          columns: {
-            id: true,
-            thumbnailUrl: true,
-            fullResUrl: true,
-            type: true
+        user: { columns: { username: true } },
+        coverMedia: { columns: { id: true, thumbnailUrl: true, type: true } }
+      }
+    });
+
+    const countResult = await db.select({ count: count() })
+      .from(galleries)
+      .where(whereClause);
+  
+    const total = Number(countResult[0]?.count) || 0;
+
+    if (items.length > 0) {
+      const galleryIds = items.map(g => g.id);
+      
+      const allGalleryMedia = await db.query.galleryMedia.findMany({
+        where: inArray(galleryMedia.galleryId, galleryIds),
+        with: {
+          media: {
+            columns: {
+              id: true,
+              thumbnailUrl: true,
+              fullResUrl: true,
+              type: true
+            }
           }
         }
-      }
-    });
-    
-    // Group by gallery and pick one random media per gallery
-    const mediaByGallery = new Map<string, any>();
-    const galleryMediaMap = new Map<string, any[]>();
-    
-    allGalleryMedia.forEach(gm => {
-      if (!galleryMediaMap.has(gm.galleryId)) {
-        galleryMediaMap.set(gm.galleryId, []);
-      }
-      galleryMediaMap.get(gm.galleryId)!.push(gm.media);
-    });
-    
-    // Pick one random media per gallery
-    galleryIds.forEach(galleryId => {
-      const medias = galleryMediaMap.get(galleryId);
-      if (medias && medias.length > 0) {
-        const randomIndex = Math.floor(Math.random() * medias.length);
-        mediaByGallery.set(galleryId, medias[randomIndex]);
-      } else {
-        mediaByGallery.set(galleryId, null);
-      }
-    });
-    
-    // Attach the random media to each gallery
-    items.forEach(gallery => {
-      (gallery as any).randomMedia = mediaByGallery.get(gallery.id) || null;
-    });
-  }
+      });
+      
+      const mediaByGallery = new Map<string, any>();
+      const galleryMediaMap = new Map<string, any[]>();
+      
+      allGalleryMedia.forEach(gm => {
+        if (!galleryMediaMap.has(gm.galleryId)) {
+          galleryMediaMap.set(gm.galleryId, []);
+        }
+        galleryMediaMap.get(gm.galleryId)!.push(gm.media);
+      });
+      
+      galleryIds.forEach(galleryId => {
+        const medias = galleryMediaMap.get(galleryId);
+        if (medias && medias.length > 0) {
+          const randomIndex = Math.floor(Math.random() * medias.length);
+          mediaByGallery.set(galleryId, medias[randomIndex]);
+        } else {
+          mediaByGallery.set(galleryId, null);
+        }
+      });
+      
+      items.forEach(gallery => {
+        (gallery as any).randomMedia = mediaByGallery.get(gallery.id) || null;
+      });
+    }
 
-  return {
-    items,
-    total,
-    hasMore: offset + limit < total
-  };
-},
+    return {
+      items,
+      total,
+      hasMore: offset + limit < total
+    };
+  },
 
   update: async (id: string, data: Partial<typeof galleries.$inferInsert>) => {
     return await db.update(galleries).set(data).where(eq(galleries.id, id)).returning();
@@ -604,12 +589,10 @@ export const galleryMediaHelpers = {
             exifData: true,
             locationName: true
           }
-          // Removed mediaReactions
         }
       }
     });
 
-    // Removed reactionCount mapping
     return items;
   },
 
