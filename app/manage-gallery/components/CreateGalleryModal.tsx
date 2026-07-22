@@ -166,7 +166,7 @@ export default function CreateGalleryModal({
   // However, to be strictly compliant, we can move this logic into the handlers themselves if needed,
   // but typically filter-change-triggered-fetches are acceptable if debounced or handled carefully.
   // For now, let's keep it but ensure it doesn't conflict with the main "open" logic.
-  // Actually, let's move the fetch trigger into the handlers to be safe.
+  // Actually, let's move the fetch trigger into the handlers to be safe..
   
   const handleFilterChange = useCallback(
     (type: string) => {
