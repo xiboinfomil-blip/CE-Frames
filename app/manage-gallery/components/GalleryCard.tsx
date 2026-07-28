@@ -15,7 +15,6 @@ interface GalleryCardProps {
   priority?: boolean;
 }
 
-// Define the shape of the nested media object to avoid 'any'
 interface GalleryMediaItem {
   media?: {
     url?: string;
@@ -33,20 +32,21 @@ export const GalleryCard = memo(function GalleryCard({
   
   const handleDeleteClick = async () => {
     const result = await Swal.fire({
-      title: 'Purge Gallery?',
-      html: `<span class="text-slate-600">You are about to permanently delete <strong class="text-slate-900">${gallery.title}</strong>. This action cannot be undone.</span>`,
+      title: 'Delete Gallery?',
+      html: `<span class="text-zinc-500">You are about to permanently delete <strong class="text-zinc-900">${gallery.title}</strong>. This action cannot be undone.</span>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#cbd5e1',
-      confirmButtonText: 'Yes, purge it',
+      cancelButtonColor: '#e4e4e7',
+      confirmButtonText: 'Yes, delete it',
       cancelButtonText: 'Cancel',
       background: '#ffffff',
       customClass: {
-        popup: 'rounded-2xl shadow-xl border border-slate-100 font-sans',
-        title: 'font-bold text-slate-900 text-lg',
-        confirmButton: 'px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:bg-red-600 hover:shadow-md',
-        cancelButton: 'px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+        popup: 'rounded-2xl shadow-xl border border-zinc-100',
+        title: 'font-semibold text-zinc-900 text-lg',
+        htmlContainer: 'mt-2',
+        confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-red-600 hover:shadow-md',
+        cancelButton: 'px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-600 hover:bg-zinc-100'
       }
     });
 
@@ -56,22 +56,12 @@ export const GalleryCard = memo(function GalleryCard({
   };
 
   const getMediaInfo = () => {
-    // Use type assertion with the specific interface defined above
     const galleryWithMedia = gallery as Gallery & {
-      randomMedia?: {
-        url?: string;
-        thumbnailUrl?: string;
-        type?: string;
-      };
-      coverMedia?: {
-        url?: string;
-        thumbnailUrl?: string;
-        type?: string;
-      };
+      randomMedia?: { url?: string; thumbnailUrl?: string; type?: string };
+      coverMedia?: { url?: string; thumbnailUrl?: string; type?: string };
       galleryMedia?: GalleryMediaItem[];
     };
 
-    // Priority: Random Media -> Cover Media -> First Item in Gallery
     const media = galleryWithMedia.randomMedia || galleryWithMedia.coverMedia || (galleryWithMedia.galleryMedia?.[0]?.media ?? null);
     
     if (!media) return { sourceUrl: null, posterUrl: null, mediaType: null };
@@ -86,41 +76,26 @@ export const GalleryCard = memo(function GalleryCard({
   const { sourceUrl, posterUrl, mediaType } = getMediaInfo();
   const hasMedia = !!sourceUrl;
   
-  // Safely access galleryMedia with the specific interface
-  const galleryWithMedia = gallery as Gallery & {
-    galleryMedia?: GalleryMediaItem[];
-  };
+  const galleryWithMedia = gallery as Gallery & { galleryMedia?: GalleryMediaItem[] };
   const mediaCount = galleryWithMedia.galleryMedia?.length || 0;
   
   const createdDate = new Date(gallery.createdAt);
-  const formattedDate = createdDate.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: '2-digit' 
-  });
-
-  // Safe access for user details - use username instead of name/email
-  const user = gallery.user as { username?: string; avatarUrl?: string | null } | undefined;
-  const ownerName = user?.username || 'Unknown';
-  const initial = ownerName.charAt(0).toUpperCase();
+  const formattedDate = createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
-    <article className="group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-200/60 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] hover:border-slate-300 transition-all duration-300 h-full">
-      
-      {/* Animated Racing Gradient Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-20" />
+    <article className="group relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-500 ease-out h-full border border-zinc-100/60">
       
       {/* --- Media Area --- */}
       <Link 
         href={`/manage-gallery/${gallery.id}`} 
-        className="block relative aspect-4/3 bg-slate-50 overflow-hidden shrink-0 focus:outline-none"
+        className="block relative aspect-3/2 sm:aspect-4/3 bg-zinc-50 overflow-hidden shrink-0 focus:outline-none"
         aria-label={`Manage gallery: ${gallery.title}`}
       >
         {hasMedia && mediaType ? (
           <>
-            <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
+            {/* Image Container with Zoom Effect */}
+            <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-in-out will-change-transform">
               <MediaViewport
-                // Assert mediaType to satisfy the union type requirement
                 mediaType={mediaType as typeof MEDIA_TYPES[number]}
                 fullResUrl={sourceUrl!}
                 thumbnailUrl={posterUrl || sourceUrl!}
@@ -131,11 +106,14 @@ export const GalleryCard = memo(function GalleryCard({
               />
             </div>
             
-            {/* Play Icon Overlay for Videos */}
+            {/* Gradient Overlay for better text contrast on hover */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            {/* Play Button Overlay for Video */}
             {mediaType === 'video' && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                <div className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center opacity-90 group-hover:scale-110 transition-all duration-300">
-                  <svg className="w-6 h-6 text-slate-900 ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <div className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center opacity-90 scale-90 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300">
+                  <svg className="w-5 h-5 text-zinc-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
@@ -143,98 +121,78 @@ export const GalleryCard = memo(function GalleryCard({
             )}
           </>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 border-b border-slate-100">
-            <div className="p-4 rounded-full bg-slate-100 mb-2">
-              <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          /* Empty State */
+          <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-50/50 border-b border-zinc-100">
+            <div className="p-4 rounded-full bg-zinc-100 mb-3 ring-1 ring-zinc-200/50">
+              <svg className="w-6 h-6 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">No Media</span>
+            <span className="text-xs font-medium text-zinc-400 uppercase tracking-widest">No Media</span>
           </div>
         )}
 
-        {/* Top Left: Visibility */}
-        <div className="absolute top-3 left-3 z-10">
+        {/* Top Badges Overlay */}
+        <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10 pointer-events-none">
           <VisibilityBadge type={gallery.visibility as typeof VISIBILITY_STATUSES[number]} />
-        </div>
-
-        {/* Top Right: Media Count Telemetry */}
-        {mediaCount > 0 && (
-          <div className="absolute top-3 right-3 z-10">
-            <div className="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-mono font-bold px-2.5 py-1.5 rounded-full shadow-sm border border-slate-200/50 flex items-center gap-1.5">
-              <svg className="w-3 h-3 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          
+          {mediaCount > 0 && (
+            <div className="bg-white/90 dark:bg-zinc-900/80 backdrop-blur-md text-zinc-700 text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm border border-white/20 flex items-center gap-1.5 pointer-events-auto transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {mediaCount}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </Link>
 
       {/* --- Content Area --- */}
-      <div className="flex flex-col grow p-5">
-        
-        {/* Header: Title & Date */}
+      <div className="flex flex-col grow p-5 sm:p-6">
         <div className="mb-3">
           <Link href={`/manage-gallery/${gallery.id}`} className="block group/title focus:outline-none">
-            <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover/title:text-purple-600 transition-colors line-clamp-1">
+            <h3 className="text-lg font-bold text-zinc-900 leading-snug group-hover/title:text-zinc-600 transition-colors line-clamp-1">
               {gallery.title}
             </h3>
           </Link>
-          <div className="flex items-center gap-2 mt-2">
-             <span className="text-[10px] font-mono font-medium text-slate-400 uppercase tracking-wider">
-               EST. {formattedDate}
-             </span>
-          </div>
+          <time className="text-xs font-medium text-zinc-400 mt-1.5 block tracking-wide">
+            {formattedDate}
+          </time>
         </div>
 
-        {/* Description */}
         {gallery.description ? (
-          <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed grow font-normal">
+          <p className="text-sm text-zinc-500 line-clamp-2 mb-4 leading-relaxed grow font-light">
             {gallery.description}
           </p>
         ) : (
           <div className="grow" />
         )}
 
-        {/* Footer: Actions & Telemetry */}
-        <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-          
-          {/* Owner Avatar */}
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm">
-                {initial}
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Owner</span>
-                <span className="text-xs text-slate-700 font-medium truncate max-w-25">{ownerName}</span>
-             </div>
-          </div>
-
-          {/* Management Actions */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={onEdit}
-              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-200"
-              title="Edit Details"
-              aria-label={`Edit details for ${gallery.title}`}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
+        {/* Actions Bar - Minimalist & Spaced */}
+        <div className="mt-auto pt-4 border-t border-zinc-50 flex items-center justify-end gap-3">
+          <button
+            onClick={onEdit}
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-600 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-900 rounded-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-200 active:scale-95"
+            title="Edit Details"
+            aria-label={`Edit details for ${gallery.title}`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit
+          </button>
             
-            <button
-              onClick={handleDeleteClick}
-              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-200"
-              title="Delete Gallery"
-              aria-label={`Delete gallery: ${gallery.title}`}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={handleDeleteClick}
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 bg-red-50/50 hover:bg-red-50 hover:text-red-700 rounded-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-100 active:scale-95 border border-transparent hover:border-red-100"
+            title="Delete Gallery"
+            aria-label={`Delete gallery: ${gallery.title}`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+          </button>
         </div>
       </div>
     </article>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { MEDIA_TYPES } from '@/db/schema'; // Adjust path as needed
-import MediaViewport from '@/components/media-viewport'; // Adjust path as needed
+import { MEDIA_TYPES } from '@/db/schema';
+import MediaViewport from '@/components/media-viewport';
 import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import BaseModal from '@/components/BaseModal';
@@ -42,7 +42,7 @@ interface AddMediaModalProps {
   onSortChange: (sortBy: 'newest' | 'oldest' | 'name') => void;
   onPageChange: (page: number) => void;
   onAddMedia: (mediaId: string) => Promise<boolean>;
-  onPreview?: (media: MediaOption) => void; // Triggers your existing lightbox
+  onPreview?: (media: MediaOption) => void;
 }
 
 // --- Static Configurations ---
@@ -168,7 +168,11 @@ export default function AddMediaModal({
   const toggleSelection = useCallback((id: string) => {
     setSelectedIds(prev => {
       const newSet = new Set(prev);
-      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
       return newSet;
     });
   }, []);
@@ -255,23 +259,20 @@ export default function AddMediaModal({
         
         {/* Sticky Header */}
         <div className="sticky top-0 z-30 px-6 pt-2 pb-4 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
+          {/* ✅ Removed unsupported props: title, subtitle, searchPlaceholder, onPageChange */}
           <MediaLibraryHeader
-            title=""
-            subtitle=""
-            searchPlaceholder="Search assets by name or ID..."
             searchValue={searchInput}
             onSearchChange={setSearchInput}
             onSearchSubmit={handleSearchSubmitLocal}
             activeFilter={initialFilters.type}
-            onFilterChange={onFilterChange}
+            onFilterChange={(val) => onFilterChange(val as 'all' | 'image' | 'video' | 'gif')}
             filters={TYPE_FILTERS}
             activeSort={initialFilters.sortBy}
-            onSortChange={onSortChange}
+            onSortChange={(val) => onSortChange(val as 'newest' | 'oldest' | 'name')}
             sorts={SORT_OPTIONS}
             totalItems={modalPagination.total}
             currentPage={modalPagination.currentPage}
             totalPages={modalPagination.totalPages}
-            onPageChange={onPageChange}
           />
         </div>
 

@@ -2,29 +2,32 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Swal from 'sweetalert2';
-import MediaCard from './components/MediaCard'; // Adjust path if needed
-import AddMediaModal from './components/AddMediaModal'; // Adjust path if needed
+import Swal, { SweetAlertOptions } from 'sweetalert2'; // ✅ Imported SweetAlertOptions
+import MediaCard from './components/MediaCard'; 
+import AddMediaModal from './components/AddMediaModal'; 
 import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
-import PhotoAlbum from "react-photo-album";
-import "react-photo-album/styles.css";
+import CardGrid from '@/components/displayGrid';
+
+// DnD Kit Imports
 import {
   DndContext,
   closestCenter,
+  KeyboardSensor,
+  PointerSensor,
   useSensor,
   useSensors,
-  PointerSensor,
   DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
-  SortableContext,
-  useSortable,
   arrayMove,
+  sortableKeyboardCoordinates,
+  SortableContext,
   rectSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface GalleryData {
   id: string;
@@ -95,19 +98,17 @@ const SORT_OPTIONS: SortOption[] = [
   { value: 'name', label: 'Name A-Z' }
 ];
 
-// --- DND Photo Components ---
-function SortablePhoto({ 
-  id, 
+// --- Sortable Wrapper Component ---
+function SortableMediaCard({ 
   item, 
+  index, 
   onRemove, 
-  priority,
-  wrapperStyle
+  onManualOrder 
 }: { 
-  id: string; 
   item: MediaItem; 
-  onRemove: (mediaId: string) => void; 
-  priority?: boolean;
-  wrapperStyle?: React.CSSProperties;
+  index: number; 
+  onRemove: (id: string) => void;
+  onManualOrder: (id: string) => void;
 }) {
   const {
     attributes,
@@ -116,51 +117,36 @@ function SortablePhoto({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id: item.id });
 
   const style = {
-    ...wrapperStyle,
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 50 : "auto",
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : 'auto',
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group relative w-full h-full">
-      {/* Drag Handle */}
-      <div 
-        {...attributes} 
-        {...listeners}
-        className="absolute top-3 left-3 z-20 p-2 bg-slate-900/80 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing backdrop-blur-sm shadow-lg"
-        title="Drag to reorder"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners} 
+      className="cursor-grab active:cursor-grabbing relative group"
+    >
+      {/* Visual Drag Handle Indicator (appears on hover) */}
+      <div className="absolute top-2 left-2 z-10 bg-black/60 text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
         </svg>
       </div>
       
-      <div className="w-full h-full">
-        <MediaCard media={item.media} onRemove={onRemove} priority={priority} />
-      </div>
-    </div>
-  );
-}
-
-function StaticPhoto({ 
-  item, 
-  onRemove, 
-  priority,
-  wrapperStyle
-}: { 
-  item: MediaItem; 
-  onRemove: (mediaId: string) => void; 
-  priority?: boolean;
-  wrapperStyle?: React.CSSProperties;
-}) {
-  return (
-    <div style={wrapperStyle} className="group relative w-full h-full">
-      <MediaCard media={item.media} onRemove={onRemove} priority={priority} />
+      <MediaCard 
+        media={item.media} 
+        onRemove={onRemove} 
+        onManualOrder={onManualOrder}
+        priority={index < 6} 
+      />
     </div>
   );
 }
@@ -182,7 +168,7 @@ export default function ManageGalleryClient({
   const [gallerySearchInput, setGallerySearchInput] = useState(initialFilters.gallerySearch);
   const [modalSearchInput, setModalSearchInput] = useState(initialFilters.search);
 
-  // Sync local state with prop changes (e.g., after server action / URL update)
+  // Sync server state to local state when server data changes (e.g., after router.refresh())
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setGallerySearchInput(initialFilters.gallerySearch);
@@ -191,59 +177,104 @@ export default function ManageGalleryClient({
   }, [initialFilters.gallerySearch, initialFilters.search, galleryMediaItems]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  // --- Shared Reorder Logic (Used by both DnD and Manual Order) ---
+  const applyNewOrder = useCallback(async (newItems: MediaItem[], previousItems: MediaItem[]) => {
+    setLocalMediaItems(newItems);
+    const orderedMediaIds = newItems.map((item) => item.mediaId);
+
+    try {
+      const res = await fetch('/api/gallery-media/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ galleryId: gallery.id, orderedMediaIds }),
+      });
+      
+      if (!res.ok) throw new Error('Failed to reorder');
+      
+    } catch (error) {
+      console.error('Failed to reorder media', error);
+      Swal.fire('Error', 'Failed to update order. Please try again.', 'error');
+      // Revert optimistic update on failure
+      setLocalMediaItems(previousItems);
+    }
+  }, [gallery.id]);
+
+  // --- DnD Sensors Configuration ---
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
-  const isCustomOrder = initialFilters.sortBy === 'position';
-
-  const albumLayout: 'masonry' | 'rows' | 'columns' = 
-    gallery.layoutStyle === 'row' ? 'rows' : 
-    gallery.layoutStyle === 'column' ? 'columns' : 
-    'masonry';
-
+  // --- DnD Handlers ---
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    if (over && active.id !== over.id) {
-      const oldIndex = localMediaItems.findIndex((item) => item.mediaId === active.id);
-      const newIndex = localMediaItems.findIndex((item) => item.mediaId === over.id);
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newItems = arrayMove(localMediaItems, oldIndex, newIndex);
-        setLocalMediaItems(newItems);
-        
-        try {
-          const res = await fetch('/api/gallery-media/reorder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              galleryId: gallery.id, 
-              orderedMediaIds: newItems.map(item => item.mediaId) 
-            }),
-          });
-          if (!res.ok) throw new Error('Failed to reorder');
-          
-          router.refresh();
-        } catch (error) {
-          console.error('Failed to reorder media', error);
-          setLocalMediaItems(galleryMediaItems);
-          Swal.fire({
-            icon: 'error',
-            title: 'Reorder Failed',
-            text: 'An error occurred while saving the new order.',
-            background: '#ffffff',
-            customClass: { 
-              popup: 'rounded-xl shadow-2xl border border-slate-200',
-              title: 'font-black text-slate-900 uppercase tracking-tight'
-            }
-          });
-        }
-      }
-    }
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localMediaItems.findIndex((item) => item.id === active.id);
+    const newIndex = localMediaItems.findIndex((item) => item.id === over.id);
+
+    const newItems = arrayMove(localMediaItems, oldIndex, newIndex);
+    await applyNewOrder(newItems, localMediaItems);
   };
+
+  // --- Manual Order Handler ---
+  const handleManualOrder = useCallback(async (mediaId: string) => {
+    const currentIndex = localMediaItems.findIndex(item => item.id === mediaId);
+    if (currentIndex === -1) return;
+
+    // ✅ Explicitly typed as SweetAlertOptions, with inputAttributes values as strings
+    const swalOptions: SweetAlertOptions = {
+      title: 'Set Position',
+      text: `Enter a position between 1 and ${localMediaItems.length}`,
+      icon: 'question',
+      input: 'number',
+      inputAttributes: {
+        min: '1',
+        max: String(localMediaItems.length),
+        step: '1'
+      },
+      inputValue: String(currentIndex + 1),
+      showCancelButton: true,
+      confirmButtonText: 'Update Position',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3b82f6',
+      cancelButtonColor: '#94a3b8',
+    };
+
+    const result = await Swal.fire(swalOptions);
+
+    if (!result.isConfirmed || !result.value) return;
+
+    const targetPosition = parseInt(result.value as string, 10);
+    if (isNaN(targetPosition) || targetPosition < 1 || targetPosition > localMediaItems.length) {
+      Swal.fire('Invalid Position', `Please enter a number between 1 and ${localMediaItems.length}.`, 'error');
+      return;
+    }
+
+    const targetIndex = targetPosition - 1;
+    if (targetIndex === currentIndex) return; // No change needed
+
+    // Move item to new position (shifts other items)
+    const newItems = [...localMediaItems];
+    const [movedItem] = newItems.splice(currentIndex, 1);
+    newItems.splice(targetIndex, 0, movedItem);
+
+    await applyNewOrder(newItems, localMediaItems);
+    
+    if (result.isConfirmed) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Position Updated',
+        text: `Moved to position ${targetPosition}`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+  }, [localMediaItems, applyNewOrder]);
 
   const updateMainFilters = useCallback((updates: {
     gallerySearch?: string;
@@ -252,62 +283,23 @@ export default function ManageGalleryClient({
     page?: number;
   }) => {
     const params = new URLSearchParams(searchParams.toString());
-    const isFilterChange = updates.gallerySearch !== undefined || updates.type !== undefined || updates.sortBy !== undefined;
-    
-    if (updates.page !== undefined) {
-      params.set('page', updates.page.toString());
-    } else if (isFilterChange) {
-      params.delete('page');
-    }
-
     if (updates.gallerySearch !== undefined) {
       if (updates.gallerySearch) params.set('gallerySearch', updates.gallerySearch);
       else params.delete('gallerySearch');
     }
-    
     if (updates.type !== undefined) {
       if (updates.type !== 'all') params.set('type', updates.type);
       else params.delete('type');
     }
-    
     if (updates.sortBy !== undefined) {
       if (updates.sortBy !== 'position') params.set('sortBy', updates.sortBy);
       else params.delete('sortBy');
     }
-    
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
-
-  const updateModalFilters = useCallback((updates: {
-    search?: string;
-    type?: 'all' | 'image' | 'video' | 'gif';
-    sortBy?: 'newest' | 'oldest' | 'name';
-    page?: number;
-  }) => {
-    const params = new URLSearchParams(searchParams.toString());
-    const isFilterChange = updates.search !== undefined || updates.type !== undefined || updates.sortBy !== undefined;
-    
     if (updates.page !== undefined) {
-      params.set('modalPage', updates.page.toString());
-    } else if (isFilterChange) {
-      params.delete('modalPage');
+      params.set('page', updates.page.toString());
+    } else {
+      params.delete('page');
     }
-
-    if (updates.search !== undefined) {
-      if (updates.search) params.set('search', updates.search);
-      else params.delete('search');
-    }
-    
-    if (updates.type !== undefined) {
-      if (updates.type !== 'all') params.set('type', updates.type);
-      else params.delete('type');
-    }
-    
-    if (updates.sortBy !== undefined) {
-      if (updates.sortBy !== 'newest') params.set('sortBy', updates.sortBy);
-      else params.delete('sortBy');
-    }
-    
     router.push(`?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
 
@@ -328,6 +320,33 @@ export default function ManageGalleryClient({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [updateMainFilters]);
 
+  const updateModalFilters = useCallback((updates: {
+    search?: string;
+    type?: 'all' | 'image' | 'video' | 'gif';
+    sortBy?: 'newest' | 'oldest' | 'name';
+    page?: number;
+  }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (updates.search !== undefined) {
+      if (updates.search) params.set('search', updates.search);
+      else params.delete('search');
+    }
+    if (updates.type !== undefined) {
+      if (updates.type !== 'all') params.set('type', updates.type);
+      else params.delete('type');
+    }
+    if (updates.sortBy !== undefined) {
+      if (updates.sortBy !== 'newest') params.set('sortBy', updates.sortBy);
+      else params.delete('sortBy');
+    }
+    if (updates.page !== undefined) {
+      params.set('modalPage', updates.page.toString());
+    } else {
+      params.delete('modalPage');
+    }
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
   const handleModalSearchSubmit = useCallback(() => {
     updateModalFilters({ search: modalSearchInput, page: 1 });
   }, [modalSearchInput, updateModalFilters]);
@@ -347,57 +366,23 @@ export default function ManageGalleryClient({
   const handleRemoveMedia = useCallback(async (mediaId: string) => {
     const result = await Swal.fire({
       title: 'Confirm Removal',
-      text: "Remove this asset from the gallery? This does not delete the original file from the library.",
+      text: "Remove this asset from the gallery? This does not delete the original file.",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
       cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Yes, remove it',
-      cancelButtonText: 'Cancel',
-      background: '#ffffff',
-      customClass: {
-        popup: 'rounded-xl shadow-2xl border border-slate-200',
-        title: 'font-black text-slate-900 uppercase tracking-tight',
-        htmlContainer: 'text-slate-600 font-medium',
-        confirmButton: 'font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-lg transition-colors hover:bg-red-700',
-        cancelButton: 'font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-200'
-      }
     });
 
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`/api/gallery-media?galleryId=${gallery.id}&mediaId=${mediaId}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(`/api/gallery-media?galleryId=${gallery.id}&mediaId=${mediaId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to remove');
-      
-      await Swal.fire({
-        icon: 'success',
-        title: 'Asset Removed',
-        text: 'The media has been detached from this gallery.',
-        timer: 1500,
-        showConfirmButton: false,
-        background: '#ffffff',
-        customClass: { 
-          popup: 'rounded-xl shadow-2xl border border-slate-200',
-          title: 'font-black text-slate-900 uppercase tracking-tight'
-        }
-      });
-      
       router.refresh();
     } catch (error) {
       console.error('Failed to remove media', error);
-      await Swal.fire({
-        icon: 'error',
-        title: 'Removal Failed',
-        text: 'An error occurred while removing the asset.',
-        background: '#ffffff',
-        customClass: { 
-          popup: 'rounded-xl shadow-2xl border border-slate-200',
-          title: 'font-black text-slate-900 uppercase tracking-tight'
-        }
-      });
+      Swal.fire('Error', 'Failed to remove asset.', 'error');
     }
   }, [gallery.id, router]);
 
@@ -409,21 +394,10 @@ export default function ManageGalleryClient({
         body: JSON.stringify({ galleryId: gallery.id, mediaId }),
       });
       if (!res.ok) throw new Error('Failed to add media');
-      
       router.refresh();
       return true;
     } catch (error) {
       console.error('Failed to add media', error);
-      await Swal.fire({
-        icon: 'error',
-        title: 'Add Failed',
-        text: 'An error occurred while adding the asset.',
-        background: '#ffffff',
-        customClass: { 
-          popup: 'rounded-xl shadow-2xl border border-slate-200',
-          title: 'font-black text-slate-900 uppercase tracking-tight'
-        }
-      });
       return false;
     }
   }, [gallery.id, router]);
@@ -433,27 +407,10 @@ export default function ManageGalleryClient({
     router.refresh();
   }, [router]);
 
-  const albumPhotos = localMediaItems.map((item) => ({
-    id: item.mediaId,
-    src: item.media.thumbnailUrl,
-    width: item.media.width || 400,
-    height: item.media.height || 300,
-    title: item.media.title || "",
-    item,
-  }));
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-red-600 selection:text-white relative">
-      
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.4]" 
-        style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }} 
-        aria-hidden="true" 
-      />
-
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans relative">
       <div className="relative z-10 flex flex-col min-h-screen">
-        
-        <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
+        <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md border-b border-slate-200">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <MediaLibraryHeader
               searchValue={gallerySearchInput}
@@ -472,137 +429,64 @@ export default function ManageGalleryClient({
           </div>
         </header>
 
-        <div className="h-px w-full bg-linear-to-r from-transparent via-red-500/40 to-transparent" aria-hidden="true" />
-
         <main className="flex-1 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          
-          <div className="sr-only" aria-live="polite" aria-atomic="true">
-            Showing {localMediaItems.length} of {mainPagination.total} assets.
-          </div>
-
-          {localMediaItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden animate-fadeInUp">
-              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-red-600 to-transparent opacity-60"></div>
-              
-              <div className="w-24 h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 relative shadow-sm">
-                <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tight">
-                {mainPagination.total === 0 ? 'Telemetry Empty' : 'No Matches Found'}
-              </h3>
-              <p className="text-slate-500 text-sm mt-2 max-w-xs font-medium leading-relaxed">
-                {mainPagination.total === 0 
-                  ? 'No assets assigned to this gallery yet.' 
-                  : 'Try adjusting your search or filter parameters.'}
-              </p>
-              {mainPagination.total === 0 && (
-                <button 
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="mt-8 px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-red-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  Initialize Upload
-                </button>
-              )}
-            </div>
-          ) : (
-            <>
-              {!isCustomOrder && (
-                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-sm font-medium flex items-start gap-3 shadow-sm animate-fadeInUp">
-                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <p className="font-bold">Drag and drop is currently disabled.</p>
-                    <p className="mt-1">
-                      Switch to <span className="font-black">{'"Custom Order"'}</span> in the sort dropdown to enable drag-and-drop reordering.{' '}
-                      <button onClick={() => handleMainSortChange('position')} className="underline font-bold hover:text-amber-900 transition-colors">
-                        Switch now
-                      </button>
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="animate-fadeInUp w-full">
-                {isCustomOrder ? (
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
-                      <div className="w-full">
-                        <PhotoAlbum
-                          layout={albumLayout}
-                          photos={albumPhotos}
-                          spacing={24}
-                          columns={(containerWidth) => {
-                            if (containerWidth < 640) return 2;
-                            if (containerWidth < 1024) return 3;
-                            if (containerWidth < 1280) return 4;
-                            if (containerWidth < 1536) return 5;
-                            return 6;
-                          }}
-                          render={{
-                            wrapper: (props, { photo, index }) => (
-                              <SortablePhoto 
-                                id={photo.id} 
-                                item={photo.item} 
-                                onRemove={handleRemoveMedia} 
-                                priority={index === 0}
-                                wrapperStyle={props.style}
-                              />
-                            )
-                          }}
-                        />
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <div className="w-full">
-                    <PhotoAlbum
-                      layout={albumLayout}
-                      photos={albumPhotos}
-                      spacing={24}
-                      columns={(containerWidth) => {
-                        if (containerWidth < 640) return 2;
-                        if (containerWidth < 1024) return 3;
-                        if (containerWidth < 1280) return 4;
-                        if (containerWidth < 1536) return 5;
-                        return 6;
-                      }}
-                      render={{
-                        wrapper: (props, { photo, index }) => (
-                          <StaticPhoto 
-                            item={photo.item} 
-                            onRemove={handleRemoveMedia} 
-                            priority={index === 0}
-                            wrapperStyle={props.style}
-                          />
-                        )
-                      }}
-                    />
-                  </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={localMediaItems.map((item) => item.id)}
+              strategy={rectSortingStrategy}
+            >
+              <CardGrid<MediaItem>
+                items={localMediaItems}
+                renderItem={(item, index) => (
+                  <SortableMediaCard 
+                    item={item} 
+                    index={index} 
+                    onRemove={handleRemoveMedia} 
+                    onManualOrder={handleManualOrder}
+                  />
                 )}
-              </div>
-              
-              {mainPagination.totalPages > 1 && (
-                <Pagination 
-                  currentPage={mainPagination.currentPage}
-                  totalPages={mainPagination.totalPages}
-                  hasNext={mainPagination.hasNext}
-                  hasPrevious={mainPagination.hasPrevious}
-                  onPageChange={handleMainPageChange}
-                  className="mt-12"
-                />
-              )}
-            </>
+                getKey={(item: MediaItem) => item.id}
+                emptyState={
+                  <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-slate-200">
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      {mainPagination.total === 0 ? 'Gallery is Empty' : 'No Matches Found'}
+                    </h3>
+                    <p className="text-slate-500 text-sm mt-2">
+                      {mainPagination.total === 0 ? 'No assets assigned to this gallery yet.' : 'Try adjusting your search.'}
+                    </p>
+                    {mainPagination.total === 0 && (
+                      <button 
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="mt-6 px-6 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors"
+                      >
+                        Add Asset
+                      </button>
+                    )}
+                  </div>
+                }
+                className="w-full min-h-100 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"
+                ariaLabel="Gallery media items"
+              />
+            </SortableContext>
+          </DndContext>
+          
+          {mainPagination.totalPages > 1 && (
+            <Pagination 
+              currentPage={mainPagination.currentPage}
+              totalPages={mainPagination.totalPages}
+              hasNext={mainPagination.hasNext}
+              hasPrevious={mainPagination.hasPrevious}
+              onPageChange={handleMainPageChange}
+              className="mt-12"
+            />
           )}
-
         </main>
 
-        <FloatingActionButton 
-          onClick={() => setIsAddModalOpen(true)}
-          label="Add Asset"
-        />
+        <FloatingActionButton onClick={() => setIsAddModalOpen(true)} label="Add Asset" />
 
         <AddMediaModal 
           isOpen={isAddModalOpen}
@@ -623,16 +507,6 @@ export default function ManageGalleryClient({
           onAddMedia={handleAddMediaToGallery}
         />
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeInUp { 
-          animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-        }
-      `}</style>
     </div>
   );
 }

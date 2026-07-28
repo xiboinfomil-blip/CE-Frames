@@ -14,9 +14,6 @@ export async function POST(req: Request) {
 
   // Optional: Verify ownership
   const gallery = await galleryHelpers.findById(galleryId);
-  if (!gallery || gallery.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
 
   try {
     await galleryMediaHelpers.addMediaToGalleryEnd(galleryId, mediaId);
@@ -39,12 +36,6 @@ export async function DELETE(req: Request) {
 
   if (!galleryId || !mediaId) {
     return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
-  }
-
-  // Optional: Verify ownership
-  const gallery = await galleryHelpers.findById(galleryId);
-  if (!gallery || gallery.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {

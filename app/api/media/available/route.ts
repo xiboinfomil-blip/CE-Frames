@@ -12,8 +12,17 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const galleryId = searchParams.get('galleryId');
   const search = searchParams.get('search') || undefined;
-  const type = searchParams.get('type') === 'all' ? undefined : (searchParams.get('type') as any);
-  const sortBy = (searchParams.get('sortBy') as any) || 'newest';
+  
+  // Safely type the filter parameter without using 'any'
+  const typeParam = searchParams.get('type');
+  const filter = typeParam === 'all' ? undefined : (typeParam as 'image' | 'video' | 'gif' | undefined);
+  
+  // Safely type the sortBy parameter without using 'any'
+  const sortByParam = searchParams.get('sortBy');
+  const sortBy = (sortByParam === 'newest' || sortByParam === 'oldest' || sortByParam === 'name') 
+    ? sortByParam 
+    : 'newest';
+    
   const page = Number(searchParams.get('page')) || 1;
   const limit = 12;
   const offset = (page - 1) * limit;
@@ -27,32 +36,22 @@ export async function GET(req: Request) {
     const existingItems = await galleryMediaHelpers.getGalleryMediaWithDetails(galleryId);
     const existingIds = existingItems.map(item => item.mediaId);
 
-    // 2. Fetch all user media with filters
-    // Note: mediaHelpers.findAll doesn't natively support "exclude IDs" yet, 
-    // so we fetch a larger batch and filter client-side OR update helper. 
-    // For performance, let's assume we fetch standard list and filter here for simplicity 
-    // or ideally update db-helpers to accept `excludeIds`.
-    
-    // For this example, we'll use the existing helper and filter the result 
-    // (In production, add `excludeIds` to your Drizzle query for better performance)
-    const { items: allMedia, total } = await mediaHelpers.findAll({
+    // 2. Fetch available media, excluding those already in the gallery.
+    // mediaHelpers.findAll now natively supports `excludeIds` and `filter`, 
+    // handling the exclusion and pagination efficiently at the database level.
+    const { items: availableMedia, total: filteredTotal } = await mediaHelpers.findAll({
       search,
-      type,
+      filter,
       sortBy,
-      limit: limit + existingIds.length, // Fetch extra to account for exclusions
-      offset: 0 // We filter manually then slice for pagination
+      limit,
+      offset,
+      excludeIds: existingIds.length > 0 ? existingIds : undefined
     });
 
-    // Filter out existing items
-    const availableMedia = allMedia.filter(m => !existingIds.includes(m.id));
-
-    // Manual Pagination after filtering
-    const paginatedMedia = availableMedia.slice(offset, offset + limit);
-    const filteredTotal = availableMedia.length;
     const totalPages = Math.ceil(filteredTotal / limit);
 
     return NextResponse.json({
-      items: paginatedMedia.map(m => ({
+      items: availableMedia.map(m => ({
         id: m.id,
         thumbnailUrl: m.thumbnailUrl,
         fullResUrl: m.fullResUrl,

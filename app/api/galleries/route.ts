@@ -44,8 +44,7 @@ export async function POST(request: NextRequest) {
       visibility: visibility || 'public',
       passwordHash: hashedPassword, 
       coverMediaId: coverMediaId || null,
-      layoutStyle: layoutStyle || 'masonry',
-      userId: session.user.id,
+      layoutStyle: layoutStyle || 'masonry'
     });
 
     return NextResponse.json(newGallery, { status: 201 });

@@ -1,4 +1,3 @@
-// components/ui/RaceButton.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -13,15 +12,15 @@ export interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButton
 
 const variantStyles = {
   continue: 
-    "bg-red-600 text-white shadow-lg shadow-red-600/20 hover:bg-red-500 hover:shadow-red-500/30 hover:-translate-y-0.5",
+    "bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:bg-rose-500 hover:shadow-rose-500/30 hover:-translate-y-0.5 border border-transparent",
   ok: 
-    "bg-emerald-500 dark:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 dark:shadow-emerald-600/20 hover:bg-emerald-400 dark:hover:bg-emerald-500 hover:-translate-y-0.5",
+    "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 hover:shadow-emerald-500/30 hover:-translate-y-0.5 border border-transparent",
   danger: 
-    "bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 shadow-sm hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-400 dark:hover:border-red-700",
+    "bg-white text-rose-600 border border-rose-200 shadow-sm hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700",
   default: 
-    "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/50 backdrop-blur-sm hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:-translate-y-0.5",
+    "bg-stone-900 text-stone-50 shadow-lg shadow-stone-900/10 hover:bg-stone-800 hover:shadow-stone-900/20 hover:-translate-y-0.5 border border-transparent",
   ghost: 
-    "bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100",
+    "bg-transparent text-stone-600 hover:bg-stone-100 hover:text-stone-900 border border-transparent",
 };
 
 const sizeStyles = {
@@ -32,7 +31,7 @@ const sizeStyles = {
 
 /**
  * RaceButton - High-performance, aerodynamic button.
- * Features a light-sweep gloss effect and tactile "downshift" press.
+ * Features a "Lens Flare" gloss effect and tactile "shutter" press.
  */
 const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
   ({ 
@@ -55,8 +54,8 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
           
           // Interactions: Tactile press & Focus
           "transition-all duration-300 ease-out",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950",
-          "active:scale-[0.97] active:shadow-none active:translate-y-0",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2",
+          "active:scale-[0.96] active:shadow-none active:translate-y-0",
           
           // States
           "disabled:pointer-events-none disabled:opacity-50 disabled:translate-y-0",
@@ -65,10 +64,10 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
           variantStyles[variant],
           sizeStyles[size],
           
-          // The "Aero-Gloss" Photography Effect (Light sweep on hover)
-          "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/15 dark:before:via-white/5 before:to-transparent",
-          "before:translate-x-[-100%] before:transition-transform before:duration-700 before:ease-out",
-          "group-hover:before:translate-x-[100%]",
+          // The "Lens Flare" Effect (Subtle light sweep)
+          "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
+          "before:translate-x-[-150%] before:transition-transform before:duration-1000 before:ease-out",
+          "group-hover:before:translate-x-[150%]",
           
           className
         )}
@@ -78,7 +77,7 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
       >
         {/* Content Wrapper (z-10 to sit above the gloss effect) */}
         <div className="relative z-10 flex items-center gap-2">
-          {/* Loading Spinner (Telemetry Pulse) */}
+          {/* Loading Spinner (Shutter Pulse) */}
           {isLoading ? (
             <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
@@ -97,9 +96,9 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
         {shortcut && !isLoading && (
           <kbd className={cn(
             "relative z-10 ml-2 font-mono text-[9px] font-medium px-1.5 py-0.5 rounded border uppercase",
-            variant === 'continue' || variant === 'ok' 
+            variant === 'continue' || variant === 'ok' || variant === 'default'
               ? "bg-black/20 border-white/20 text-white/80" 
-              : "bg-zinc-200/50 dark:bg-zinc-700/50 border-zinc-300/50 dark:border-zinc-600/50 text-zinc-500 dark:text-zinc-400"
+              : "bg-stone-200/50 border-stone-300/50 text-stone-500"
           )}>
             {shortcut}
           </kbd>

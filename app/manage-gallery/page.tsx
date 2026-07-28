@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleriesContent from './GalleriesContent';
 import { Suspense } from 'react';
+import { Gallery } from '@/types/gallery';
 
 export const metadata = {
   title: 'My Galleries',
@@ -14,7 +15,7 @@ interface PageProps {
     page?: string;
     search?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
-    visibility?: 'public' | 'private' | 'password_protected';
+    visibility?: 'public' | 'private' | 'password_protected' | 'unlisted';
   }>;
 }
 
@@ -28,6 +29,54 @@ function GalleriesLoading() {
       </div>
     </div>
   );
+}
+
+// ✅ Strictly typed to match the exact canonical Gallery interface provided
+function transformGalleryToComponentFormat(gallery: Record<string, unknown>, userId: string): Gallery {
+  const coverMedia = gallery.coverMedia as Record<string, unknown> | null | undefined;
+  const randomMedia = gallery.randomMedia as Record<string, unknown> | null | undefined;
+  const dbUser = gallery.user as Record<string, unknown> | null | undefined;
+  const count = gallery._count as Record<string, unknown> | null | undefined;
+
+  return {
+    id: String(gallery.id),
+    title: String(gallery.title),
+    slug: String(gallery.slug),
+    // ✅ Enforce string | null (no undefined)
+    description: (gallery.description as string | null) ?? null,
+    visibility: gallery.visibility as 'public' | 'unlisted' | 'password_protected' | 'private',
+    // ✅ Enforce Date object
+    createdAt: gallery.createdAt instanceof Date 
+      ? gallery.createdAt 
+      : new Date(String(gallery.createdAt)),
+    userId: String(gallery.userId || userId),
+    // ✅ Enforce string | null (no undefined)
+    coverMediaId: (gallery.coverMediaId as string | null) ?? null,
+    // ✅ Match exact { username, avatarUrl } shape
+    user: dbUser ? {
+      username: String(dbUser.username || ''),
+      avatarUrl: (dbUser.avatarUrl as string | null) ?? null,
+    } : undefined,
+    // ✅ Match exact shape (removed invalid 'url' and 'title' properties)
+    coverMedia: coverMedia ? {
+      id: String(coverMedia.id),
+      thumbnailUrl: String(coverMedia.thumbnailUrl || ''),
+      type: coverMedia.type as 'image' | 'video' | 'gif',
+      fullResUrl: coverMedia.fullResUrl ? String(coverMedia.fullResUrl) : undefined,
+    } : undefined,
+    // ✅ Match exact shape (removed invalid 'url' and 'title' properties)
+    randomMedia: randomMedia ? {
+      id: String(randomMedia.id),
+      thumbnailUrl: String(randomMedia.thumbnailUrl || ''),
+      type: randomMedia.type as 'image' | 'video' | 'gif',
+      fullResUrl: randomMedia.fullResUrl ? String(randomMedia.fullResUrl) : undefined,
+    } : null,
+    // ✅ Include _count if it exists in the DB response
+    _count: count ? {
+      galleryMedia: Number(count.galleryMedia || 0),
+      comments: Number(count.comments || 0),
+    } : undefined,
+  };
 }
 
 async function GalleriesPageContent({ searchParams }: PageProps) {
@@ -49,13 +98,21 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
     );
   }
 
-  const { items: galleries, total } = await galleryHelpers.findAll(session.user.id, {
+  const userId = session.user.id;
+
+  // ✅ Changed 'visibility' to 'filter' to match galleryHelpers.findAll signature
+  const { items: galleries, total } = await galleryHelpers.findAll({
     search: params.search,
     sortBy: params.sortBy || 'newest',
-    visibility: params.visibility,
+    filter: params.visibility,
     limit,
     offset
   });
+
+  // Transform galleries to match the expected Gallery type
+  const transformedGalleries = galleries.map((g: Record<string, unknown>) => 
+    transformGalleryToComponentFormat(g, userId)
+  );
 
   const totalPages = Math.ceil(total / limit);
   const hasNext = currentPage < totalPages;
@@ -63,7 +120,7 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
 
   return (
     <GalleriesContent 
-      initialGalleries={galleries} 
+      initialGalleries={transformedGalleries} 
       pagination={{ 
         total, 
         currentPage, 

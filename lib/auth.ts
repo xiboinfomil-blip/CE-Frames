@@ -17,21 +17,11 @@ export const authOptions: NextAuthOptions = {
 
         if (!email || !password) return null;
 
-        // --- TEMPORARY TEST USER FALLBACK ---
-        if (email === "test@oramacreativ.com" && password === "test123") {
-          return { 
-            id: "00000000-0000-0000-0000-000000000001", 
-            email, 
-            name: "TestAdmin",
-            username: "TestAdmin",
-            role: "admin" 
-          };
-        }
-        // ------------------------------------
-
         try {
           const user = await userHelpers.findByEmail(email);
-          if (!user) return null;
+          
+          // If user not found or no password hash exists (e.g. OAuth users)
+          if (!user || !user.passwordHash) return null;
 
           const isValidPassword = await bcrypt.compare(password, user.passwordHash);
           if (!isValidPassword) return null;
@@ -40,8 +30,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.username,
-            username: user.username,
-            role: user.role,
+            username: user.username
           };
         } catch (error) {
           console.error("Auth error:", error);

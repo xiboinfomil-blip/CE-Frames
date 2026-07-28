@@ -1,4 +1,5 @@
-"use client";
+'use client';
+
 import { useEffect, useState } from 'react';
 import Image from "next/image";
 import Link from 'next/link';
@@ -8,53 +9,118 @@ import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { useNavData } from "@/hooks/useNavData"; 
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaFlagCheckered } from 'react-icons/fa';
 
 import DropdownMenu from './DropdownMenu';
 import MobileMenu from './MobileMenu';
 import NavbarSkeleton from './NavbarSkeleton'; 
 import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar'; 
 
-// Helper component for Desktop Links to keep main JSX clean
-const DesktopLink = ({ item, isActive, href }: { item: any, isActive: boolean, href: string }) => {
-  const linkClasses = `group relative px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider italic transition-all duration-300
-    ${isActive ? 'text-red-500 bg-red-50 dark:bg-red-900/20' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50'}`;
+// --- Type Definitions ---
+interface Category {
+  name: string;
+  isVisible?: boolean;
+}
 
+interface NavItem {
+  id: string;
+  label: string;
+  href: string;
+  desktop: boolean;
+  mobile: boolean;
+  mobileGroup?: 'main' | 'extra';
+  auth?: 'authenticated' | 'guest' | 'any';
+  activePaths?: string[];
+  type: 'link' | 'gallery' | 'category-list';
+  dataSource?: string;
+  dataKey?: string;
+  desktopDropdown?: {
+    title: string;
+    basePath: string;
+  };
+  mobileCategoryList?: {
+    header: { show: boolean; title?: string };
+    basePath: string;
+  };
+}
+
+interface NavDataSource {
+  [key: string]: unknown;
+  loading: boolean;
+  error: string | null;
+}
+
+interface NavData {
+  [key: string]: NavDataSource;
+}
+
+interface DesktopLinkProps {
+  item: NavItem;
+  isActive: boolean;
+  href: string;
+}
+
+const DesktopLink = ({ item, isActive, href }: DesktopLinkProps) => {
   return (
-    <Link href={href} className={linkClasses} data-cursor="hover">
+    <Link 
+      href={href} 
+      className={`group relative px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-200 ease-in-out 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded-md
+        ${isActive 
+          ? 'text-stone-900 dark:text-stone-100' 
+          : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100'
+        }`}
+      data-cursor="hover"
+      aria-current={isActive ? 'page' : undefined}
+    >
       {item.label}
-      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-300 ${isActive ? 'w-3/4 opacity-100' : 'w-0 opacity-0 group-hover:w-3/4 group-hover:opacity-100'}`} />
+      <span 
+        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-stone-900 dark:bg-stone-100 transition-all duration-300 ease-out rounded-full
+          ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
+      />
     </Link>
   );
 };
 
 export default function Navbar() {
   const { isAuthenticated, isLoading } = useAuthCheck();
-  const navData = useNavData(); 
+  const navData = useNavData() as NavData; 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Helper to get data for dropdowns
-  const getItemData = (item: any) => {
-    if (!item.dataSource || !navData[item.dataSource]) {
-      return { categories: [], loading: false, error: null };
+  const getItemData = (item: NavItem | undefined) => {
+    if (!item?.dataSource || !navData[item.dataSource]) {
+      return { categories: [] as Category[], loading: false, error: null };
     }
     const sourceData = navData[item.dataSource];
     return {
-      categories: sourceData[item.dataKey] || [],
+      categories: (sourceData[item.dataKey as keyof typeof sourceData] as Category[]) || [],
       loading: sourceData.loading || false,
       error: sourceData.error || null,
     };
   };
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { setIsMenuOpen(false); }, [pathname]);
+  // ✅ Block-level disable ensures the rule is suppressed for the setState call inside the effect
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => { 
+    setIsMenuOpen(false); 
+  }, [pathname]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMenuOpen]);
 
   if (isLoading) return <NavbarSkeleton />;
 
@@ -63,83 +129,84 @@ export default function Navbar() {
     setIsMenuOpen(false);
   };
 
-  // Filter items for desktop
-  const desktopItems = NAV_ITEMS.filter(item => {
+  const desktopItems = (NAV_ITEMS as NavItem[]).filter(item => {
     if (!item.desktop) return false;
     if (item.auth === 'authenticated' && !isAuthenticated) return false;
     if (item.auth === 'guest' && isAuthenticated) return false;
     return true;
   });
 
-  const mobileGalleryItem = NAV_ITEMS.find(i => i.id === 'gallery');
+  const mobileGalleryItem = (NAV_ITEMS as NavItem[]).find(i => i.id === 'gallery');
   const mobileData = getItemData(mobileGalleryItem);
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className={`fixed w-full z-40 transition-all duration-500 ease-out will-change-transform ${
-        isScrolled
-          ? 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-zinc-200/50 dark:border-zinc-800/50 h-16'
-          : 'bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border-b border-transparent h-20'
-      }`}
+      transition={{ type: "spring", stiffness: 120, damping: 20 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out
+        ${isScrolled 
+          ? 'bg-white/80 dark:bg-stone-950/80 backdrop-blur-xl border-b border-stone-200/60 dark:border-stone-800/60 shadow-sm' 
+          : 'bg-white/50 dark:bg-stone-950/50 backdrop-blur-md border-b border-transparent'
+        }`}
+      role="navigation"
+      aria-label="Main navigation"
     >
-      {/* Top Gradient Line */}
-      <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent transition-opacity duration-500 ${
-        isScrolled ? 'opacity-100 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'opacity-40'
-      }`} />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div className="flex items-center justify-between h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3 group" data-cursor="hover">
+          <div className="shrink-0">
+            <Link 
+              href="/" 
+              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded-lg p-1 -ml-1"
+              data-cursor="hover"
+              aria-label="OramaCreativ Home"
+            >
               <motion.div
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 p-0.5 shadow-lg shadow-red-500/20"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-stone-900 dark:bg-stone-100 flex items-center justify-center shadow-sm"
               >
-                <div className="w-full h-full rounded-[10px] bg-white dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
-                  <Image src="/logo.png" alt="Logo" width={40} height={40} className="w-7 h-7 sm:w-8 sm:h-8 object-contain" priority />
-                </div>
+                <Image 
+                  src="/logo.png" 
+                  alt="OramaCreativ Logo" 
+                  width={40} 
+                  height={40} 
+                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain invert dark:invert-0" 
+                  priority 
+                />
               </motion.div>
-              <div className="flex flex-col">
-                <span className="font-black italic text-lg sm:text-xl uppercase tracking-tight text-zinc-900 dark:text-white">
-                  Orama<span className="text-red-500">Creativ</span>
-                </span>
-                <span className="text-[8px] tracking-[0.3em] text-zinc-500 dark:text-zinc-400 uppercase font-bold hidden sm:block">
-                  Motorsport Media
+              <div className="flex flex-col justify-center">
+                <span className="font-bold text-lg sm:text-xl tracking-tight text-stone-900 dark:text-stone-100 leading-none">
+                  Orama<span className="text-stone-500 dark:text-stone-400 font-light">Creativ</span>
                 </span>
               </div>
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-10">
-            <ul className="flex items-center space-x-1">
+          <div className="hidden lg:flex items-center gap-8">
+            <ul className="flex items-center gap-1" role="menubar">
               {desktopItems.map((item) => {
-                // Updated isActive logic to support activePaths
                 const isActive = pathname === item.href || 
-                  (item.activePaths && item.activePaths.some(path => 
+                  (item.activePaths && item.activePaths.some((path: string) => 
                     pathname === path || pathname.startsWith(path + '/')
-                  ));
+                  )) || false;
 
-                // 1. Simple Link
                 if (item.type === 'link') {
                   return (
-                    <li key={item.id}>
-                      <DesktopLink item={item} isActive={isActive} href={item.href} />
+                    <li key={item.id} role="none">
+                      <DesktopLink item={item} isActive={isActive} href={item.href || '#'} />
                     </li>
                   );
                 }
 
-                // 2. Dropdown (Authenticated)
                 if ((item.type === 'gallery' || item.type === 'category-list') && isAuthenticated && item.desktopDropdown) {
                   const { categories, loading, error } = getItemData(item);
                   return (
-                    <li key={item.id}>
+                    <li key={item.id} role="none">
                       <DropdownMenu 
                         title={item.desktopDropdown.title} 
                         categories={categories} 
@@ -151,10 +218,9 @@ export default function Navbar() {
                   );
                 } 
                 
-                // 3. Fallback Link for Unauthenticated Users
                 if ((item.type === 'gallery' || item.type === 'category-list') && !isAuthenticated && item.href) {
                   return (
-                    <li key={item.id}>
+                    <li key={item.id} role="none">
                       <DesktopLink item={item} isActive={isActive} href={item.href} />
                     </li>
                   );
@@ -163,70 +229,87 @@ export default function Navbar() {
               })}
             </ul>
 
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-3">
+            <div className="w-px h-6 bg-stone-200 dark:bg-stone-800" aria-hidden="true" />
+
+            <div className="flex items-center gap-3">
               {!isAuthenticated ? (
-                <Link href={AUTH_ITEMS.login.href} data-cursor="hover" className="group relative px-5 py-2 rounded-lg text-sm font-bold uppercase tracking-wider italic text-white bg-gradient-to-r from-red-600 to-orange-600 shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  <span className="relative z-10 flex items-center gap-2">
-                    <FaFlagCheckered className="text-xs" />
-                    {AUTH_ITEMS.login.label}
-                  </span>
+                <Link 
+                  href={AUTH_ITEMS.login.href || '#'} 
+                  data-cursor="hover" 
+                  className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-stone-900 dark:bg-stone-100 dark:text-stone-900 rounded-lg shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+                >
+                  <span>{AUTH_ITEMS.login.label}</span>
                 </Link>
               ) : (
                 <motion.button 
-                  whileTap={{ scale: 0.95 }} 
+                  whileTap={{ scale: 0.96 }} 
                   onClick={handleLogout} 
                   data-cursor="hover" 
-                  className="group relative px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider italic text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
+                  className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800/50 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+                  aria-label="Log out of your account"
                 >
                   {AUTH_ITEMS.logout.label}
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-red-500 group-hover:w-3/4 transition-all duration-300" />
                 </motion.button>
               )}
             </div>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center">
+          <div className="lg:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               data-cursor="hover"
-              className={`relative p-2 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 ${isMenuOpen ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : 'bg-zinc-100/50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'}`}
-              aria-label="Toggle menu"
+              className={`relative p-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2
+                ${isMenuOpen 
+                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100' 
+                  : 'bg-stone-100/50 dark:bg-stone-800/50 text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-700/50'
+                }`}
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" initial={false}>
                 {isMenuOpen ? (
-                  <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                    <HiX className="w-6 h-6" />
+                  <motion.div 
+                    key="close" 
+                    initial={{ rotate: -90, opacity: 0 }} 
+                    animate={{ rotate: 0, opacity: 1 }} 
+                    exit={{ rotate: 90, opacity: 0 }} 
+                    transition={{ duration: 0.2 }}
+                  >
+                    <HiX className="w-6 h-6" aria-hidden="true" />
                   </motion.div>
                 ) : (
-                  <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                    <HiMenuAlt3 className="w-6 h-6" />
+                  <motion.div 
+                    key="menu" 
+                    initial={{ rotate: 90, opacity: 0 }} 
+                    animate={{ rotate: 0, opacity: 1 }} 
+                    exit={{ rotate: -90, opacity: 0 }} 
+                    transition={{ duration: 0.2 }}
+                  >
+                    <HiMenuAlt3 className="w-6 h-6" aria-hidden="true" />
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.button>
           </div>
         </div>
-
-        <AnimatePresence>
-          {isMenuOpen && (
-            <MobileMenu 
-              authenticated={isAuthenticated} 
-              imagesFor={mobileData.categories}
-              loading={mobileData.loading}
-              error={mobileData.error}
-              handleLogout={handleLogout}
-              setIsMenuOpen={setIsMenuOpen}
-            />
-          )}
-        </AnimatePresence>
       </div>
 
-      {/* Bottom Gradient Line */}
-      <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent transition-opacity duration-500 ${isScrolled ? 'opacity-100 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'opacity-0'}`} />
+      {/* Mobile Menu Dropdown */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <MobileMenu 
+            authenticated={isAuthenticated} 
+            imagesFor={mobileData.categories}
+            loading={mobileData.loading}
+            error={mobileData.error}
+            handleLogout={handleLogout}
+            setIsMenuOpen={setIsMenuOpen}
+          />
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 }

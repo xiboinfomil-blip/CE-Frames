@@ -3,30 +3,35 @@
 import { Gallery } from '@/types/gallery';
 import { GalleryCard } from './GalleryCard';
 import { EmptyState } from './EmptyState';
+import CardGrid from '@/components/displayGrid'; // Adjust path to where you saved CardGrid
 
 interface GalleryGridProps {
   galleries: Gallery[];
   onEdit: (gallery: Gallery) => void;
-  onDelete: (id: string, title: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
 export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGridProps) {
   
-  if (!galleries || galleries.length === 0) {
-    return <EmptyState onCreateClick={() => onEdit({} as Gallery)} />;
-  }
+  // Custom empty state specific to Galleries
+  const galleryEmptyState = (
+    <EmptyState onCreateClick={() => onEdit({} as Gallery)} />
+  );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {galleries.map((gallery, index) => (
+    <CardGrid
+      items={galleries}
+      ariaLabel="Photo galleries"
+      emptyState={galleryEmptyState}
+      getKey={(gallery) => gallery.id}
+      renderItem={(gallery, index) => (
         <GalleryCard 
-          key={gallery.id} 
           gallery={gallery} 
           onEdit={() => onEdit(gallery)}
-          onDelete={() => onDelete(gallery.id, gallery.title)}
-          priority={index === 0} // <-- Only the first card gets eager-loaded for LCP
+          onDelete={() => onDelete(gallery.id)}
+          priority={index === 0}
         />
-      ))}
-    </div>
+      )}
+    />
   );
 }

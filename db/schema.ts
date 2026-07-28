@@ -24,17 +24,17 @@ export const VISIBILITY_STATUSES = [
   'password_protected', 
   'private'
 ] as const;
-export const LAYOUT_STYLES = ['column', 'row', 'masonry'] as const; // Updated
+export const LAYOUT_STYLES = ['column', 'row', 'masonry'] as const;
 
 // Derive TypeScript types from the constants
 export type MediaType = typeof MEDIA_TYPES[number];
 export type VisibilityStatus = typeof VISIBILITY_STATUSES[number];
-export type LayoutStyle = typeof LAYOUT_STYLES[number]; // Updated
+export type LayoutStyle = typeof LAYOUT_STYLES[number];
 
 // Derive Drizzle enums from the same constants
 export const mediaTypeEnum = pgEnum('media_type', [...MEDIA_TYPES]);
 export const visibilityEnum = pgEnum('visibility_status', [...VISIBILITY_STATUSES]);
-export const layoutStyleEnum = pgEnum('layout_style', [...LAYOUT_STYLES]); // Updated
+export const layoutStyleEnum = pgEnum('layout_style', [...LAYOUT_STYLES]);
 
 // ==========================================
 // 2. TABLES
@@ -73,10 +73,9 @@ export const media = pgTable('media', {
   uploadedAt: timestamp('uploaded_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// GALLERIES
+// GALLERIES (No user reference)
 export const galleries = pgTable('galleries', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   
   title: varchar('title', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 255 }).unique().notNull(),
@@ -87,7 +86,6 @@ export const galleries = pgTable('galleries', {
   
   coverMediaId: uuid('cover_media_id').references(() => media.id, { onDelete: 'set null' }),
   
-  // Updated to use the strict enum instead of varchar
   layoutStyle: layoutStyleEnum('layout_style').default('masonry').notNull(), 
   
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -97,7 +95,7 @@ export const galleries = pgTable('galleries', {
 export const galleryMedia = pgTable('gallery_media', {
   galleryId: uuid('gallery_id').references(() => galleries.id, { onDelete: 'cascade' }).notNull(),
   mediaId: uuid('media_id').references(() => media.id, { onDelete: 'cascade' }).notNull(),
-  position: integer('position').notNull(), // Removed .unique() so multiple media can exist in the same gallery at different positions
+  position: integer('position').notNull(),
 }, (table) => ({
   pk: primaryKey({ columns: [table.galleryId, table.mediaId] }),
 }));
@@ -108,7 +106,7 @@ export const galleryMedia = pgTable('gallery_media', {
 // ==========================================
 
 export const usersRelations = relations(users, ({ many }) => ({
-  galleries: many(galleries),
+  // No galleries relation since galleries don't reference users
 }));
 
 export const mediaRelations = relations(media, ({ many }) => ({
@@ -118,10 +116,6 @@ export const mediaRelations = relations(media, ({ many }) => ({
 }));
 
 export const galleriesRelations = relations(galleries, ({ one, many }) => ({
-  user: one(users, {
-    fields: [galleries.userId],
-    references: [users.id],
-  }),
   coverMedia: one(media, {
     fields: [galleries.coverMediaId],
     references: [media.id],

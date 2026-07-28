@@ -1,130 +1,79 @@
 import { db } from './db';
-import { eq, and, desc, asc, or, ilike, count, notInArray, inArray } from 'drizzle-orm';
+import { eq, and, desc, asc, or, ilike, count, notInArray, inArray, SQL } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import {
   users,
   media,
   galleries,
   galleryMedia,
-  VISIBILITY_STATUSES,
-  type VisibilityStatus
 } from '@/db/schema';
 
-// ==========================================
-// 1. ADMIN HELPERS
-// ==========================================
-export const adminHelpers = {
-  getStats: async () => {
-    const [userCount, mediaCount, galleryCount] = await Promise.all([
-      db.select({ count: count() }).from(users),
-      db.select({ count: count() }).from(media),
-      db.select({ count: count() }).from(galleries)
-    ]);
+import {
+  PaginatedResponse,
+  PasswordVerificationResult
+} from '@/types/types';
 
-    return {
-      users: userCount[0].count,
-      media: mediaCount[0].count,
-      galleries: galleryCount[0].count
-    };
-  },
+// ==========================================
+// TYPES
+// ==========================================
+type MediaRow = typeof media.$inferSelect;
+type GalleryRow = typeof galleries.$inferSelect;
+type GalleryMediaRow = typeof galleryMedia.$inferSelect;
 
-  getRecentMedia: async (limit = 10) => {
-    return await db.query.media.findMany({
-      limit,
-      orderBy: [desc(media.uploadedAt)],
-      columns: {
-        id: true,
-        type: true,
-        thumbnailUrl: true,
-        caption: true,
-        uploadedAt: true
-      }
-    });
-  },
+type EnrichedGallery = GalleryRow & { randomMedia: MediaRow | null };
+type GalleryWithItems = GalleryRow & { 
+  items: { position: number; media: MediaRow | null }[] 
 };
+type GalleryMediaWithDetails = GalleryMediaRow & { media: MediaRow };
 
 // ==========================================
-// 2. USERS HELPERS
+// 1. USERS HELPERS
 // ==========================================
 export const userHelpers = {
-  findById: async (id: string) => {
-    return await db.query.users.findFirst({ 
-      where: eq(users.id, id),
-      columns: { passwordHash: false }
-    });
-  },
-  
   findByEmail: async (email: string) => {
-    return await db.query.users.findFirst({ where: eq(users.email, email) });
+    return await db.query.users.findFirst({ 
+      where: eq(users.email, email) 
+    });
   },
 };
 
 // ==========================================
-// 3. MEDIA HELPERS
+// 2. MEDIA HELPERS
 // ==========================================
 export const mediaHelpers = {
   create: async (data: typeof media.$inferInsert) => {
     return await db.insert(media).values(data).returning();
-  },
-  
-  findById: async (id: string) => {
-    return await db.query.media.findFirst({ 
-      where: eq(media.id, id),
-      with: {
-        galleryMedia: {
-          with: { 
-            gallery: { columns: { id: true, title: true, slug: true } }
-          }
-        }
-      }
-    });
-  },
-  
-  search: async (query: string, limit = 20) => {
-    return await db.query.media.findMany({
-      where: or(
-        ilike(media.caption, `%${query}%`),
-        ilike(media.originalFilename, `%${query}%`)
-      ),
-      limit,
-      orderBy: [desc(media.uploadedAt)],
-      columns: {
-        id: true,
-        type: true,
-        thumbnailUrl: true,
-        caption: true,
-        originalFilename: true,
-        uploadedAt: true
-      }
-    });
   },
 
   findAll: async (options?: { 
     limit?: number; 
     offset?: number; 
     search?: string;
-    type?: 'all' | 'image' | 'video' | 'gif';
+    filter?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
     excludeIds?: string[]; 
-  }) => {
-    const { limit = 50, offset = 0, search, type, sortBy = 'newest', excludeIds } = options || {};
+  }): Promise<PaginatedResponse<MediaRow>> => {
+    const { limit = 50, offset = 0, search, filter, sortBy = 'newest', excludeIds } = options || {};
     
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
     
-    if (type && type !== 'all') {
-      conditions.push(eq(media.type, type));
+    if (filter && ['image', 'video', 'gif'].includes(filter)) {
+      conditions.push(eq(media.type, filter as MediaRow['type']));
     }
     
-    if (search && search.trim()) {
+    if (search && typeof search === 'string' && search.trim()) {
       const searchTerm = `%${search.trim()}%`;
-      const searchConditions = [
+      const searchConditions: SQL[] = [
         ilike(media.originalFilename, searchTerm),
         ilike(media.caption, searchTerm),
-        media.locationName ? ilike(media.locationName, searchTerm) : null,
-      ].filter(Boolean);
+      ];
+      
+      if (media.locationName) {
+        searchConditions.push(ilike(media.locationName, searchTerm));
+      }
       
       if (searchConditions.length > 0) {
-        conditions.push(or(...searchConditions));
+        conditions.push(or(...searchConditions) as SQL);
       }
     }
 
@@ -178,116 +127,59 @@ export const mediaHelpers = {
 };
 
 // ==========================================
-// 4. GALLERIES HELPERS
+// 3. GALLERIES HELPERS
 // ==========================================
 export const galleryHelpers = {
   create: async (data: typeof galleries.$inferInsert) => {
     return await db.insert(galleries).values(data).returning();
   },
   
-  findBySlug: async (slug: string) => {
-    return await db.query.galleries.findFirst({
-      where: eq(galleries.slug, slug),
-      with: {
-        user: { columns: { username: true } },
-        coverMedia: { 
-          columns: { id: true, thumbnailUrl: true, type: true } 
-        },
-        galleryMedia: {
-          with: { 
-            media: { 
-              columns: { 
-                id: true, 
-                type: true, 
-                thumbnailUrl: true, 
-                fullResUrl: true,
-                caption: true,
-                width: true,
-                height: true
-              }
-            } 
-          },
-          orderBy: [asc(galleryMedia.position)]
-        }
-      }
-    });
-  },
-
-  findById: async (id: string) => {
-    return await db.query.galleries.findFirst({
+  findById: async (id: string): Promise<GalleryWithItems | undefined> => {
+    const gallery = await db.query.galleries.findFirst({
       where: eq(galleries.id, id),
       with: { 
-        user: { columns: { username: true } },
-        coverMedia: { columns: { id: true, thumbnailUrl: true } },
+        coverMedia: true,
         galleryMedia: { 
           with: { 
-            media: { 
-              columns: { 
-                id: true, 
-                type: true, 
-                thumbnailUrl: true, 
-                fullResUrl: true,
-                caption: true,
-                width: true,
-                height: true,
-                durationSeconds: true
-              }
-            } 
+            media: true
           }, 
           orderBy: [asc(galleryMedia.position)] 
         } 
       }
     });
+
+    if (!gallery) return undefined;
+
+    return {
+      ...gallery,
+      items: gallery.galleryMedia.map((gm) => ({
+        position: gm.position,
+        media: gm.media
+      }))
+    };
   },
 
-  findByUserId: async (userId: string) => {
-    return await db.query.galleries.findMany({
-      where: eq(galleries.userId, userId),
-      orderBy: [desc(galleries.createdAt)],
-      columns: {
-        id: true,
-        title: true,
-        slug: true,
-        description: true,
-        visibility: true,
-        coverMediaId: true,
-        layoutStyle: true, // Included for the new enum
-        createdAt: true
-      },
-      with: {
-        coverMedia: { columns: { id: true, thumbnailUrl: true } },
-        galleryMedia: {
-          with: { 
-            media: { columns: { id: true, thumbnailUrl: true } } 
-          },
-          orderBy: [asc(galleryMedia.position)],
-          limit: 1
-        }
-      }
-    });
-  },
-
-  findAll: async (userId: string, options?: { 
+  findAll: async (options?: { 
     limit?: number; 
     offset?: number; 
     search?: string;
+    filter?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
-    visibility?: VisibilityStatus;
-  }) => {
-    const { limit = 50, offset = 0, search, sortBy = 'newest', visibility } = options || {};
+  }): Promise<PaginatedResponse<EnrichedGallery>> => {
+    const { limit = 50, offset = 0, search, filter, sortBy = 'newest' } = options || {};
     
-    const conditions: any[] = [eq(galleries.userId, userId)];
+    const conditions: SQL[] = [];
     
-    if (visibility) {
-      conditions.push(eq(galleries.visibility, visibility));
+    if (filter && ['public', 'unlisted', 'password_protected', 'private'].includes(filter)) {
+      conditions.push(eq(galleries.visibility, filter as GalleryRow['visibility']));
     }
     
-    if (search && search.trim()) {
+    if (search && typeof search === 'string' && search.trim()) {
       const searchTerm = `%${search.trim()}%`;
       conditions.push(ilike(galleries.title, searchTerm));
     }
 
-    const whereClause = and(...conditions);
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     let orderByClause;
     switch (sortBy) {
@@ -308,18 +200,8 @@ export const galleryHelpers = {
       limit,
       offset,
       orderBy: orderByClause,
-      columns: {
-        id: true,
-        title: true,
-        slug: true,
-        description: true,
-        visibility: true,
-        coverMediaId: true,
-        layoutStyle: true, // Included for the new enum
-        createdAt: true
-      },
       with: {
-        coverMedia: { columns: { id: true, thumbnailUrl: true } }
+        coverMedia: true
       }
     });
 
@@ -330,32 +212,26 @@ export const galleryHelpers = {
     const total = Number(countResult[0]?.count) || 0;
 
     if (items.length > 0) {
-      const galleryIds = items.map(g => g.id);
+      const galleryIds = items.map((g: { id: string }) => g.id);
       
       const allGalleryMedia = await db.query.galleryMedia.findMany({
         where: inArray(galleryMedia.galleryId, galleryIds),
         with: {
-          media: {
-            columns: {
-              id: true,
-              thumbnailUrl: true,
-              type: true
-            }
-          }
+          media: true
         }
       });
       
-      const mediaByGallery = new Map();
-      const galleryMediaMap = new Map();
+      const mediaByGallery = new Map<string, MediaRow | null>();
+      const galleryMediaMap = new Map<string, MediaRow[]>();
       
-      allGalleryMedia.forEach(gm => {
+      allGalleryMedia.forEach((gm: { galleryId: string; media: MediaRow }) => {
         if (!galleryMediaMap.has(gm.galleryId)) {
           galleryMediaMap.set(gm.galleryId, []);
         }
-        galleryMediaMap.get(gm.galleryId).push(gm.media);
+        galleryMediaMap.get(gm.galleryId)!.push(gm.media);
       });
       
-      galleryIds.forEach(galleryId => {
+      galleryIds.forEach((galleryId: string) => {
         const medias = galleryMediaMap.get(galleryId);
         if (medias && medias.length > 0) {
           const randomIndex = Math.floor(Math.random() * medias.length);
@@ -365,17 +241,23 @@ export const galleryHelpers = {
         }
       });
       
-      items.forEach(gallery => {
-        (gallery as any).randomMedia = mediaByGallery.get(gallery.id) || null;
+      const enrichedItems: EnrichedGallery[] = items.map((gallery) => {
+        const randomMedia = mediaByGallery.get(gallery.id) || null;
+        return {
+          ...gallery,
+          randomMedia
+        } as EnrichedGallery;
       });
-    } else {
-      items.forEach(gallery => {
-        (gallery as any).randomMedia = null;
-      });
+
+      return {
+        items: enrichedItems,
+        total,
+        hasMore: offset + limit < total
+      };
     }
 
     return {
-      items,
+      items: [] as EnrichedGallery[],
       total,
       hasMore: offset + limit < total
     };
@@ -385,39 +267,43 @@ export const galleryHelpers = {
     limit?: number; 
     offset?: number;
     search?: string;
+    filter?: string;
     sortBy?: 'newest' | 'oldest' | 'title';
-    visibility?: VisibilityStatus | 'all';
-  }) => {
+  }): Promise<PaginatedResponse<EnrichedGallery>> => {
     const { 
       limit = 12, 
       offset = 0,
       search, 
+      filter,
       sortBy = 'newest', 
-      visibility = 'all'
     } = options || {};
 
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
 
-    // Clean if/else instead of array mutation (.pop)
-    if (visibility && visibility !== 'all') {
-      conditions.push(eq(galleries.visibility, visibility));
+    if (filter && ['public', 'unlisted', 'password_protected', 'private'].includes(filter)) {
+      conditions.push(eq(galleries.visibility, filter as GalleryRow['visibility']));
     } else {
       conditions.push(
         or(
           eq(galleries.visibility, 'public'),
           eq(galleries.visibility, 'password_protected')
-        )
+        )!
       );
     }
 
-    if (search && search.trim()) {
+    if (search && typeof search === 'string' && search.trim()) {
       const searchTerm = `%${search.trim()}%`;
-      conditions.push(
-        or(
-          ilike(galleries.title, searchTerm),
-          galleries.description ? ilike(galleries.description, searchTerm) : undefined
-        )
-      );
+      const searchConditions: SQL[] = [
+        ilike(galleries.title, searchTerm),
+      ];
+      
+      if (galleries.description) {
+        searchConditions.push(ilike(galleries.description, searchTerm));
+      }
+      
+      if (searchConditions.length > 0) {
+        conditions.push(or(...searchConditions) as SQL);
+      }
     }
 
     const whereClause = and(...conditions);
@@ -441,18 +327,8 @@ export const galleryHelpers = {
       limit,
       offset,
       orderBy: orderByClause,
-      columns: {
-        id: true,
-        title: true,
-        slug: true,
-        description: true,
-        visibility: true,
-        layoutStyle: true, // Included for the new enum
-        createdAt: true
-      },
       with: {
-        user: { columns: { username: true } },
-        coverMedia: { columns: { id: true, thumbnailUrl: true, type: true } }
+        coverMedia: true
       }
     });
 
@@ -463,33 +339,26 @@ export const galleryHelpers = {
     const total = Number(countResult[0]?.count) || 0;
 
     if (items.length > 0) {
-      const galleryIds = items.map(g => g.id);
+      const galleryIds = items.map((g: { id: string }) => g.id);
       
       const allGalleryMedia = await db.query.galleryMedia.findMany({
         where: inArray(galleryMedia.galleryId, galleryIds),
         with: {
-          media: {
-            columns: {
-              id: true,
-              thumbnailUrl: true,
-              fullResUrl: true,
-              type: true
-            }
-          }
+          media: true
         }
       });
       
-      const mediaByGallery = new Map<string, any>();
-      const galleryMediaMap = new Map<string, any[]>();
+      const mediaByGallery = new Map<string, MediaRow | null>();
+      const galleryMediaMap = new Map<string, MediaRow[]>();
       
-      allGalleryMedia.forEach(gm => {
+      allGalleryMedia.forEach((gm: { galleryId: string; media: MediaRow }) => {
         if (!galleryMediaMap.has(gm.galleryId)) {
           galleryMediaMap.set(gm.galleryId, []);
         }
         galleryMediaMap.get(gm.galleryId)!.push(gm.media);
       });
       
-      galleryIds.forEach(galleryId => {
+      galleryIds.forEach((galleryId: string) => {
         const medias = galleryMediaMap.get(galleryId);
         if (medias && medias.length > 0) {
           const randomIndex = Math.floor(Math.random() * medias.length);
@@ -499,13 +368,23 @@ export const galleryHelpers = {
         }
       });
       
-      items.forEach(gallery => {
-        (gallery as any).randomMedia = mediaByGallery.get(gallery.id) || null;
+      const enrichedItems: EnrichedGallery[] = items.map((gallery) => {
+        const randomMedia = mediaByGallery.get(gallery.id) || null;
+        return {
+          ...gallery,
+          randomMedia
+        } as EnrichedGallery;
       });
+
+      return {
+        items: enrichedItems,
+        total,
+        hasMore: offset + limit < total
+      };
     }
 
     return {
-      items,
+      items: [] as EnrichedGallery[],
       total,
       hasMore: offset + limit < total
     };
@@ -519,7 +398,7 @@ export const galleryHelpers = {
     return await db.delete(galleries).where(eq(galleries.id, id)).returning();
   },
 
-  verifyGalleryPassword: async (galleryId: string, password: string) => {
+  verifyGalleryPassword: async (galleryId: string, password: string): Promise<PasswordVerificationResult> => {
     const gallery = await db.query.galleries.findFirst({
       where: eq(galleries.id, galleryId),
       columns: { passwordHash: true, visibility: true }
@@ -548,7 +427,7 @@ export const galleryHelpers = {
 };
 
 // ==========================================
-// 5. GALLERY MEDIA HELPERS
+// 4. GALLERY MEDIA HELPERS
 // ==========================================
 export const galleryMediaHelpers = {
   addMediaToGallery: async (galleryId: string, mediaId: string, position: number) => {
@@ -576,20 +455,7 @@ export const galleryMediaHelpers = {
       where: eq(galleryMedia.galleryId, galleryId),
       orderBy: [asc(galleryMedia.position)],
       with: {
-        media: {
-          columns: {
-            id: true,
-            type: true,
-            thumbnailUrl: true,
-            fullResUrl: true,
-            caption: true,
-            width: true,
-            height: true,
-            durationSeconds: true,
-            exifData: true,
-            locationName: true
-          }
-        }
+        media: true
       }
     });
 
@@ -597,18 +463,19 @@ export const galleryMediaHelpers = {
   },
 
   reorderGallery: async (galleryId: string, orderedMediaIds: string[]) => {
-    return await db.transaction(async (tx) => {
-      for (let i = 0; i < orderedMediaIds.length; i++) {
-        await tx.update(galleryMedia)
-          .set({ position: i })
-          .where(
-            and(
-              eq(galleryMedia.galleryId, galleryId),
-              eq(galleryMedia.mediaId, orderedMediaIds[i])
-            )
-          );
-      }
-    });
+    if (orderedMediaIds.length === 0) return [];
+    
+    const firstQuery = db.update(galleryMedia)
+      .set({ position: 0 })
+      .where(and(eq(galleryMedia.galleryId, galleryId), eq(galleryMedia.mediaId, orderedMediaIds[0])));
+      
+    const restQueries = orderedMediaIds.slice(1).map((mediaId, index) => 
+      db.update(galleryMedia)
+        .set({ position: index + 1 })
+        .where(and(eq(galleryMedia.galleryId, galleryId), eq(galleryMedia.mediaId, mediaId)))
+    );
+    
+    return await db.batch([firstQuery, ...restQueries]);
   },
   
   removeMediaFromGallery: async (galleryId: string, mediaId: string) => {
@@ -621,13 +488,14 @@ export const galleryMediaHelpers = {
     limit?: number;
     offset?: number;
     search?: string;
+    filter?: string;
     sortBy?: 'newest' | 'oldest' | 'name' | 'position';
-  }) => {
-    const { limit = 50, offset = 0, search, sortBy = 'position' } = options || {};
+  }): Promise<PaginatedResponse<GalleryMediaWithDetails>> => {
+    const { limit = 50, offset = 0, search, filter, sortBy = 'position' } = options || {};
     
     let mediaIdFilter: string[] | undefined = undefined;
     
-    if (search && search.trim()) {
+    if (search && typeof search === 'string' && search.trim()) {
       const searchTerm = `%${search.trim()}%`;
       const matchingMedia = await db.select({ id: media.id })
         .from(media)
@@ -640,6 +508,26 @@ export const galleryMediaHelpers = {
       
       if (mediaIdFilter.length === 0) {
         return { items: [], total: 0, hasMore: false };
+      }
+    }
+
+    if (filter && ['image', 'video', 'gif'].includes(filter)) {
+      const filteredMedia = await db.select({ id: media.id })
+        .from(media)
+        .where(eq(media.type, filter as MediaRow['type']));
+      const filteredIds = filteredMedia.map(m => m.id);
+      
+      if (filteredIds.length === 0) {
+        return { items: [], total: 0, hasMore: false };
+      }
+      
+      if (mediaIdFilter) {
+        mediaIdFilter = mediaIdFilter.filter(id => filteredIds.includes(id));
+        if (mediaIdFilter.length === 0) {
+          return { items: [], total: 0, hasMore: false };
+        }
+      } else {
+        mediaIdFilter = filteredIds;
       }
     }
 
@@ -661,36 +549,21 @@ export const galleryMediaHelpers = {
       offset,
       orderBy: [asc(galleryMedia.position)],
       with: {
-        media: {
-          columns: {
-            id: true,
-            type: true,
-            thumbnailUrl: true,
-            fullResUrl: true,
-            caption: true,
-            width: true,
-            height: true,
-            durationSeconds: true,
-            exifData: true,
-            locationName: true,
-            originalFilename: true,
-            uploadedAt: true
-          }
-        }
+        media: true
       }
     });
 
     let sortedItems = items;
     if (sortBy === 'name') {
-      sortedItems = [...items].sort((a, b) => 
+      sortedItems = [...items].sort((a: GalleryMediaWithDetails, b: GalleryMediaWithDetails) => 
         (a.media.originalFilename || '').localeCompare(b.media.originalFilename || '')
       );
     } else if (sortBy === 'newest') {
-      sortedItems = [...items].sort((a, b) => 
+      sortedItems = [...items].sort((a: GalleryMediaWithDetails, b: GalleryMediaWithDetails) => 
         new Date(b.media.uploadedAt).getTime() - new Date(a.media.uploadedAt).getTime()
       );
     } else if (sortBy === 'oldest') {
-      sortedItems = [...items].sort((a, b) => 
+      sortedItems = [...items].sort((a: GalleryMediaWithDetails, b: GalleryMediaWithDetails) => 
         new Date(a.media.uploadedAt).getTime() - new Date(b.media.uploadedAt).getTime()
       );
     }

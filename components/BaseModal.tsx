@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -37,13 +38,25 @@ export default function BaseModal({
   maxWidth = 'lg',
   isLoading = false
 }: BaseModalProps) {
+  const [isRendered, setIsRendered] = useState(isOpen);
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
-  // 1. Accessibility: Focus Trap & Escape Key Handling
+  // 1. Self-contained animation mounting/unmounting
   useEffect(() => {
-    if (!isOpen) return;
+    if (isOpen) {
+      setIsRendered(true);
+    } else {
+      // Delay unmounting to allow Framer Motion exit animation to complete
+      const timer = setTimeout(() => setIsRendered(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // 2. Accessibility: Focus Trap & Escape Key Handling
+  useEffect(() => {
+    if (!isRendered) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Handle Escape
@@ -82,9 +95,9 @@ export default function BaseModal({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, isLoading]);
+  }, [isRendered, onClose, isLoading]);
 
-  // 2. Accessibility & UX: Focus Management & Body Scroll Lock
+  // 3. Accessibility & UX: Focus Management & Body Scroll Lock
   useEffect(() => {
     if (isOpen) {
       previousActiveElement.current = document.activeElement as HTMLElement;
@@ -103,82 +116,80 @@ export default function BaseModal({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isRendered) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-      {/* Backdrop: Premium "Depth of Field" Glassmorphism */}
-      <div 
-        className="absolute inset-0 bg-slate-900/30 backdrop-blur-md transition-opacity duration-300 ease-out" 
-        onClick={!isLoading ? onClose : undefined} 
-        aria-hidden="true"
-      />
-      
-      {/* Modal Container: Aerodynamic curves, crisp borders, deep shadow */}
-      <div 
-        ref={modalRef}
-        className={`relative w-full ${widthClasses[maxWidth]} bg-white rounded-t-3xl sm:rounded-3xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh] ring-1 ring-black/5 transform transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] scale-100 opacity-100`}
+    <AnimatePresence>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        aria-describedby={subtitle ? "modal-subtitle" : undefined}
       >
+        {/* Backdrop: Premium, subtle depth of field */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-colors duration-300" 
+          onClick={!isLoading ? onClose : undefined} 
+          aria-hidden="true"
+        />
         
-        {/* Racing Livery Accent Top Bar: Classic white car with central racing stripe */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-slate-900 via-red-600 to-slate-900 z-20" />
-
-        {/* Header */}
-        <div className="px-5 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex justify-between items-start bg-white relative">
-          <div className="pr-8">
-            <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="text-[10px] sm:text-xs font-mono font-semibold text-slate-500 mt-2 uppercase tracking-[0.2em] flex items-center gap-2">
-                {/* Live Telemetry Indicator */}
-                <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shadow-[0_0_8px_rgba(220,38,38,0.6)] animate-pulse" />
-                {subtitle}
-              </p>
-            )}
+        {/* Modal Container: Aerodynamic curves, crisp borders, diffused shadow */}
+        <motion.div 
+          ref={modalRef}
+          initial={{ opacity: 0, scale: 0.98, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.98, y: 10 }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+          className={`relative w-full ${widthClasses[maxWidth]} bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 border border-zinc-100 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh]`}
+        >
+          {/* Header */}
+          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-white dark:bg-zinc-950 relative z-10">
+            <div className="pr-8">
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
+                {title}
+              </h2>
+              {subtitle && (
+                <p id="modal-subtitle" className="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5 font-medium leading-relaxed">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+            <button 
+              ref={closeBtnRef}
+              onClick={onClose} 
+              disabled={isLoading}
+              className="group flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2"
+              aria-label="Close modal"
+            >
+              <svg className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button 
-            ref={closeBtnRef}
-            onClick={onClose} 
-            disabled={isLoading}
-            className="group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-full transition-all duration-200 disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:ring-offset-2"
-            aria-label="Close modal"
-          >
-            <svg className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        {/* Content Area: Scrollable with Technical Grid */}
-        <div className="flex-1 overflow-y-auto relative bg-white modal-scroll">
-           {/* Subtle Technical Drafting Grid: Highly performant radial gradient */}
-           <div 
-            className="absolute inset-0 pointer-events-none opacity-[0.4]" 
-            style={{ 
-              backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', 
-              backgroundSize: '20px 20px' 
-            }} 
-            aria-hidden="true" 
-          />
-          
-          <div className="relative z-10 px-5 py-6 sm:px-8 sm:py-6">
-            {children}
+          {/* Content Area: Clean, scrollable, distraction-free */}
+          <div className="flex-1 overflow-y-auto relative bg-white dark:bg-zinc-950 modal-scroll">
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-8">
+              {children}
+            </div>
           </div>
-        </div>
 
-        {/* Footer Actions: Frosted glass separation */}
-        {footer && (
-          <div className="px-5 py-4 sm:px-8 sm:py-5 bg-slate-50/80 border-t border-slate-100 flex justify-end gap-3 relative z-10 backdrop-blur-md">
-            {footer}
-          </div>
-        )}
-      </div>
+          {/* Footer Actions: Frosted glass separation */}
+          {footer && (
+            <div className="px-6 py-4 sm:px-8 sm:py-5 bg-zinc-50/80 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 relative z-10 backdrop-blur-md">
+              {footer}
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
 
       {/* Inline styles for a premium, dependency-free custom scrollbar */}
       <style>{`
@@ -189,13 +200,19 @@ export default function BaseModal({
           background: transparent;
         }
         .modal-scroll::-webkit-scrollbar-thumb {
-          background-color: #e2e8f0;
-          border-radius: 20px;
+          background-color: #e4e4e7; /* zinc-200 */
+          border-radius: 9999px;
+        }
+        .dark .modal-scroll::-webkit-scrollbar-thumb {
+          background-color: #3f3f46; /* zinc-700 */
         }
         .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background-color: #cbd5e1;
+          background-color: #d4d4d8; /* zinc-300 */
+        }
+        .dark .modal-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: #52525b; /* zinc-600 */
         }
       `}</style>
-    </div>
+    </AnimatePresence>
   );
 }

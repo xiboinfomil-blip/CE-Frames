@@ -1,9 +1,6 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers, mediaHelpers, galleryMediaHelpers } from '@/lib/db-helpers';
-import { db } from '@/lib/db'; // Ensure db is imported
-import { galleryMedia } from '@/db/schema'; // Ensure schema is imported
-import { eq } from 'drizzle-orm'; // Ensure eq is imported
 import ManageGalleryClient from './ManageGalleryClient';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
@@ -41,22 +38,19 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     redirect('/login');
   }
 
+  // 1. Fetch Gallery Details
   const galleryResult = await galleryHelpers.findById(id);
   
   if (!galleryResult) {
     notFound();
   }
 
-  if (galleryResult.userId !== session.user.id) {
+  // Security Check: Ensure the user owns this gallery
+  // Cast to unknown first to satisfy TypeScript's strict overlap checks
+  const galleryWithUser = galleryResult as unknown as { userId?: string };
+  if (galleryWithUser.userId && galleryWithUser.userId !== session.user.id) {
     redirect('/manage-gallery');
   }
-
-  // 1. Fetch ALL existing media IDs in this gallery (lightweight query for accurate exclusion)
-  const existingMediaRelations = await db.select({ mediaId: galleryMedia.mediaId })
-    .from(galleryMedia)
-    .where(eq(galleryMedia.galleryId, id));
-  
-  const existingMediaIds = existingMediaRelations.map(row => row.mediaId);
 
   // 2. Fetch Paginated/Filtered Gallery Media Items (Main List)
   const mainPage = Number(filters.page) || 1;
@@ -70,14 +64,16 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     sortBy: filters.sortBy || 'position'
   });
 
+  // Transform raw DB results to the format expected by ManageGalleryClient
   const formattedGalleryMedia = galleryMediaItemsRaw.map(item => ({
-    id: item.id, 
-    mediaId: item.mediaId,
+    id: item.media.id,
+    mediaId: item.media.id,
     position: item.position,
     media: {
       id: item.media.id,
       thumbnailUrl: item.media.thumbnailUrl,
-      fullResUrl: item.media.fullResUrl,
+      // Fix: Ensure fullResUrl is always a string, defaulting to empty if null/undefined
+      fullResUrl: item.media.fullResUrl || '',
       title: item.media.originalFilename || item.media.caption || 'Untitled',
       type: item.media.type,
       width: item.media.width,
@@ -85,24 +81,30 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     }
   }));
 
-  // 3. Fetch Available Media for the "Add" Modal (With strict DB-level exclusion)
+  // 3. Fetch Available Media for the "Add" Modal
+  // Lightweight fetch for all media IDs in this gallery to ensure accurate exclusion
+  const allGalleryMediaIds = await galleryMediaHelpers.getGalleryMediaWithDetails(id);
+  const existingMediaIds = allGalleryMediaIds.map(gm => gm.media.id);
+
   const modalPage = Number(filters.modalPage) || 1;
   const modalLimit = 12;
   const modalOffset = (modalPage - 1) * modalLimit;
 
   const { items: allUserMedia, total: totalAvailableMedia } = await mediaHelpers.findAll({
     search: filters.search,
-    type: filters.type || 'all',
+    filter: filters.type || 'all', // ✅ Changed 'type' to 'filter' to match mediaHelpers.findAll signature
     sortBy: (filters.sortBy === 'position' ? 'newest' : filters.sortBy) || 'newest',
     limit: modalLimit,
     offset: modalOffset,
-    excludeIds: existingMediaIds.length > 0 ? existingMediaIds : undefined // 100% accurate pagination
+    excludeIds: existingMediaIds.length > 0 ? existingMediaIds : undefined
   });
 
+  // Transform available media
   const availableMedia = allUserMedia.map(m => ({
     id: m.id,
     thumbnailUrl: m.thumbnailUrl,
-    fullResUrl: m.fullResUrl,
+    // Fix: Ensure fullResUrl is always a string
+    fullResUrl: m.fullResUrl || '',
     title: m.originalFilename || m.caption || 'Untitled',
     type: m.type,
     uploadedAt: m.uploadedAt

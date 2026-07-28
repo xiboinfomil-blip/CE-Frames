@@ -1,3 +1,5 @@
+import { Gallery } from '@/types/gallery';
+
 // Helper to get unlocked galleries from localStorage
 export const getUnlockedGalleries = (): string[] => {
   if (typeof window === 'undefined') return [];

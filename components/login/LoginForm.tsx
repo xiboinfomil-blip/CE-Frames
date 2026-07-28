@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import { FiUser, FiLock, FiEye, FiEyeOff, FiCheck } from "react-icons/fi";
+import { FiUser, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 
-// Update these paths if you placed the components in your /login folder instead of /ui
 import { CustomTextfield } from "@/components/ui/CustomTextfield";
 import { CustomButton } from "@/components/ui/CustomButton";
-import styles from "./Login.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -59,14 +57,13 @@ export default function LoginForm() {
     }
   };
 
-  // Telemetry-style loading state
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
+      <div className="h-full w-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-500 animate-pulse">
-            Initializing Telemetry...
+          <div className="w-8 h-8 border-2 border-stone-200 border-t-stone-800 rounded-full animate-spin" />
+          <span className="text-xs font-medium text-stone-400 uppercase tracking-widest">
+            Loading...
           </span>
         </div>
       </div>
@@ -78,95 +75,81 @@ export default function LoginForm() {
   }
 
   return (
-    <main className={styles.formPanel}>
-      <div className={styles.formContent}>
-        <header className={styles.formHeader}>
-          <div className={styles.formHeaderTag}>SECURE ACCESS</div>
-          <h2 className={styles.formTitle}>Admin Access</h2>
-          <p className={styles.formSubtitle}>Enter your credentials to continue</p>
-        </header>
+    <div className="max-w-md w-full mx-auto">
+      <header className="mb-10">
+        <h2 className="text-3xl font-bold text-stone-900 tracking-tight mb-2">Welcome Back</h2>
+        <p className="text-stone-500">Please enter your details to access the dashboard.</p>
+      </header>
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          {/* Upgraded Telemetry Error Message */}
-          {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-[11px] font-mono font-medium flex items-center gap-2 mb-2 animate-in fade-in slide-in-from-top-1 duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-              {error}
-            </div>
-          )}
-
-          <div className={styles.field}>
-            <CustomTextfield
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="admin@oramacreativ.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              leftIcon={<FiUser size={18} />}
-              autoComplete="email"
-              required
-            />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" x2="12" y1="8" y2="12"/>
+              <line x1="12" x2="12.01" y1="16" y2="16"/>
+            </svg>
+            <span>{error}</span>
           </div>
+        )}
 
-          <div className={styles.field}>
-            <CustomTextfield
-              label="Password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              leftIcon={<FiLock size={18} />}
-              rightIcon={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50 text-inherit"
-                >
-                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                </button>
-              }
-              autoComplete="current-password"
-              required
-            />
-          </div>
+        <div className="space-y-4">
+          <CustomTextfield
+            label="Email Address"
+            name="email"
+            type="email"
+            placeholder="admin@oramacreativ.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            leftIcon={<FiUser size={18} />}
+            autoComplete="email"
+            required
+          />
 
-          <div className={styles.options}>
-            <label className={styles.checkbox}>
-              <input type="checkbox" className={styles.checkboxInput} defaultChecked />
-              <span className={styles.checkboxMark} />
-              <span className={styles.checkboxText}>Remember me</span>
-            </label>
-            <a href="#" className={styles.forgotLink}>
-              Forgot password?
-            </a>
-          </div>
+          <CustomTextfield
+            label="Password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            leftIcon={<FiLock size={18} />}
+            rightIcon={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="p-1 rounded-md hover:bg-stone-100 transition-colors focus:outline-none text-stone-400 hover:text-stone-600"
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
+            }
+            autoComplete="current-password"
+            required
+          />
+        </div>
 
-          <div className={styles.submit}>
-            <CustomButton
-              type="submit"
-              variant="continue"
-              size="lg"
-              leftIcon={<FiCheck size={18} />}
-              disabled={isLoading}
-              isLoading={isLoading}
-              className="w-full"
-              shortcut="↵"
-            >
-              Access Dashboard
-            </CustomButton>
-          </div>
-        </form>
+        <div className="pt-4">
+          <CustomButton
+            type="submit"
+            variant="default"
+            size="lg"
+            disabled={isLoading}
+            isLoading={isLoading}
+            className="w-full"
+            rightIcon={!isLoading && <FiArrowRight size={18} />}
+          >
+            Sign In
+          </CustomButton>
+        </div>
+      </form>
 
-        <footer className={styles.formFooter}>
-          <div className={styles.formFooterLine} />
-          <p className={styles.formFooterText}>
-            © 2026 OramaCreativ. All rights reserved.
-          </p>
-        </footer>
-      </div>
-    </main>
+      <footer className="mt-12 text-center">
+        <p className="text-xs text-stone-400">
+          © 2026 OramaCreativ. All rights reserved.
+        </p>
+      </footer>
+    </div>
   );
 }

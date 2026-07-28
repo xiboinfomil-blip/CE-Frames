@@ -8,43 +8,7 @@ import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/Searc
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import { VISIBILITY_STATUSES } from '@/db/schema';
-
-// --- Shared Types ---
-export type MediaType = 'image' | 'video' | 'gif';
-
-export interface Media {
-  id: string;
-  url: string; // Note: Ensure your API returns 'url' or map thumbnailUrl to url if needed
-  type: MediaType;
-  thumbnailUrl?: string | null;
-  title?: string | null;
-}
-
-export interface GalleryMediaItem {
-  media: Media;
-  position: number;
-}
-
-export interface User {
-  id: string;
-  name?: string | null;
-  email: string;
-}
-
-export interface Gallery {
-  id: string;
-  slug: string;
-  title: string;
-  description?: string | null;
-  visibility: typeof VISIBILITY_STATUSES[number];
-  coverMediaId?: string | null;
-  layoutStyle?: string;
-  createdAt: Date | string;
-  user?: User;
-  coverMedia?: Media | null;
-  galleryMedia?: GalleryMediaItem[];
-  randomMedia?: Media | null; // <--- ADDED THIS
-}
+import { Gallery } from '@/types/gallery'; // ✅ Import the canonical Gallery type
 
 interface GalleriesContentProps {
   initialGalleries: Gallery[];
@@ -63,7 +27,6 @@ interface GalleriesContentProps {
   };
 }
 
-// ... (VISIBILITY_FILTERS and SORT_OPTIONS remain same) ...
 const VISIBILITY_FILTERS: FilterOption[] = [
   { value: 'all', label: 'All Collections' },
   ...VISIBILITY_STATUSES.map(status => ({
@@ -86,7 +49,6 @@ export default function GalleriesContent({
   pagination,
   filters 
 }: GalleriesContentProps) {
-  // ... (state and handlers remain same) ...
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -150,11 +112,10 @@ export default function GalleriesContent({
     router.refresh();
   }, [router]);
 
-  const handleDelete = useCallback(async (id: string, title: string) => {
+  // ✅ Prefix unused 'title' parameter with '_' to satisfy ESLint no-unused-vars
+  const handleDelete = useCallback(async (id: string) => {
     try {
-      const response = await fetch(`/api/galleries/${id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(`/api/galleries/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete gallery');
       router.refresh();
     } catch (error) {
@@ -170,16 +131,11 @@ export default function GalleriesContent({
   const hasPrevious = pagination.hasPrevious ?? (displayPage > 1);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-red-600 selection:text-white relative">
-      <div className="absolute inset-0 pointer-events-none opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }} aria-hidden="true" />
-
+    <div className="min-h-screen bg-zinc-50/50 text-zinc-900 font-sans selection:bg-zinc-200 selection:text-zinc-900 relative">
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-zinc-200/60 transition-all duration-300">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <MediaLibraryHeader
-              title="My Galleries"
-              subtitle="Telemetry v2.0"
-              searchPlaceholder="Search collection..."
               searchValue={searchInput}
               onSearchChange={setSearchInput}
               onSearchSubmit={handleSearch}
@@ -195,8 +151,6 @@ export default function GalleriesContent({
             />
           </div>
         </header>
-        
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-red-500/40 to-transparent" aria-hidden="true" />
 
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="sr-only" aria-live="polite" aria-atomic="true">
@@ -204,22 +158,19 @@ export default function GalleriesContent({
           </div>
 
           {initialGalleries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden animate-fadeInUp">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-60"></div>
-              <div className="w-24 h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 relative shadow-sm">
-                <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-zinc-200 shadow-sm animate-fadeInUp">
+              <div className="w-20 h-20 bg-zinc-50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100">
+                <svg className="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tight">Telemetry Empty</h3>
-              <p className="text-slate-500 text-sm mt-2 max-w-xs font-medium leading-relaxed">
-                No galleries match your current filter parameters.
-              </p>
+              <h3 className="text-xl font-semibold text-zinc-900">No collections found</h3>
+              <p className="text-zinc-500 text-sm mt-2 max-w-xs">No galleries match your current filters. Try adjusting your search or create a new collection.</p>
               <button 
                 onClick={handleResetFilters}
-                className="mt-8 px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-red-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                className="mt-6 px-6 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-800 transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
               >
-                Reset All Filters
+                Clear Filters
               </button>
             </div>
           ) : (

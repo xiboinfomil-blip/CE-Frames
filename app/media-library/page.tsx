@@ -5,7 +5,7 @@ import MediaLibraryClient from './MediaLibraryClient';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import type { MediaSchema } from '@/app/media-library/components/MediaCard';
-import { MEDIA_TYPES } from '@/db/schema'; // Import MEDIA_TYPES
+import { MEDIA_TYPES } from '@/db/schema';
 
 export const metadata = {
   title: 'Media Library | Racecar Portfolio',
@@ -17,7 +17,7 @@ interface MediaLibraryPageProps {
     page?: string;
     limit?: string;
     search?: string;
-    type?: typeof MEDIA_TYPES[number]; // Use the derived type
+    type?: typeof MEDIA_TYPES[number];
     sortBy?: 'newest' | 'oldest' | 'name';
   }>;
 }
@@ -42,13 +42,13 @@ export default async function MediaLibraryPage({ searchParams }: MediaLibraryPag
     limit, 
     offset,
     search: search || undefined,
-    type: type || undefined,
+    filter: type || undefined,
     sortBy: sortBy as 'newest' | 'oldest' | 'name'
   });
 
-  const safeMedia: MediaSchema[] = result.items.map((m: any) => ({
+  const safeMedia: MediaSchema[] = result.items.map((m) => ({
     id: m.id,
-    type: m.type as typeof MEDIA_TYPES[number], // Use the derived type
+    type: m.type as typeof MEDIA_TYPES[number],
     thumbnailUrl: m.thumbnailUrl,
     fullResUrl: m.fullResUrl,
     originalFilename: m.originalFilename,
@@ -56,10 +56,13 @@ export default async function MediaLibraryPage({ searchParams }: MediaLibraryPag
     width: m.width,
     height: m.height,
     durationSeconds: m.durationSeconds,
-    exifData: m.exifData as Record<string, any> | null,
+    exifData: m.exifData as Record<string, unknown> | null,
     caption: m.caption,
     locationName: m.locationName,
-    coordinates: m.coordinates ? [Number(m.coordinates.x), Number(m.coordinates.y)] as [number, number] : null,
+    // ✅ Access coordinates as an array/tuple using indices [0] and [1]
+    coordinates: m.coordinates 
+      ? [Number(m.coordinates[0]), Number(m.coordinates[1])] as [number, number] 
+      : null,
     uploadedAt: m.uploadedAt,
   }));
 

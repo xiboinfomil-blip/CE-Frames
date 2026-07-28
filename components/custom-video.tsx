@@ -3,7 +3,7 @@
 import { forwardRef, useCallback, useState } from 'react';
 
 interface CustomVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
-  poster?: string;
+  poster?: string; // This is your thumbnail MP4 URL
   hoverPlay?: boolean;
 }
 
@@ -18,7 +18,6 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
   }, ref) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // CRITICAL FIX: Unified handler for both metadata and data loaded.
     const handleReady = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
       setIsLoaded(true);
       onLoadedData?.(e);
@@ -26,41 +25,66 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
 
     const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
       if (!hoverPlay) return;
+      // Force mute right before playing to guarantee browser autoplay policies allow it
+      e.currentTarget.muted = true;
       e.currentTarget.play().catch(() => {
-        // Ignore autoplay prevention errors
+        // Ignore autoplay prevention errors silently
       });
     }, [hoverPlay]);
 
     const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
       if (!hoverPlay) return;
       e.currentTarget.pause();
-      e.currentTarget.currentTime = 0; // Reset to show poster again
+      e.currentTarget.currentTime = 0; // Reset to show first frame again
     }, [hoverPlay]);
 
     const handleError = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
       console.error('Video failed to load:', props.src);
-      setIsLoaded(true); // Force opacity-100 so poster/error is visible
+      setIsLoaded(true); // Prevent getting stuck at opacity-0 if video fails
       onError?.(e);
     }, [onError, props.src]);
 
     return (
-      <div className="relative h-full w-full overflow-hidden">
+      <div className="relative h-full w-full overflow-hidden bg-zinc-100">
+        {/* 
+          1. INSTANT THUMBNAIL LAYER (MP4)
+          Rendered as a <video> with preload="metadata". 
+          This instantly shows the first frame of the MP4 without downloading the whole file.
+          NO hover events here — this layer is purely visual.
+        */}
+        {poster && (
+          <video
+            src={poster}
+            muted
+            playsInline
+            preload="metadata" 
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+          />
+        )}
+        
+        {/* 
+          2. MAIN VIDEO LAYER
+          Fades in seamlessly when ready. Handles the hover playback.
+        */}
         <video
           ref={ref}
-          poster={poster}
-          muted
+          {...props} 
           loop
           playsInline
           preload="metadata"
+          disablePictureInPicture 
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onLoadedMetadata={handleReady} // 🚨 CRITICAL: Fires even if loadedData stalls
+          onLoadedMetadata={handleReady}
           onLoadedData={handleReady}
           onError={handleError}
-          className={`h-full w-full object-cover transition-opacity duration-500 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
-          {...props}
+          // CRITICAL: Placed AFTER {...props} to strictly enforce "no sound, no controls"
+          muted
+          controls={false}
+          className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03] will-change-transform ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          } ${className}`}
         />
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)]" />
       </div>
     );
   }

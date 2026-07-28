@@ -1,5 +1,6 @@
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleryClient from './GalleryClient';
+import { Gallery } from '@/types/gallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,12 @@ interface SearchParams {
   page?: string;
 }
 
+type FindPublicResult = {
+  items: Gallery[];
+  total: number;
+  hasMore: boolean;
+};
+
 export default async function GalleryPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
   
@@ -17,18 +24,21 @@ export default async function GalleryPage({ searchParams }: { searchParams: Prom
   const limit = 12; // Items per page
   const offset = (currentPage - 1) * limit;
   
-  let result = { items: [], total: 0, hasMore: false };
+  let result: FindPublicResult = { items: [], total: 0, hasMore: false };
   
   try {
-    result = await galleryHelpers.findPublic({
+    const res = await galleryHelpers.findPublic({
       limit,
       offset,
       search: params.search,
       sortBy: params.sort || 'newest',
-      visibility: params.filter as any || 'all'
+      filter: params.filter || 'all' // ✅ Fixed: changed 'visibility' to 'filter' and removed 'as any'
     });
-  } catch (error) {
-    console.error('Error fetching galleries:', error);
+    
+    // Cast to our expected shape (EnrichedGallery usually extends Gallery)
+    result = res as unknown as FindPublicResult;
+  } catch (err) {
+    console.error('Error fetching galleries:', err);
   }
 
   const totalPages = Math.ceil(result.total / limit);
