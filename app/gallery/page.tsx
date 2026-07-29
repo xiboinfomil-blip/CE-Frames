@@ -1,6 +1,7 @@
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleryClient from './GalleryClient';
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary instead of the old Gallery type
+import { GallerySummary } from '@/types/types'; 
 
 export const dynamic = 'force-dynamic';
 
@@ -11,8 +12,9 @@ interface SearchParams {
   page?: string;
 }
 
+// ✅ Updated Result Type to match GallerySummary
 type FindPublicResult = {
-  items: Gallery[];
+  items: GallerySummary[];
   total: number;
   hasMore: boolean;
 };
@@ -32,11 +34,13 @@ export default async function GalleryPage({ searchParams }: { searchParams: Prom
       offset,
       search: params.search,
       sortBy: params.sort || 'newest',
-      filter: params.filter || 'all' // ✅ Fixed: changed 'visibility' to 'filter' and removed 'as any'
+      filter: params.filter || 'all'
     });
     
-    // Cast to our expected shape (EnrichedGallery usually extends Gallery)
-    result = res as unknown as FindPublicResult;
+    // ✅ Safe Assignment: Assuming galleryHelpers returns a shape compatible with GallerySummary
+    // If your helper returns Prisma objects directly, you might need a small mapping function here
+    // to ensure dates are Date objects and not strings, and nested objects match the interface.
+    result = res as FindPublicResult; 
   } catch (err) {
     console.error('Error fetching galleries:', err);
   }

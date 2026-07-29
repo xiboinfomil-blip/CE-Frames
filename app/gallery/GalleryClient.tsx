@@ -3,7 +3,8 @@
 import { useState, useEffect, useTransition, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from your consolidated types
+import { GallerySummary } from '@/types/types'; 
 
 // Your Custom Components
 import MediaLibraryHeader from '@/components/SearchSortFilter';
@@ -19,7 +20,8 @@ import {
 } from '@/lib/gallery-utils';
 
 interface GalleryClientProps {
-  initialGalleries: Gallery[];
+  // ✅ Updated Prop Types to match GallerySummary
+  initialGalleries: GallerySummary[];
   totalGalleries: number;
   currentPage: number;
   totalPages: number;
@@ -98,7 +100,8 @@ export default function GalleryClient({
   };
 
   // Password Protection Logic
-  const handleGalleryClick = async (gallery: Gallery) => {
+  // ✅ Updated Argument Type to GallerySummary
+  const handleGalleryClick = async (gallery: GallerySummary) => {
     const unlockedGalleries = getUnlockedGalleries();
 
     if (gallery.visibility === 'password_protected' && !unlockedGalleries.includes(gallery.id)) {
@@ -246,7 +249,9 @@ export default function GalleryClient({
               emptyState={<EmptyState />}
               ariaLabel="Photo Galleries"
               renderItem={(gallery, index) => {
-                const displayMedia = gallery.coverMedia || gallery.randomMedia;
+                // ✅ FIX: Use randomMedia for list previews. 
+                // coverMedia is not available in GallerySummary, only coverMediaId.
+                const displayMedia = gallery.randomMedia; 
                 
                 // --- Fallback State (No Media) ---
                 if (!displayMedia) {
@@ -287,7 +292,7 @@ export default function GalleryClient({
                       {/* Hover Overlay Gradient */}
                       <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       
-                      {/* Locked Badge (Visible on Hover or Always if preferred) */}
+                      {/* Locked Badge */}
                       {gallery.visibility === 'password_protected' && (
                         <div className="absolute top-3 right-3">
                           <div className="bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1.5">
@@ -317,12 +322,12 @@ export default function GalleryClient({
                       
                       {/* Meta Footer */}
                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100">
-                        {gallery.user ? (
+                        {gallery.owner ? (
                           <div className="flex items-center gap-2">
                             <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-400 to-purple-400 flex items-center justify-center text-[10px] font-bold text-white uppercase">
-                              {gallery.user.username.charAt(0)}
+                              {gallery.owner.username.charAt(0)}
                             </div>
-                            <span className="text-xs font-medium text-slate-600">@{gallery.user.username}</span>
+                            <span className="text-xs font-medium text-slate-600">@{gallery.owner.username}</span>
                           </div>
                         ) : (
                           <div className="w-5 h-5 rounded-full bg-slate-200" />

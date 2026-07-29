@@ -1,10 +1,15 @@
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from consolidated types
+import { GallerySummary } from '@/types/types';
 
 // Helper to get unlocked galleries from localStorage
 export const getUnlockedGalleries = (): string[] => {
   if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem('unlockedGalleries');
-  return stored ? JSON.parse(stored) : [];
+  try {
+    const stored = localStorage.getItem('unlockedGalleries');
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 };
 
 // Helper to save unlocked gallery to localStorage
@@ -18,8 +23,9 @@ export const saveUnlockedGallery = (galleryId: string): void => {
 };
 
 // Filter and sort galleries
+// ✅ Updated parameter type to GallerySummary[]
 export const filterAndSortGalleries = (
-  galleries: Gallery[],
+  galleries: GallerySummary[],
   searchQuery: string,
   sortBy: 'newest' | 'oldest' | 'name',
   filterType: 'all' | 'public' | 'password_protected'

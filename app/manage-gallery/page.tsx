@@ -3,7 +3,9 @@ import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleriesContent from './GalleriesContent';
 import { Suspense } from 'react';
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import
+import { GallerySummary, MediaSummary } from '@/types/types';
+import { VISIBILITY_STATUSES, MediaType } from '@/db/schema';
 
 export const metadata = {
   title: 'My Galleries',
@@ -15,11 +17,10 @@ interface PageProps {
     page?: string;
     search?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
-    visibility?: 'public' | 'private' | 'password_protected' | 'unlisted';
+    visibility?: typeof VISIBILITY_STATUSES[number];
   }>;
 }
 
-// Loading fallback
 function GalleriesLoading() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -31,51 +32,52 @@ function GalleriesLoading() {
   );
 }
 
-// ✅ Strictly typed to match the exact canonical Gallery interface provided
-function transformGalleryToComponentFormat(gallery: Record<string, unknown>, userId: string): Gallery {
-  const coverMedia = gallery.coverMedia as Record<string, unknown> | null | undefined;
-  const randomMedia = gallery.randomMedia as Record<string, unknown> | null | undefined;
-  const dbUser = gallery.user as Record<string, unknown> | null | undefined;
-  const count = gallery._count as Record<string, unknown> | null | undefined;
+// ✅ Transformation Function: Maps EnrichedGallery (DB shape) to GallerySummary (UI shape)
+function mapToGallerySummary(gallery: any): GallerySummary {
+  // Map randomMedia if it exists in the DB response
+  const randomMedia: MediaSummary | null = gallery.randomMedia ? {
+    id: String(gallery.randomMedia.id),
+    type: gallery.randomMedia.type as MediaType,
+    thumbnailUrl: String(gallery.randomMedia.thumbnailUrl || ''),
+    fullResUrl: gallery.randomMedia.fullResUrl ? String(gallery.randomMedia.fullResUrl) : null,
+    caption: gallery.randomMedia.caption || null,
+    width: gallery.randomMedia.width ? Number(gallery.randomMedia.width) : null,
+    height: gallery.randomMedia.height ? Number(gallery.randomMedia.height) : null,
+    durationSeconds: gallery.randomMedia.durationSeconds ? Number(gallery.randomMedia.durationSeconds) : null,
+    originalFilename: gallery.randomMedia.originalFilename || null,
+    uploadedAt: gallery.randomMedia.uploadedAt instanceof Date 
+      ? gallery.randomMedia.uploadedAt 
+      : new Date(String(gallery.randomMedia.uploadedAt)),
+    exifData: gallery.randomMedia.exifData || undefined,
+    locationName: gallery.randomMedia.locationName || null,
+  } : null;
+
+  // Map owner/user info
+  const owner = gallery.user ? {
+    id: String(gallery.user.id),
+    username: String(gallery.user.username || ''),
+    avatarUrl: gallery.user.avatarUrl ? String(gallery.user.avatarUrl) : null,
+  } : undefined;
 
   return {
     id: String(gallery.id),
     title: String(gallery.title),
     slug: String(gallery.slug),
-    // ✅ Enforce string | null (no undefined)
-    description: (gallery.description as string | null) ?? null,
-    visibility: gallery.visibility as 'public' | 'unlisted' | 'password_protected' | 'private',
-    // ✅ Enforce Date object
+    description: gallery.description ? String(gallery.description) : null,
+    visibility: gallery.visibility,
+    layoutStyle: gallery.layoutStyle, // Ensure this field exists in DB response
+    coverMediaId: gallery.coverMediaId ? String(gallery.coverMediaId) : null,
     createdAt: gallery.createdAt instanceof Date 
       ? gallery.createdAt 
       : new Date(String(gallery.createdAt)),
-    userId: String(gallery.userId || userId),
-    // ✅ Enforce string | null (no undefined)
-    coverMediaId: (gallery.coverMediaId as string | null) ?? null,
-    // ✅ Match exact { username, avatarUrl } shape
-    user: dbUser ? {
-      username: String(dbUser.username || ''),
-      avatarUrl: (dbUser.avatarUrl as string | null) ?? null,
-    } : undefined,
-    // ✅ Match exact shape (removed invalid 'url' and 'title' properties)
-    coverMedia: coverMedia ? {
-      id: String(coverMedia.id),
-      thumbnailUrl: String(coverMedia.thumbnailUrl || ''),
-      type: coverMedia.type as 'image' | 'video' | 'gif',
-      fullResUrl: coverMedia.fullResUrl ? String(coverMedia.fullResUrl) : undefined,
-    } : undefined,
-    // ✅ Match exact shape (removed invalid 'url' and 'title' properties)
-    randomMedia: randomMedia ? {
-      id: String(randomMedia.id),
-      thumbnailUrl: String(randomMedia.thumbnailUrl || ''),
-      type: randomMedia.type as 'image' | 'video' | 'gif',
-      fullResUrl: randomMedia.fullResUrl ? String(randomMedia.fullResUrl) : undefined,
-    } : null,
-    // ✅ Include _count if it exists in the DB response
-    _count: count ? {
-      galleryMedia: Number(count.galleryMedia || 0),
-      comments: Number(count.comments || 0),
-    } : undefined,
+    updatedAt: gallery.updatedAt ? (
+      gallery.updatedAt instanceof Date 
+        ? gallery.updatedAt 
+        : new Date(String(gallery.updatedAt))
+    ) : undefined,
+    mediaCount: gallery._count?.galleryMedia ? Number(gallery._count.galleryMedia) : undefined,
+    randomMedia,
+    owner,
   };
 }
 
@@ -98,23 +100,19 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
     );
   }
 
-  const userId = session.user.id;
-
-  // ✅ Changed 'visibility' to 'filter' to match galleryHelpers.findAll signature
-  const { items: galleries, total } = await galleryHelpers.findAll({
+  // Fetch galleries - returns PaginatedResponse<EnrichedGallery>
+  const response = await galleryHelpers.findAll({
     search: params.search,
     sortBy: params.sortBy || 'newest',
     filter: params.visibility,
     limit,
-    offset
+    offset,
   });
 
-  // Transform galleries to match the expected Gallery type
-  const transformedGalleries = galleries.map((g: Record<string, unknown>) => 
-    transformGalleryToComponentFormat(g, userId)
-  );
+  // ✅ Transform each gallery to match GallerySummary interface
+  const transformedGalleries: GallerySummary[] = response.items.map(mapToGallerySummary);
 
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(response.total / limit);
   const hasNext = currentPage < totalPages;
   const hasPrevious = currentPage > 1;
 
@@ -122,7 +120,7 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
     <GalleriesContent 
       initialGalleries={transformedGalleries} 
       pagination={{ 
-        total, 
+        total: response.total, 
         currentPage, 
         totalPages, 
         hasNext, 

@@ -3,24 +3,17 @@
 import Link from 'next/link';
 import { memo } from 'react';
 import Swal from 'sweetalert2';
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from consolidated types
+import { GallerySummary } from '@/types/types';
 import { VisibilityBadge } from './VisibilityBadge';
 import { VISIBILITY_STATUSES, MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport'; 
 
 interface GalleryCardProps {
-  gallery: Gallery;
+  gallery: GallerySummary;
   onEdit: () => void;
   onDelete: () => void;
   priority?: boolean;
-}
-
-interface GalleryMediaItem {
-  media?: {
-    url?: string;
-    thumbnailUrl?: string;
-    type?: string;
-  };
 }
 
 export const GalleryCard = memo(function GalleryCard({ 
@@ -55,14 +48,9 @@ export const GalleryCard = memo(function GalleryCard({
     }
   };
 
+  // ✅ Updated Logic: Use randomMedia for list previews as per GallerySummary definition
   const getMediaInfo = () => {
-    const galleryWithMedia = gallery as Gallery & {
-      randomMedia?: { url?: string; thumbnailUrl?: string; type?: string };
-      coverMedia?: { url?: string; thumbnailUrl?: string; type?: string };
-      galleryMedia?: GalleryMediaItem[];
-    };
-
-    const media = galleryWithMedia.randomMedia || galleryWithMedia.coverMedia || (galleryWithMedia.galleryMedia?.[0]?.media ?? null);
+    const media = gallery.randomMedia;
     
     if (!media) return { sourceUrl: null, posterUrl: null, mediaType: null };
 
@@ -76,8 +64,8 @@ export const GalleryCard = memo(function GalleryCard({
   const { sourceUrl, posterUrl, mediaType } = getMediaInfo();
   const hasMedia = !!sourceUrl;
   
-  const galleryWithMedia = gallery as Gallery & { galleryMedia?: GalleryMediaItem[] };
-  const mediaCount = galleryWithMedia.galleryMedia?.length || 0;
+  // ✅ Updated Logic: Use optional mediaCount from GallerySummary
+  const mediaCount = gallery.mediaCount || 0;
   
   const createdDate = new Date(gallery.createdAt);
   const formattedDate = createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -96,7 +84,7 @@ export const GalleryCard = memo(function GalleryCard({
             {/* Image Container with Zoom Effect */}
             <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-in-out will-change-transform">
               <MediaViewport
-                mediaType={mediaType as typeof MEDIA_TYPES[number]}
+                mediaType={mediaType}
                 fullResUrl={sourceUrl!}
                 thumbnailUrl={posterUrl || sourceUrl!}
                 caption={gallery.title}
@@ -134,7 +122,7 @@ export const GalleryCard = memo(function GalleryCard({
 
         {/* Top Badges Overlay */}
         <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10 pointer-events-none">
-          <VisibilityBadge type={gallery.visibility as typeof VISIBILITY_STATUSES[number]} />
+          <VisibilityBadge type={gallery.visibility} />
           
           {mediaCount > 0 && (
             <div className="bg-white/90 dark:bg-zinc-900/80 backdrop-blur-md text-zinc-700 text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm border border-white/20 flex items-center gap-1.5 pointer-events-auto transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">

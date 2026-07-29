@@ -8,10 +8,11 @@ import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/Searc
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import { VISIBILITY_STATUSES } from '@/db/schema';
-import { Gallery } from '@/types/gallery'; // ✅ Import the canonical Gallery type
+import { GallerySummary } from '@/types/types';
 
 interface GalleriesContentProps {
-  initialGalleries: Gallery[];
+  // ✅ Updated to use GallerySummary
+  initialGalleries: GallerySummary[];
   pagination: {
     total: number;
     currentPage?: number;
@@ -54,7 +55,8 @@ export default function GalleriesContent({
   const searchParams = useSearchParams();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
+  // ✅ Updated state type to GallerySummary
+  const [editingGallery, setEditingGallery] = useState<GallerySummary | null>(null);
   const [searchInput, setSearchInput] = useState(filters.search);
 
   const updateSearchParams = useCallback((params: Record<string, string | undefined>) => {
@@ -101,7 +103,8 @@ export default function GalleriesContent({
     setIsModalOpen(true);
   }, []);
 
-  const handleOpenEditModal = useCallback((gallery: Gallery) => {
+  // ✅ Updated parameter type to GallerySummary
+  const handleOpenEditModal = useCallback((gallery: GallerySummary) => {
     setEditingGallery(gallery);
     setIsModalOpen(true);
   }, []);
@@ -112,7 +115,6 @@ export default function GalleriesContent({
     router.refresh();
   }, [router]);
 
-  // ✅ Prefix unused 'title' parameter with '_' to satisfy ESLint no-unused-vars
   const handleDelete = useCallback(async (id: string) => {
     try {
       const response = await fetch(`/api/galleries/${id}`, { method: 'DELETE' });
@@ -195,6 +197,7 @@ export default function GalleriesContent({
         </main>
 
         <FloatingActionButton onClick={handleOpenCreateModal} label="New Gallery" />
+        {/* Note: Ensure CreateGalleryModal accepts GallerySummary | null for initialData */}
         <CreateGalleryModal isOpen={isModalOpen} onClose={handleCloseModal} initialData={editingGallery} />
       </div>
 

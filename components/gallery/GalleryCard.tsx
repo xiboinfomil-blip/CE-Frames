@@ -9,12 +9,13 @@ import {
   FaEyeSlash,
   FaArrowRight
 } from 'react-icons/fa';
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from consolidated types
+import { GallerySummary } from '@/types/types';
 import { getUnlockedGalleries } from '@/lib/gallery-utils';
 
 interface GalleryCardProps {
-  gallery: Gallery;
-  onClick: (gallery: Gallery) => void;
+  gallery: GallerySummary;
+  onClick: (gallery: GallerySummary) => void;
 }
 
 const itemVariants = {
@@ -63,6 +64,9 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
 
   const badge = getBadgeStyle();
 
+  // ✅ Use randomMedia for preview since coverMedia object isn't in GallerySummary
+  const displayMedia = gallery.randomMedia;
+
   return (
     <motion.div
       variants={itemVariants}
@@ -76,9 +80,9 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
         
         {/* Image Section (Taller Aspect Ratio for Photography Focus) */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-          {gallery.coverMedia?.thumbnailUrl ? (
+          {displayMedia?.thumbnailUrl ? (
             <Image
-              src={gallery.coverMedia.thumbnailUrl}
+              src={displayMedia.thumbnailUrl}
               alt={gallery.title || 'Gallery cover'}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -90,7 +94,7 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
             </div>
           )}
           
-          {/* Dark Gradient Overlay (Always present slightly for text readability if needed, stronger on hover) */}
+          {/* Dark Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
           {/* Top Right: Status Badge */}
@@ -101,11 +105,12 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
             </span>
           </div>
 
-          {/* Bottom Left: Floating Media Count (Telemetry Style) */}
+          {/* Bottom Left: Floating Media Count */}
+          {/* ✅ Updated: Use gallery.mediaCount instead of _count.galleryMedia */}
           <div className="absolute bottom-4 left-4 z-20">
             <div className="flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white shadow-lg transform translate-y-2 opacity-90 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
               <FaImages className="w-3 h-3 text-blue-300" />
-              <span className="text-xs font-semibold">{gallery._count?.galleryMedia || 0}</span>
+              <span className="text-xs font-semibold">{gallery.mediaCount || 0}</span>
             </div>
           </div>
 
@@ -130,7 +135,7 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
           )}
 
           {/* Spacer to push content up if description is short */}
-          <div className="flex-grow" />
+          <div className="grow" />
         </div>
 
         {/* The "Start Light" Racing Stripe */}

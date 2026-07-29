@@ -1,21 +1,24 @@
 'use client';
 
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from consolidated types
+import { GallerySummary } from '@/types/types';
 import { GalleryCard } from './GalleryCard';
 import { EmptyState } from './EmptyState';
-import CardGrid from '@/components/displayGrid'; // Adjust path to where you saved CardGrid
+import CardGrid from '@/components/displayGrid'; 
 
 interface GalleryGridProps {
-  galleries: Gallery[];
-  onEdit: (gallery: Gallery) => void;
+  // ✅ Updated to use GallerySummary
+  galleries: GallerySummary[];
+  onEdit: (gallery: GallerySummary) => void;
   onDelete: (id: string) => Promise<void>;
 }
 
 export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGridProps) {
   
   // Custom empty state specific to Galleries
+  // Note: Ensure EmptyState handles the onCreateClick prop correctly
   const galleryEmptyState = (
-    <EmptyState onCreateClick={() => onEdit({} as Gallery)} />
+    <EmptyState onCreateClick={() => onEdit({} as GallerySummary)} />
   );
 
   return (

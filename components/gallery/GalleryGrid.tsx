@@ -1,19 +1,20 @@
 'use client';
 
-import { Gallery } from '@/types/gallery';
+// ✅ Updated Import: Using GallerySummary from consolidated types
+import { GallerySummary } from '@/types/types';
 import MediaViewport from '@/components/media-viewport';
 
 interface GalleryGridProps {
-  galleries: Gallery[];
-  onGalleryClick: (gallery: Gallery) => void;
+  galleries: GallerySummary[];
+  onGalleryClick: (gallery: GallerySummary) => void;
 }
 
 const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {galleries.map((gallery, index) => {
-        // Use coverMedia if available, otherwise use randomMedia
-        const displayMedia = gallery.coverMedia || gallery.randomMedia;
+        // ✅ Use randomMedia for list previews since coverMedia object isn't in GallerySummary
+        const displayMedia = gallery.randomMedia;
         
         if (!displayMedia) {
           // Fallback for galleries without any media
@@ -107,8 +108,9 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
               
               {/* Meta info */}
               <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
-                {gallery.user && (
-                  <span className="font-medium">@{gallery.user.username}</span>
+                {/* ✅ Updated: Use gallery.owner instead of gallery.user */}
+                {gallery.owner && (
+                  <span className="font-medium">@{gallery.owner.username}</span>
                 )}
                 <span>•</span>
                 <span>{new Date(gallery.createdAt).toLocaleDateString()}</span>

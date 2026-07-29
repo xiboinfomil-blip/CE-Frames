@@ -2,7 +2,7 @@ import {
   MediaType, 
   VisibilityStatus, 
   LayoutStyle 
-} from '@/db/schema'; // Adjust path if schema is in a different folder
+} from '@/db/schema';
 
 // ==========================================
 // 1. CORE ENTITY TYPES
@@ -19,7 +19,8 @@ export interface MediaSummary {
   durationSeconds?: number | null;
   originalFilename?: string | null;
   uploadedAt: Date;
-  exifData?: any;
+  // ✅ Fixed: Replaced 'any' with 'Record<string, unknown>' for type safety
+  exifData?: Record<string, unknown>;
   locationName?: string | null;
 }
 
@@ -32,6 +33,18 @@ export interface GallerySummary {
   layoutStyle: LayoutStyle;
   coverMediaId?: string | null;
   createdAt: Date;
+  updatedAt?: Date; 
+  
+  // Optional: Add if you show owner info in lists
+  owner?: {
+    id: string;
+    username: string;
+    avatarUrl?: string | null;
+  };
+
+  // Optional: Add if you show counts in lists
+  mediaCount?: number;
+  
   randomMedia?: MediaSummary | null; // Used for list previews
 }
 
@@ -71,7 +84,7 @@ export interface AdminStats {
 }
 
 // ==========================================
-// 3. HELPER RETURN TYPES (Specific to logic)
+// 3. HELPER RETURN TYPES
 // ==========================================
 
 export interface PasswordVerificationResult {
@@ -79,6 +92,7 @@ export interface PasswordVerificationResult {
   error?: string;
 }
 
+// This is now redundant if GalleryDetail.items is used, but kept if needed elsewhere
 export interface GalleryMediaWithPosition {
   position: number;
   media: MediaSummary;
