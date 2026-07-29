@@ -1,5 +1,4 @@
-// config/navbar.js
-import { FaImages, FaPhotoVideo } from 'react-icons/fa';
+import { FaPhotoVideo } from 'react-icons/fa';
 
 export const NAV_ITEMS = [
   {
@@ -9,7 +8,7 @@ export const NAV_ITEMS = [
     desktop: true, 
     mobile: true, 
     mobileGroup: 'main', 
-    auth: 'all', 
+    auth: 'any', // ✅ Changed from 'all' to 'any' to match TypeScript interface
     type: 'link',
   },
   {
@@ -19,7 +18,7 @@ export const NAV_ITEMS = [
     desktop: true, 
     mobile: true, 
     mobileGroup: 'main', 
-    auth: 'all', 
+    auth: 'any', // ✅ Changed from 'all' to 'any'
     type: 'link',
   },
   {
@@ -29,27 +28,8 @@ export const NAV_ITEMS = [
     desktop: true, 
     mobile: true, 
     mobileGroup: 'extra', 
-    auth: 'all', 
-    type: 'link', // Changed from 'gallery' to 'link'
-    // Removed all dynamic properties (dataSource, dataKey, queryParam)
-    // Removed desktopDropdown and mobileCategoryList
-  },
-  {
-    id: 'order-images',
-    label: 'Order Images',
-    desktop: false, 
-    mobile: true, 
-    mobileGroup: 'extra', 
-    auth: 'authenticated', 
-    type: 'category-list',
-    dataSource: 'imageCategories',
-    dataKey: 'imagesFor',
-    queryParam: 'category',
-    mobileCategoryList: {
-      basePath: '/orderimage', 
-      theme: 'orange',
-      header: { show: false }
-    }
+    auth: 'any', // ✅ Changed from 'all' to 'any'
+    type: 'link', 
   },
   {
     id: 'manage-gallery',
@@ -60,7 +40,7 @@ export const NAV_ITEMS = [
     mobileGroup: 'extra', 
     auth: 'authenticated', 
     type: 'link',
-    activePaths: ['/manage-gallery'], // Matches /manage-gallery and /manage-gallery/*
+    activePaths: ['/manage-gallery'], 
   },
   {
     id: 'media-library',

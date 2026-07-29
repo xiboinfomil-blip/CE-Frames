@@ -41,8 +41,6 @@ interface MobileMenuProps {
 }
 
 // --- Animation Variants ---
-// ✅ Use strict tuple type [number, number, number, number] for cubic-bezier 
-// to satisfy Framer Motion's Easing type without using 'any'
 const cubicBezier = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const menuVariants: Variants = {
@@ -155,86 +153,83 @@ export default function MobileMenu({
             </div>
           )}
 
-          {authenticated ? (
-            <motion.div variants={itemVariants} className="space-y-4">
-              {extraItems.map((item) => {
-                if ((item.type === 'gallery' || item.type === 'category-list') && item.mobileCategoryList) {
-                  const config = item.mobileCategoryList;
+          {/* ✅ FIXED: Unified rendering for extraItems. Auth filtering is already handled by `mobileItems` above. */}
+          <motion.div variants={itemVariants} className="space-y-4">
+            {extraItems.map((item) => {
+              // 1. Render category list if applicable
+              if ((item.type === 'gallery' || item.type === 'category-list') && item.mobileCategoryList) {
+                const config = item.mobileCategoryList;
 
-                  return (
-                    <div key={item.id} className="space-y-3">
-                      {config.header.show && (
-                        <div className="flex items-center gap-3 px-4">
-                          <span className="text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                            {config.header.title || 'Categories'}
-                          </span>
-                          <div className="flex-1 h-px bg-stone-200 dark:bg-stone-800" aria-hidden="true" />
-                        </div>
-                      )}
-                      
-                      <div className="max-h-60 overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-stone-200 dark:scrollbar-thumb-stone-800 scrollbar-track-transparent">
-                        {loading ? (
-                          <div className="px-4 py-3 text-sm text-stone-400 animate-pulse">Loading categories...</div>
-                        ) : error ? (
-                          <div className="px-4 py-3 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/50">
-                            {error}
-                          </div>
-                        ) : visibleCategories.length > 0 ? (
-                          visibleCategories.map((categoryObj) => (
-                            <CategoryLink 
-                              key={`${item.id}-${categoryObj.name}`} 
-                              category={categoryObj} 
-                              config={config} 
-                              onClick={closeMenu} 
-                            />
-                          ))
-                        ) : (
-                          <div className="px-4 py-3 text-sm text-stone-400">No categories available</div>
-                        )}
+                return (
+                  <div key={item.id} className="space-y-3">
+                    {config.header.show && (
+                      <div className="flex items-center gap-3 px-4">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                          {config.header.title || 'Categories'}
+                        </span>
+                        <div className="flex-1 h-px bg-stone-200 dark:bg-stone-800" aria-hidden="true" />
                       </div>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-            </motion.div>
-          ) : (
-            <motion.div variants={itemVariants} className="space-y-1">
-              {extraItems.map((item) => {
-                if (item.type === 'link' || (item.type === 'gallery' && item.href)) {
-                  const isActive = pathname === item.href || 
-                    (item.activePaths && item.activePaths.some((path: string) => 
-                      pathname === path || pathname.startsWith(path + '/')
-                    ));
-                  
-                  return (
-                    <Link 
-                      key={item.id}
-                      href={item.href || '#'} 
-                      className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400
-                        ${isActive 
-                          ? 'bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100' 
-                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100'
-                        }`}
-                      onClick={closeMenu}
-                      role="menuitem"
-                      aria-current={isActive ? 'page' : undefined}
-                    >
-                      {isActive && (
-                        <motion.div 
-                          layoutId="mobileActiveIndicator" 
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-stone-900 dark:bg-stone-100 rounded-r-full" 
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }} 
-                        />
+                    )}
+                    
+                    <div className="max-h-60 overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-stone-200 dark:scrollbar-thumb-stone-800 scrollbar-track-transparent">
+                      {loading ? (
+                        <div className="px-4 py-3 text-sm text-stone-400 animate-pulse">Loading categories...</div>
+                      ) : error ? (
+                        <div className="px-4 py-3 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/50">
+                          {error}
+                        </div>
+                      ) : visibleCategories.length > 0 ? (
+                        visibleCategories.map((categoryObj) => (
+                          <CategoryLink 
+                            key={`${item.id}-${categoryObj.name}`} 
+                            category={categoryObj} 
+                            config={config} 
+                            onClick={closeMenu} 
+                          />
+                        ))
+                      ) : (
+                        <div className="px-4 py-3 text-sm text-stone-400">No categories available</div>
                       )}
-                      <span className="relative z-10">{item.label}</span>
-                    </Link>
-                  );
-                }
-                return null;
-              })}
-            </motion.div>
-          )}
+                    </div>
+                  </div>
+                );
+              }
+              
+              // 2. Render standard links (Now works for BOTH authenticated and guest users)
+              if (item.type === 'link' || (item.type === 'gallery' && item.href)) {
+                const isActive = pathname === item.href || 
+                  (item.activePaths && item.activePaths.some((path: string) => 
+                    pathname === path || pathname.startsWith(path + '/')
+                  ));
+                
+                return (
+                  <Link 
+                    key={item.id}
+                    href={item.href || '#'} 
+                    className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400
+                      ${isActive 
+                        ? 'bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100' 
+                        : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100'
+                      }`}
+                    onClick={closeMenu}
+                    role="menuitem"
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {isActive && (
+                      <motion.div 
+                        layoutId="mobileActiveIndicator" 
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-stone-900 dark:bg-stone-100 rounded-r-full" 
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }} 
+                      />
+                    )}
+                    <span className="relative z-10">{item.label}</span>
+                  </Link>
+                );
+              }
+              
+              return null;
+            })}
+          </motion.div>
         </div>
 
         <div className="relative border-t border-stone-200/60 dark:border-stone-800/60 bg-stone-50/50 dark:bg-stone-900/50 p-6">
