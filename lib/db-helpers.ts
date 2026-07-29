@@ -1,5 +1,5 @@
 import { db } from './db';
-import { eq, and, desc, asc, or, ilike, count, notInArray, inArray, SQL } from 'drizzle-orm';
+import { eq, and, not, desc, asc, or, ilike, count, notInArray, inArray, SQL } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import {
   users,
