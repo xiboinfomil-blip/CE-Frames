@@ -133,6 +133,33 @@ export const galleryHelpers = {
   create: async (data: typeof galleries.$inferInsert) => {
     return await db.insert(galleries).values(data).returning();
   },
+  findByNotPrivateId: async (id: string): Promise<GalleryWithItems | undefined> => {
+    const gallery = await db.query.galleries.findFirst({
+      where: and(
+        eq(galleries.id, id),
+        not(eq(galleries.visibility, 'private')) // ✅ Exclude private galleries
+      ),
+      with: { 
+        coverMedia: true,
+        galleryMedia: { 
+          with: { 
+            media: true
+          }, 
+          orderBy: [asc(galleryMedia.position)] 
+        } 
+      }
+    });
+
+    if (!gallery) return undefined;
+
+    return {
+      ...gallery,
+      items: gallery.galleryMedia.map((gm) => ({
+        position: gm.position,
+        media: gm.media
+      }))
+    };
+  },
   
   findById: async (id: string): Promise<GalleryWithItems | undefined> => {
     const gallery = await db.query.galleries.findFirst({

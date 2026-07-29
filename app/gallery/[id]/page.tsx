@@ -11,7 +11,7 @@ export default async function GalleryPage({ params }: PageProps) {
   const { id } = await params;
   
   // 1. Fetch Gallery Data
-  const gallery = await galleryHelpers.findById(id);
+  const gallery = await galleryHelpers.findByNotPrivateId(id);
 
   if (!gallery) {
     notFound();
