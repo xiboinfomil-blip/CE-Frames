@@ -68,7 +68,7 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
       className="group relative flex flex-col h-full w-full overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out hover:-translate-y-1"
     >
       {/* Media Viewport */}
-      <div className="relative w-full aspect-[4/3] bg-zinc-50 dark:bg-zinc-950 overflow-hidden">
+      <div className="relative w-full aspect-4/3 bg-zinc-50 dark:bg-zinc-950 overflow-hidden">
         {displayUrl ? (
           <div className="absolute inset-0 w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
             <MediaViewport
@@ -125,7 +125,7 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
       </div>
 
       {/* Content Body */}
-      <div className="flex flex-col p-4 bg-white dark:bg-zinc-900 flex-shrink-0 grow">
+      <div className="flex flex-col p-4 bg-white dark:bg-zinc-900 shrink-0 grow">
         <h3 className="truncate text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors mb-3 tracking-tight" title={media.title || 'Untitled Asset'}>
           {media.title || 'Untitled Asset'}
         </h3>

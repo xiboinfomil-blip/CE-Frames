@@ -38,7 +38,8 @@ export async function GET() {
   try {
     const usage = await cloudinary.api.usage();
     
-    const isFreePlan = usage.plan === 'free';
+    // FIX: Make the check case-insensitive since the API returns "Free" with a capital 'F'
+    const isFreePlan = usage.plan?.toLowerCase() === 'free';
     
     // Cloudinary Free Plan Limits (in bytes)
     // 25 GB Storage and 25 GB Bandwidth are the standard free tier limits
@@ -59,7 +60,7 @@ export async function GET() {
     const objectsUsed = usage.resources || usage.objects?.usage || 0;
     const objectsLimit = usage.objects?.limit || 0;
 
-    // Free plan typically has 2500 credits/month
+    // Free plan credits limit (fallback to 2500 or 25 depending on your current Cloudinary free tier structure)
     const creditsLimit = usage.credits?.limit || (isFreePlan ? 2500 : 0);
     const creditsUsed = usage.credits?.usage || 0;
 

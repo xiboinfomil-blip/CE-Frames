@@ -5,7 +5,6 @@ import { memo } from 'react';
 import Swal from 'sweetalert2';
 import { GallerySummary } from '@/types/types';
 import { VisibilityBadge } from './VisibilityBadge';
-import { VISIBILITY_STATUSES, MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport'; 
 
 interface GalleryCardProps {
@@ -73,7 +72,7 @@ export const GalleryCard = memo(function GalleryCard({
       {/* --- Media Area --- */}
       <Link 
         href={`/manage-gallery/${gallery.id}`} 
-        className="block relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-950 overflow-hidden shrink-0 focus:outline-none"
+        className="block relative aspect-4/3 bg-zinc-50 dark:bg-zinc-950 overflow-hidden shrink-0 focus:outline-none"
         aria-label={`Manage gallery: ${gallery.title}`}
       >
         {hasMedia && mediaType ? (
@@ -92,7 +91,7 @@ export const GalleryCard = memo(function GalleryCard({
             </div>
             
             {/* Gradient Overlay for better text contrast on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
             {/* Play Button Overlay for Video */}
             {mediaType === 'video' && (

@@ -9,7 +9,7 @@ import Pagination from '@/components/Pagination';
 import CardGrid from '@/components/displayGrid'; 
 import MediaViewport from '@/components/media-viewport';
 import EmptyState from '@/components/gallery/EmptyState';
-import { Lock, User, Calendar } from 'lucide-react';
+import { Lock, Calendar } from 'lucide-react';
 import { 
   getUnlockedGalleries, 
   saveUnlockedGallery
@@ -233,7 +233,7 @@ export default function GalleryClient({
              </div>
           )}
 
-          <div className="min-h-[400px]">
+          <div className="min-h-100">
             <CardGrid
               items={displayedGalleries}
               getKey={(item) => item.id}
@@ -247,7 +247,7 @@ export default function GalleryClient({
                   return (
                     <button
                       onClick={() => handleGalleryClick(gallery)}
-                      className="group relative w-full aspect-[4/3] bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-900 dark:hover:border-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 flex flex-col items-center justify-center text-center p-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
+                      className="group relative w-full aspect-4/3 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-900 dark:hover:border-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 flex flex-col items-center justify-center text-center p-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
                     >
                       <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -267,7 +267,7 @@ export default function GalleryClient({
                     className="group flex flex-col h-full cursor-pointer focus:outline-none"
                   >
                     {/* Image Container */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out group-hover:-translate-y-1">
+                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out group-hover:-translate-y-1">
                       <MediaViewport
                         mediaType={displayMedia.type}
                         fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
@@ -279,7 +279,7 @@ export default function GalleryClient({
                       />
                       
                       {/* Hover Overlay Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       
                       {/* Locked Badge */}
                       {gallery.visibility === 'password_protected' && (

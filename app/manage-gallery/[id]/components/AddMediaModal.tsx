@@ -294,7 +294,7 @@ export default function AddMediaModal({
         </div>
 
         {/* Content Area */}
-        <div className="relative min-h-[400px] bg-white dark:bg-zinc-950">
+        <div className="relative min-h-100 bg-white dark:bg-zinc-950">
           
           {availableMedia.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center px-4">

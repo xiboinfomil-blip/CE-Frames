@@ -135,7 +135,7 @@ export default function PhotoGrid({ photos, layoutStyle, onPhotoClick }: PhotoGr
                 </div>
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
                 
                 {/* Caption & Metadata Overlay */}
                 {(caption || locationName) && (

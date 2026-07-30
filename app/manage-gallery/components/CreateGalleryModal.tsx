@@ -460,7 +460,7 @@ export default function CreateGalleryModal({
             />
           </div>
 
-          <div className="relative min-h-[400px] bg-zinc-50/50 dark:bg-zinc-900/20 p-6">
+          <div className="relative min-h-100 bg-zinc-50/50 dark:bg-zinc-900/20 p-6">
             {isFetchingMedia ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <div className="w-8 h-8 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin" />

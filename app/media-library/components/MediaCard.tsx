@@ -95,7 +95,7 @@ const MediaCard = memo(function MediaCard({
       
       {/* --- Media Viewport Wrapper --- */}
       <div 
-        className="relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-950 overflow-hidden cursor-zoom-in shrink-0"
+        className="relative aspect-4/3 bg-zinc-50 dark:bg-zinc-950 overflow-hidden cursor-zoom-in shrink-0"
         onClick={onOpenLightbox}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onOpenLightbox(); }}
         role="button"
@@ -114,7 +114,7 @@ const MediaCard = memo(function MediaCard({
         />
 
         {/* Gradient Overlay for better contrast on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {/* Top Badges (Glassmorphism) */}
         <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">

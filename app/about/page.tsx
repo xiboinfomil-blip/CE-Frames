@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ArrowRight, Aperture, Flag, Heart, Star, Camera } from 'lucide-react';
+import { ArrowRight, Aperture, Flag, Heart, Camera } from 'lucide-react';
 
 // --- Utility Component for Scroll Animations ---
 const FadeIn = ({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) => {
@@ -50,7 +50,7 @@ export default function AboutPage() {
                 The Studio
               </span>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] text-zinc-900 dark:text-zinc-100">
-                WE DON'T JUST <br />
+                WE DON&apos;T JUST <br />
                 <span className="text-zinc-300 dark:text-zinc-700">TAKE PHOTOS.</span> <br />
                 WE PRESERVE <br />
                 ADRENALINE.
@@ -66,7 +66,7 @@ export default function AboutPage() {
 
           <div className="lg:col-span-5 relative">
             <FadeIn delay={400}>
-              <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 group">
+              <div className="relative aspect-4/5 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 group">
                 <Image 
                   src="https://images.unsplash.com/photo-1552168324-d612d77725e3?q=80&w=800&auto=format&fit=crop" 
                   alt="Photographer in action" 
@@ -91,7 +91,7 @@ export default function AboutPage() {
             <div className="prose prose-lg prose-zinc max-w-none dark:prose-invert">
               <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 tracking-tight">The Unlikely Pair</h2>
               <p className="text-zinc-600 dark:text-zinc-400 leading-loose mb-6">
-                People often ask us how we switch between the deafening roar of a GT3 race car and the hushed silence of a wedding ceremony. To us, they aren't different jobs. They are the same pursuit.
+                People often ask us how we switch between the deafening roar of a GT3 race car and the hushed silence of a wedding ceremony. To us, they aren&apos;t different jobs. They are the same pursuit.
               </p>
               <p className="text-zinc-600 dark:text-zinc-400 leading-loose mb-6">
                 In motorsport, you have one chance. If you miss the apex, the shot is gone forever. In weddings, the first kiss happens once. The tear falls once. The champagne pops once. 
@@ -131,7 +131,7 @@ export default function AboutPage() {
                 <Flag className="w-8 h-8 text-rose-600 dark:text-rose-500 mb-4" />
                 <h3 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">MOTORSPORT</h3>
                 <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  We speak the language of the track. From historic rallies to modern GT championships, we capture the mechanical violence and the driver's focus. Our images are used by teams for sponsorship decks and by drivers for their portfolios.
+                  We speak the language of the track. From historic rallies to modern GT championships, we capture the mechanical violence and the driver&apos;s focus. Our images are used by teams for sponsorship decks and by drivers for their portfolios.
                 </p>
                 <ul className="space-y-3 mt-6 text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
                   <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div> Trackside Action</li>
@@ -149,7 +149,7 @@ export default function AboutPage() {
                 <Heart className="w-8 h-8 text-rose-600 dark:text-rose-500 mb-4" />
                 <h3 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">WEDDINGS</h3>
                 <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Your day moves faster than a race car. We keep up. We don't interrupt your moments with awkward posing instructions. We move through the shadows, capturing the raw, unfiltered joy of your celebration with a cinematic, editorial eye.
+                  Your day moves faster than a race car. We keep up. We don&apos;t interrupt your moments with awkward posing instructions. We move through the shadows, capturing the raw, unfiltered joy of your celebration with a cinematic, editorial eye.
                 </p>
                 <ul className="space-y-3 mt-6 text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
                   <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div> Candid Storytelling</li>
@@ -160,7 +160,7 @@ export default function AboutPage() {
             </div>
             <div className="w-full md:w-1/2">
               <FadeIn delay={100}>
-                <div className="relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 overflow-hidden group shadow-lg">
+                <div className="relative aspect-3/4 bg-zinc-100 dark:bg-zinc-900 overflow-hidden group shadow-lg">
                    <Image 
                     src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop" 
                     alt="Wedding couple" 
@@ -213,7 +213,7 @@ export default function AboutPage() {
               READY TO SHOOT?
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 text-lg mb-10 max-w-xl mx-auto font-medium">
-              Whether it's the Nürburgring or a vineyard in Tuscany, we're ready to travel.
+              Whether it&apos;s the Nürburgring or a vineyard in Tuscany, we&apos;re ready to travel.
             </p>
             <a 
               href="/contact" 

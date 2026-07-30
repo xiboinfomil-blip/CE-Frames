@@ -42,7 +42,7 @@ export default function Home() {
           />
           {/* Grain Overlay for Texture */}
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/30 via-transparent to-zinc-950/90" />
+          <div className="absolute inset-0 bg-linear-to-b from-zinc-950/30 via-transparent to-zinc-950/90" />
         </div>
 
         <div className="relative z-10 container mx-auto px-6 md:px-12 text-center text-white">
@@ -90,7 +90,7 @@ export default function Home() {
         {/* Scroll Indicator */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce">
           <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-white/50 to-transparent"></div>
+          <div className="w-px h-12 bg-linear-to-b from-white/50 to-transparent"></div>
         </div>
       </section>
 
@@ -105,7 +105,7 @@ export default function Home() {
                   <span className="text-zinc-400 dark:text-zinc-600">ONE VISION.</span>
                 </h2>
                 <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Whether it's the split-second precision of a race car hitting the apex or the tearful joy of a first look, we specialize in <strong className="text-zinc-900 dark:text-zinc-100">high-stakes photography</strong>. We don't just document events; we preserve the adrenaline and the emotion in equal measure.
+                  Whether it&apos;s the split-second precision of a race car hitting the apex or the tearful joy of a first look, we specialize in <strong className="text-zinc-900 dark:text-zinc-100">high-stakes photography</strong>. We don&apos;t just document events; we preserve the adrenaline and the emotion in equal measure.
                 </p>
                 <Link href="/about" className="inline-flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold uppercase tracking-[0.15em] text-xs hover:gap-4 transition-all duration-300">
                   Read Our Story <ArrowRight className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function Home() {
             </FadeIn>
 
             <FadeIn delay={200}>
-              <div className="relative aspect-square md:aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 group">
+              <div className="relative aspect-square md:aspect-4/5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 group">
                 <Image 
                   src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1000&auto=format&fit=crop" 
                   alt="Photographer holding camera" 
@@ -147,9 +147,9 @@ export default function Home() {
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-[600px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-150">
             {/* Large Feature Item */}
-            <FadeIn delay={100} className="md:col-span-2 h-full min-h-[400px]">
+            <FadeIn delay={100} className="md:col-span-2 h-full min-h-100">
               <Link href="/gallery/motorsport" className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-900 shadow-lg">
                 <Image 
                   src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1200&auto=format&fit=crop" 
@@ -157,7 +157,7 @@ export default function Home() {
                   fill
                   className="object-cover opacity-90 group-hover:opacity-70 group-hover:scale-105 transition-all duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent" />
                 
                 {/* Technical Overlay */}
                 <div className="absolute top-6 right-6 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border border-white/10 hidden group-hover:block transition-all duration-300">
@@ -173,7 +173,7 @@ export default function Home() {
             </FadeIn>
 
             {/* Secondary Item */}
-            <FadeIn delay={200} className="h-full min-h-[400px]">
+            <FadeIn delay={200} className="h-full min-h-100">
               <Link href="/gallery/weddings" className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                 <Image 
                   src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop" 
@@ -223,7 +223,7 @@ export default function Home() {
                 <Heart className="w-10 h-10 text-zinc-900 dark:text-zinc-100 mb-6 group-hover:scale-110 transition-transform duration-300" />
                 <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">Wedding Storytelling</h3>
                 <p className="text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed">
-                  We don't just take pictures; we tell your story. Candid, unposed, and deeply emotional coverage of your most important day.
+                  We don&apos;t just take pictures; we tell your story. Candid, unposed, and deeply emotional coverage of your most important day.
                 </p>
                 <ul className="space-y-3 text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
                   <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div> Full Day Coverage</li>
@@ -248,7 +248,7 @@ export default function Home() {
               READY TO CREATE?
             </h2>
             <p className="text-zinc-400 text-lg mb-12 max-w-xl mx-auto font-medium">
-              Whether you're chasing podiums or saying "I do", let's make something timeless together.
+              Whether you&apos;re chasing podiums or saying &quot;I do&quot;, let&apos;s make something timeless together.
             </p>
             <Link 
               href="/contact" 

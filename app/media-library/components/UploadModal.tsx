@@ -9,6 +9,7 @@ import { MEDIA_TYPES } from '@/db/schema';
 import BaseModal from '@/components/BaseModal'; 
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
+import StorageIndicator from './StorageIndicator';
 
 interface MediaItem {
   file: File;
@@ -34,6 +35,16 @@ interface StorageUsage {
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+// Type for Cloudinary Upload Response
+interface CloudinaryUploadResponse {
+  public_id: string;
+  secure_url: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
 }
 
 const getValidMimeTypes = () => {
@@ -120,9 +131,30 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const [storageUsage, setStorageUsage] = useState<StorageUsage | null>(null);
   const [rejectedFiles, setRejectedFiles] = useState<string[]>([]);
 
+  // Helper to reset state cleanly
+  const resetModalState = useCallback(() => {
+    setMediaItems(prev => {
+      prev.forEach(item => {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      });
+      return [];
+    });
+    setCurrentIndex(0);
+    setError(null);
+    setUploadProgress(0);
+    setCurrentUploadIndex(0);
+    setRejectedFiles([]);
+    setIsDragging(false);
+  }, []);
+
+  // Cleanup object URLs on unmount only
   useEffect(() => {
-    if (isOpen) fetchStorageUsage();
-  }, [isOpen]);
+    return () => {
+      mediaItems.forEach(item => {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, [mediaItems]);
 
   const fetchStorageUsage = useCallback(async () => {
     setIsCheckingStorage(true);
@@ -139,29 +171,24 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     }
   }, []);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setMediaItems(prev => {
-        prev.forEach(item => {
-          if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-        });
-        return [];
-      });
-      setCurrentIndex(0);
-      setError(null);
-      setUploadProgress(0);
-      setCurrentUploadIndex(0);
-      setRejectedFiles([]);
-    }
-  }, [isOpen]);
+  // Fetch storage when modal opens - handled via conditional call in render or effect with safe pattern
+  // Since we removed the effect, we'll call this in a safe way below or keep a minimal effect 
+  // that only triggers side effects that don't cause cascading renders of the parent.
+  // However, for simple data fetching on open, an effect is standard IF it doesn't set state 
+  // that triggers a re-render of the parent before the child is ready. 
+  // To strictly satisfy the linter which dislikes setState in effect for "initialization",
+  // we can use a ref to track if we've fetched for this session.
+  
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    return () => {
-      mediaItems.forEach(item => {
-        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-      });
-    };
-  }, [mediaItems]);
+    if (isOpen && !hasFetchedRef.current) {
+      fetchStorageUsage();
+      hasFetchedRef.current = true;
+    } else if (!isOpen) {
+      hasFetchedRef.current = false;
+    }
+  }, [isOpen, fetchStorageUsage]);
 
   const formatBytes = useCallback((bytes: number, decimals = 2) => {
     if (bytes === 0) return '0 Bytes';
@@ -330,7 +357,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         const xhr = new XMLHttpRequest();
         const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
 
-        const cloudinaryPromise = new Promise<any>((resolve, reject) => {
+        const cloudinaryPromise = new Promise<CloudinaryUploadResponse>((resolve, reject) => {
           xhr.open('POST', uploadUrl);
           
           xhr.upload.onprogress = (event) => {
@@ -344,13 +371,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               try { resolve(JSON.parse(xhr.responseText)); } 
-              catch (e) { reject(new Error('Invalid JSON response')); }
+              catch { reject(new Error('Invalid JSON response')); }
             } else {
               let errorMsg = 'Upload failed';
               try {
                 const errData = JSON.parse(xhr.responseText);
                 errorMsg = errData.error?.message || errorMsg;
-              } catch (e) {}
+              } catch {
+                // Ignore parsing error if we already have a generic message
+              }
               reject(new Error(errorMsg));
             }
           };
@@ -403,13 +432,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       router.refresh();
       onClose();
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
       console.error('Upload Error:', err);
-      setError(err.message || 'Upload failed');
+      setError(errorMessage);
       await Swal.fire({
         icon: 'error',
         title: 'Upload Failed',
-        text: err.message || 'An unexpected error occurred.',
+        text: errorMessage,
         confirmButtonColor: '#dc2626',
         background: '#ffffff',
         color: '#18181b'
@@ -420,8 +450,12 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   }, [mediaItems, storageUsage, getCloudinarySignature, router, onClose, formatBytes]);
 
   const currentItem = mediaItems[currentIndex];
-  const storagePercent = storageUsage ? parseFloat(storageUsage.storage.percentageUsed) : 0;
-  const isStorageFull = storageUsage && storageUsage.storage.rawLimit > 0 && storagePercent >= 95;
+
+  // Wrap onClose to ensure cleanup happens before the modal visually closes
+  const handleClose = useCallback(() => {
+    resetModalState();
+    onClose();
+  }, [resetModalState, onClose]);
 
   const footerActions = (
     <>
@@ -432,7 +466,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         <CustomButton 
           variant="ghost"
           size="lg"
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isLoading}
           className="flex-1 sm:flex-none"
         >
@@ -460,7 +494,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   return (
     <BaseModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="Ingest Media"
       subtitle="Add photos and videos to your library."
       maxWidth="5xl"
@@ -469,41 +503,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     >
       <div className="space-y-6">
         
-        {/* Storage Indicator - HUD Style */}
-        <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 relative overflow-hidden transition-colors duration-300">
-          <div className="relative flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isStorageFull ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
-                Storage Capacity
-              </h3>
-            </div>
-            <span className="text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300">
-              {storageUsage ? `${storageUsage.storage.percentageUsed}% USED` : 'CALCULATING...'}
-            </span>
-          </div>
-          
-          <div 
-            className="relative h-1.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden transition-colors duration-300"
-            role="progressbar"
-            aria-valuenow={storagePercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label="Storage capacity used"
-          >
-            <div 
-              className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${
-                isStorageFull ? 'bg-rose-500' : 'bg-zinc-900 dark:bg-zinc-100'
-              }`}
-              style={{ width: `${Math.min(100, storagePercent)}%` }}
-            />
-          </div>
-          
-          <div className="flex justify-between mt-2.5 text-[10px] font-mono text-zinc-400 dark:text-zinc-500">
-            <span>{storageUsage ? storageUsage.storage.used : '---'}</span>
-            <span>{storageUsage ? storageUsage.storage.limit : '---'}</span>
-          </div>
-        </div>
+        {/* Storage Indicator Component */}
+        <StorageIndicator 
+          storage={storageUsage?.storage || null} 
+          isLoading={isCheckingStorage} 
+        />
 
         {/* Alerts */}
         {rejectedFiles.length > 0 && (
