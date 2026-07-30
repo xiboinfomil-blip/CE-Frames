@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-// import { signIn } from 'next-auth/react'; // Example auth import
+import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
+import { CustomTextfield } from '@/components/ui/CustomTextfield';
+import { CustomButton } from '@/components/ui/CustomButton';
 
 export default function LoginForm() {
-  // ✅ useSearchParams is now safely isolated inside this Suspense boundary
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   
@@ -17,7 +18,6 @@ export default function LoginForm() {
     setIsLoading(true);
     setError(null);
     
-    // Simulate API call / NextAuth signIn
     try {
       // await signIn('credentials', { callbackUrl });
       await new Promise(resolve => setTimeout(resolve, 1500)); 
@@ -29,49 +29,73 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-stone-900 tracking-tight">Welcome back</h1>
-        <p className="text-stone-500 mt-2">Please enter your details to sign in.</p>
+    <div className="w-full max-w-md mx-auto px-6 sm:px-0">
+      {/* Editorial Header */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-3">
+          Welcome back
+        </h1>
+        <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm tracking-wide">
+          Enter your studio credentials to continue.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Refined Error Message */}
         {error && (
-          <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
-            {error}
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" x2="12" y1="8" y2="12"/>
+              <line x1="12" x2="12.01" y1="16" y2="16"/>
+            </svg>
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
-        <div className="space-y-1.5">
-          <label htmlFor="email" className="text-sm font-medium text-stone-700">Email</label>
-          <input 
-            id="email" 
-            type="email" 
-            required
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+        <div className="space-y-5">
+          <CustomTextfield
+            label="Email Address"
+            name="email"
+            type="email"
             placeholder="name@company.com"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label htmlFor="password" className="text-sm font-medium text-stone-700">Password</label>
-          <input 
-            id="password" 
-            type="password" 
+            leftIcon={<FiUser size={18} />}
+            autoComplete="email"
             required
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+          />
+
+          <CustomTextfield
+            label="Password"
+            name="password"
+            type="password"
             placeholder="••••••••"
+            leftIcon={<FiLock size={18} />}
+            autoComplete="current-password"
+            required
           />
         </div>
 
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          className="w-full py-3.5 px-4 bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-stone-900 focus:ring-offset-2"
-        >
-          {isLoading ? 'Signing in...' : 'Sign in'}
-        </button>
+        <div className="pt-4">
+          <CustomButton
+            type="submit"
+            variant="primary"
+            size="lg"
+            disabled={isLoading}
+            isLoading={isLoading}
+            className="w-full"
+            rightIcon={!isLoading && <FiArrowRight size={18} />}
+          >
+            {isLoading ? 'Authenticating...' : 'Sign in'}
+          </CustomButton>
+        </div>
       </form>
+
+      {/* Subtle Footer Metadata */}
+      <div className="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800/50">
+        <p className="text-[10px] text-zinc-400 dark:text-zinc-600 font-bold uppercase tracking-[0.15em] text-center">
+          Secure Studio Access • v2.4.0
+        </p>
+      </div>
     </div>
   );
 }

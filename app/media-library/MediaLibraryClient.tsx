@@ -8,7 +8,7 @@ import UploadModal from '@/app/media-library/components/UploadModal';
 import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter'; 
 import Pagination from '@/components/Pagination'; 
 import FloatingActionButton from '@/components/FloatingActionButton'; 
-import GalleryLightbox, { MediaItem } from '@/components/GalleryLightbox'; // ✅ Import MediaItem
+import GalleryLightbox, { MediaItem } from '@/components/GalleryLightbox';
 import CardGrid from '@/components/displayGrid';
 import { MEDIA_TYPES } from '@/db/schema';
 
@@ -177,17 +177,17 @@ export default function MediaLibraryClient({
   const currentSort = filters.sortBy || 'newest';
 
   const mediaEmptyState = (
-    <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-zinc-200 shadow-sm">
-      <div className="w-20 h-20 bg-zinc-50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100">
-        <svg className="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm">
+      <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100 dark:border-zinc-800">
+        <svg className="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </div>
-      <h3 className="text-xl font-semibold text-zinc-900">No assets found</h3>
-      <p className="text-zinc-500 text-sm mt-2 max-w-xs">No items match your current filters. Try adjusting your search or upload new media.</p>
+      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No assets found</h3>
+      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">No items match your current filters. Try adjusting your search or upload new media.</p>
       <button 
         onClick={handleResetFilters}
-        className="mt-6 px-6 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-800 transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
+        className="mt-8 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
       >
         Clear Filters
       </button>
@@ -195,26 +195,25 @@ export default function MediaLibraryClient({
   );
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 text-zinc-900 font-sans selection:bg-red-100 selection:text-red-900 relative">
+    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-rose-500/30 selection:text-rose-900 dark:selection:text-rose-100 relative">
       <div className="relative z-10 flex flex-col min-h-screen">
         
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-zinc-200/60 transition-all duration-300">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-4">
-            <MediaLibraryHeader
-              searchValue={searchInput}
-              onSearchChange={setSearchInput}
-              onSearchSubmit={handleSearch}
-              activeFilter={currentFilter}
-              onFilterChange={handleTypeFilter}
-              filters={FILTER_OPTIONS}
-              activeSort={currentSort}
-              onSortChange={handleSort}
-              sorts={SORT_OPTIONS}
-              totalItems={pagination.totalItems}
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-            />
-          </div>
+        {/* Sticky Header with Glassmorphism */}
+        <header className="sticky top-0 z-40">
+          <MediaLibraryHeader
+            searchValue={searchInput}
+            onSearchChange={setSearchInput}
+            onSearchSubmit={handleSearch}
+            activeFilter={currentFilter}
+            onFilterChange={handleTypeFilter}
+            filters={FILTER_OPTIONS}
+            activeSort={currentSort}
+            onSortChange={handleSort}
+            sorts={SORT_OPTIONS}
+            totalItems={pagination.totalItems}
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+          />
         </header>
 
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-[1600px]">

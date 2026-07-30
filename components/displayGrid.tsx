@@ -1,6 +1,7 @@
 'use client';
 
 import React, { memo, ReactNode } from 'react';
+import { FolderOpen } from 'lucide-react';
 
 interface CardGridProps<T> {
   /** The array of items to render */
@@ -24,7 +25,7 @@ interface CardGridProps<T> {
 
 /**
  * A responsive, accessible, and performant grid layout for displaying lists of cards.
- * Uses CSS Grid with modern breakpoints for optimal viewing on all devices.
+ * Designed to mimic the spacing and rhythm of a professional photography portfolio.
  */
 const CardGrid = <T,>({ 
   items, 
@@ -35,16 +36,14 @@ const CardGrid = <T,>({
   ariaLabel = 'Content grid' 
 }: CardGridProps<T>) => {
   
-  // Default Empty State if none provided
+  // Default Empty State - Editorial Style
   const defaultEmptyState = (
-    <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-zinc-200 shadow-sm">
-      <div className="w-20 h-20 bg-zinc-50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100">
-        <svg className="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
+    <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm">
+      <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100 dark:border-zinc-800">
+        <FolderOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-500" strokeWidth={1.5} />
       </div>
-      <h3 className="text-xl font-semibold text-zinc-900">No items found</h3>
-      <p className="text-zinc-500 text-sm mt-2 max-w-xs">Try adjusting your filters or create a new item.</p>
+      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No items found</h3>
+      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">Try adjusting your filters or create a new item.</p>
     </div>
   );
 
@@ -70,7 +69,6 @@ const CardGrid = <T,>({
   );
 };
 
-// Memoize to prevent re-renders when parent state changes but items don't
 CardGrid.displayName = 'CardGrid';
 
 export default memo(CardGrid) as typeof CardGrid;

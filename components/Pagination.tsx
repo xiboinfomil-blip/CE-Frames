@@ -17,12 +17,12 @@ const Pagination = memo(function Pagination({
   hasNext, 
   hasPrevious, 
   onPageChange,
-  className = "mt-12"
+  className = "mt-12 mb-8"
 }: PaginationProps) {
   
   if (totalPages <= 1) return null;
 
-  // Memoize page number calculation to prevent unnecessary recalculations
+  // Memoize page number calculation
   const pageNumbers = useMemo(() => {
     const pages: (number | '...')[] = [];
     const maxVisible = 3; 
@@ -51,29 +51,29 @@ const Pagination = memo(function Pagination({
 
   return (
     <div className={`flex items-center justify-center w-full ${className}`}>
-      <div className="inline-flex items-center gap-2 p-1 bg-white rounded-full border border-zinc-200 shadow-sm animate-slideUpFade">
+      <nav className="inline-flex items-center gap-2 p-2 rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm animate-slideUpFade" aria-label="Pagination">
         
         {/* Previous Button */}
         <button
           onClick={() => hasPrevious && onPageChange(currentPage - 1)}
           disabled={!hasPrevious}
-          className="group relative flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-slate-900 hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 active:scale-90 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+          className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
           aria-label="Previous Page"
         >
-          <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+          <svg className="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-zinc-200 mx-1"></div>
+        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
         {/* Page Numbers Container */}
-        <div className="flex items-center gap-1 px-2">
+        <div className="flex items-center gap-1 px-1">
           {pageNumbers.map((page, index) => (
             page === '...' ? (
-              <span key={`ellipsis-${index}`} className="w-8 h-8 flex items-center justify-center text-xs font-mono text-zinc-400 select-none animate-pulse" aria-hidden="true">
-                •••
+              <span key={`ellipsis-${index}`} className="w-8 h-8 flex items-center justify-center text-xs font-medium text-zinc-400 dark:text-zinc-500 select-none" aria-hidden="true">
+                ...
               </span>
             ) : (
               <button
@@ -81,17 +81,13 @@ const Pagination = memo(function Pagination({
                 onClick={() => onPageChange(page as number)}
                 aria-current={page === currentPage ? 'page' : undefined}
                 className={`
-                  relative w-8 h-8 flex items-center justify-center text-xs font-bold rounded-full transition-all duration-300 font-mono tracking-wide overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500/20
+                  relative w-9 h-9 flex items-center justify-center text-sm font-medium rounded-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-1
                   ${page === currentPage
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 scale-110 z-10' 
-                    : 'text-zinc-500 hover:text-slate-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md scale-105 z-10' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                   }
                 `}
               >
-                {/* Active State Background Animation */}
-                {page === currentPage && (
-                  <span className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 animate-scaleIn -z-10"></span>
-                )}
                 {page}
               </button>
             )
@@ -99,20 +95,20 @@ const Pagination = memo(function Pagination({
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-zinc-200 mx-1"></div>
+        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
         {/* Next Button */}
         <button
           onClick={() => hasNext && onPageChange(currentPage + 1)}
           disabled={!hasNext}
-          className="group relative flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-slate-900 hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 active:scale-90 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+          className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
           aria-label="Next Page"
         >
-          <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          <svg className="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         </button>
-      </div>
+      </nav>
 
       {/* Inline Styles for Custom Animations */}
       <style jsx>{`
@@ -120,12 +116,7 @@ const Pagination = memo(function Pagination({
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes scaleIn {
-          from { transform: scale(0.8); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
         .animate-slideUpFade { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-scaleIn { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}</style>
     </div>
   );

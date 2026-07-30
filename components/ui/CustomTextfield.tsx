@@ -20,7 +20,7 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
         {label && (
           <label 
             className={cn(
-              "text-xs font-semibold uppercase tracking-wider transition-colors duration-200 select-none",
+              "text-[11px] font-bold uppercase tracking-[0.12em] transition-colors duration-300 select-none pl-1",
               "text-stone-500 dark:text-stone-400",
               "group-focus-within:text-stone-900 dark:group-focus-within:text-stone-100",
               error && "text-rose-600 dark:text-rose-400"
@@ -35,9 +35,9 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
           {/* Left Icon */}
           {leftIcon && (
             <div className={cn(
-              "absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 pointer-events-none",
+              "absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 pointer-events-none",
               "text-stone-400 dark:text-stone-500",
-              "group-focus-within:text-stone-700 dark:group-focus-within:text-stone-300",
+              "group-focus-within:text-stone-800 dark:group-focus-within:text-stone-200",
               error && "text-rose-500"
             )}>
               {leftIcon}
@@ -49,28 +49,28 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
             type={type}
             className={cn(
               // Base styles: Clean & Matte
-              "w-full rounded-xl px-4 py-3.5 text-sm font-medium",
-              "bg-white dark:bg-stone-900/50",
+              "w-full rounded-2xl px-4 py-3.5 text-sm font-medium",
+              "bg-stone-50/50 dark:bg-stone-900/50 backdrop-blur-sm",
               "text-stone-900 dark:text-stone-100",
               "placeholder:text-stone-400 dark:placeholder:text-stone-600",
               
               // Borders & Shadows (Subtle depth)
-              "border border-stone-200 dark:border-stone-800",
-              "shadow-sm hover:shadow-md transition-shadow duration-300",
+              "border border-stone-200/60 dark:border-stone-800/60",
+              "shadow-sm hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all duration-300",
               
               // Focus state (Lens Focus Effect)
-              "focus:outline-none focus:ring-2 focus:ring-stone-200 dark:focus:ring-stone-700",
-              "focus:border-stone-300 dark:focus:border-stone-600",
+              "focus:outline-none focus:border-stone-400 dark:focus:border-stone-500",
+              "focus:ring-4 focus:ring-stone-100/50 dark:focus:ring-stone-800/50",
               
               // Error state
-              error && "border-rose-200 dark:border-rose-900/50 focus:ring-rose-100 dark:focus:ring-rose-900/30 focus:border-rose-300",
+              error && "border-rose-200 dark:border-rose-900/50 focus:ring-rose-100/50 dark:focus:ring-rose-900/30 focus:border-rose-300",
               
               // Disabled state
-              "disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-stone-50 dark:disabled:bg-stone-950",
+              "disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-stone-100 dark:disabled:bg-stone-950",
               
               // Padding adjustments for icons
-              leftIcon && "pl-11",
-              rightIcon && "pr-11",
+              leftIcon && "pl-12",
+              rightIcon && "pr-12",
               
               className
             )}
@@ -81,9 +81,9 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
           {/* Right Icon */}
           {rightIcon && (
             <div className={cn(
-              "absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200",
+              "absolute right-4 top-1/2 -translate-y-1/2 transition-colors duration-300",
               "text-stone-400 dark:text-stone-500",
-              "group-focus-within:text-stone-700 dark:group-focus-within:text-stone-300",
+              "group-focus-within:text-stone-800 dark:group-focus-within:text-stone-200",
               error && "text-rose-500"
             )}>
               {rightIcon}
@@ -93,7 +93,7 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
 
         {/* Error Message (Editorial Warning) */}
         {error && (
-          <p className="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5 mt-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
+          <p className="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5 mt-1 pl-1 animate-in fade-in slide-in-from-top-1 duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" x2="12" y1="8" y2="12"/>

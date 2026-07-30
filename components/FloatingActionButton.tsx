@@ -17,7 +17,7 @@ const PlusIcon = () => (
     viewBox="0 0 24 24" 
     fill="none" 
     stroke="currentColor"
-    strokeWidth={2}
+    strokeWidth={1.5}
     strokeLinecap="round" 
     strokeLinejoin="round"
     aria-hidden="true"
@@ -38,7 +38,7 @@ const FloatingActionButton = memo(function FloatingActionButton({
     ? 'right-6 sm:right-8' 
     : 'left-6 sm:left-8';
 
-  // Generate a stable ID for accessibility (in a real app, use useId() from React 18)
+  // Generate a stable ID for accessibility
   const tooltipId = `fab-tooltip-${React.useId?.() || Math.random().toString(36).substr(2, 9)}`;
 
   return (
@@ -48,43 +48,43 @@ const FloatingActionButton = memo(function FloatingActionButton({
         fixed bottom-6 sm:bottom-8 ${positionClasses} z-50
         flex items-center justify-center
         w-14 h-14 sm:w-16 sm:h-16
-        bg-white dark:bg-zinc-900
-        text-zinc-900 dark:text-zinc-100
+        bg-zinc-900 dark:bg-white
+        text-white dark:text-zinc-900
         rounded-full
-        border border-zinc-200 dark:border-zinc-800
-        shadow-lg shadow-zinc-200/50 dark:shadow-black/50
-        hover:shadow-xl hover:shadow-zinc-300/50 dark:hover:shadow-black/60
-        hover:border-zinc-300 dark:hover:border-zinc-700
-        transition-all duration-300 ease-out
+        border border-zinc-800 dark:border-zinc-200
+        shadow-xl shadow-zinc-900/20 dark:shadow-white/10
+        hover:shadow-2xl hover:shadow-zinc-900/30 dark:hover:shadow-white/20
+        hover:-translate-y-1
+        transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)
         group
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2
-        active:scale-95 hover:scale-105
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2
+        active:scale-95 active:translate-y-0
         ${className}
       `}
       aria-label={label}
       aria-describedby={tooltipId}
     >
       {/* Icon container with elegant rotation micro-interaction */}
-      <span className="relative z-10 transform transition-transform duration-300 ease-out group-hover:rotate-45">
+      <span className="relative z-10 transform transition-transform duration-300 ease-out group-hover:rotate-90">
         {icon}
       </span>
 
-      {/* Modern, Robust Tooltip */}
+      {/* Modern, Camera-Setting Style Tooltip */}
       <span 
         id={tooltipId}
         className={`
           absolute 
           ${position === 'bottom-left' ? 'left-full ml-4' : 'right-full mr-4'}
           top-1/2 -translate-y-1/2
-          bg-zinc-900 dark:bg-zinc-100 
+          bg-zinc-900 dark:bg-white 
           text-white dark:text-zinc-900
-          text-xs font-medium px-3 py-1.5
+          text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5
           rounded-md
           opacity-0 group-hover:opacity-100 group-hover:translate-y-0
           transition-all duration-200 ease-out
           whitespace-nowrap
           pointer-events-none
-          shadow-lg
+          shadow-lg border border-zinc-800 dark:border-zinc-200
         `}
         role="tooltip"
       >

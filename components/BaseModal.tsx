@@ -124,36 +124,36 @@ export default function BaseModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
         aria-describedby={subtitle ? "modal-subtitle" : undefined}
       >
-        {/* Backdrop: Premium, subtle depth of field */}
+        {/* Backdrop: Deep Immersion */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-colors duration-300" 
+          className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-xl transition-colors duration-300" 
           onClick={!isLoading ? onClose : undefined} 
           aria-hidden="true"
         />
         
-        {/* Modal Container: Aerodynamic curves, crisp borders, diffused shadow */}
+        {/* Modal Container: Premium Glass & Curves */}
         <motion.div 
           ref={modalRef}
-          initial={{ opacity: 0, scale: 0.98, y: 10 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.98, y: 10 }}
-          transition={{ type: "spring", stiffness: 350, damping: 30 }}
-          className={`relative w-full ${widthClasses[maxWidth]} bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 border border-zinc-100 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh]`}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          className={`relative w-full ${widthClasses[maxWidth]} bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl shadow-black/10 dark:shadow-black/50 border border-zinc-200/50 dark:border-zinc-800/50 overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh]`}
         >
           {/* Header */}
-          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-white dark:bg-zinc-950 relative z-10">
+          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-start bg-white dark:bg-zinc-950 relative z-10">
             <div className="pr-8">
-              <h2 id="modal-title" className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
                 {title}
               </h2>
               {subtitle && (
@@ -166,7 +166,7 @@ export default function BaseModal({
               ref={closeBtnRef}
               onClick={onClose} 
               disabled={isLoading}
-              className="group flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2"
+              className="group flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
               aria-label="Close modal"
             >
               <svg className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" strokeWidth={1.5}>
@@ -182,9 +182,9 @@ export default function BaseModal({
             </div>
           </div>
 
-          {/* Footer Actions: Frosted glass separation */}
+          {/* Footer Actions: Frosted Glass Separation */}
           {footer && (
-            <div className="px-6 py-4 sm:px-8 sm:py-5 bg-zinc-50/80 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 relative z-10 backdrop-blur-md">
+            <div className="px-6 py-4 sm:px-8 sm:py-5 bg-white/80 dark:bg-zinc-950/80 border-t border-zinc-100 dark:border-zinc-800/50 flex justify-end gap-3 relative z-10 backdrop-blur-xl">
               {footer}
             </div>
           )}

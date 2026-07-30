@@ -48,6 +48,8 @@ const getValidMimeTypes = () => {
 const VALID_TYPES = getValidMimeTypes();
 const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
+// --- Sub-Components ---
+
 const ThumbnailItem = memo(({ 
   item, 
   idx, 
@@ -64,10 +66,10 @@ const ThumbnailItem = memo(({
   <button
     onClick={onClick}
     disabled={isLoading}
-    className={`group relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
+    className={`group relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2 ${
       idx === currentIndex 
-        ? 'border-zinc-900 dark:border-zinc-100 ring-1 ring-zinc-900/20 dark:ring-zinc-100/20' 
-        : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 opacity-60 hover:opacity-100'
+        ? 'border-zinc-900 dark:border-white ring-2 ring-zinc-900/10 dark:ring-white/10 scale-105 z-10' 
+        : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 opacity-60 hover:opacity-100'
     }`}
     aria-label={`Select media ${idx + 1}`}
     aria-pressed={idx === currentIndex}
@@ -89,7 +91,8 @@ const ThumbnailItem = memo(({
         </svg>
       </div>
     )}
-    <div className="absolute top-1 right-1 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded backdrop-blur-sm">
+    {/* Index Badge */}
+    <div className="absolute top-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md">
       {idx + 1}
     </div>
   </button>
@@ -436,7 +439,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           Cancel
         </CustomButton>
         <CustomButton 
-          variant="continue"
+          variant="primary"
           size="lg"
           onClick={handleSubmit}
           disabled={mediaItems.length === 0 || isLoading || isCheckingStorage}
@@ -446,7 +449,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
           ) : undefined}
-          className="flex-1 sm:flex-none bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="flex-1 sm:flex-none"
         >
           {isCheckingStorage ? 'Checking...' : `Upload ${mediaItems.length > 1 ? `${mediaItems.length} Assets` : 'Asset'}`}
         </CustomButton>
@@ -458,30 +461,30 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Upload Media"
+      title="Ingest Media"
       subtitle="Add photos and videos to your library."
-      maxWidth="4xl"
+      maxWidth="5xl"
       isLoading={isLoading}
       footer={footerActions}
     >
       <div className="space-y-6">
         
-        {/* Storage Indicator */}
+        {/* Storage Indicator - HUD Style */}
         <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 relative overflow-hidden transition-colors duration-300">
           <div className="relative flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isStorageFull ? 'bg-red-500' : 'bg-emerald-500'}`} />
-              <h3 className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+              <div className={`w-2 h-2 rounded-full ${isStorageFull ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
                 Storage Capacity
               </h3>
             </div>
-            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-              {storageUsage ? `${storageUsage.storage.percentageUsed}% used` : 'Calculating...'}
+            <span className="text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300">
+              {storageUsage ? `${storageUsage.storage.percentageUsed}% USED` : 'CALCULATING...'}
             </span>
           </div>
           
           <div 
-            className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden transition-colors duration-300"
+            className="relative h-1.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden transition-colors duration-300"
             role="progressbar"
             aria-valuenow={storagePercent}
             aria-valuemin={0}
@@ -490,13 +493,13 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           >
             <div 
               className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${
-                isStorageFull ? 'bg-red-500' : 'bg-zinc-900 dark:bg-zinc-100'
+                isStorageFull ? 'bg-rose-500' : 'bg-zinc-900 dark:bg-zinc-100'
               }`}
               style={{ width: `${Math.min(100, storagePercent)}%` }}
             />
           </div>
           
-          <div className="flex justify-between mt-2.5 text-xs font-medium text-zinc-500 dark:text-zinc-500">
+          <div className="flex justify-between mt-2.5 text-[10px] font-mono text-zinc-400 dark:text-zinc-500">
             <span>{storageUsage ? storageUsage.storage.used : '---'}</span>
             <span>{storageUsage ? storageUsage.storage.limit : '---'}</span>
           </div>
@@ -509,7 +512,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div className="flex-1">
-              <p className="font-semibold text-amber-800 dark:text-amber-300 text-xs mb-1">Files Excluded</p>
+              <p className="font-semibold text-amber-800 dark:text-amber-300 text-xs mb-1 uppercase tracking-wide">Files Excluded</p>
               <p className="text-amber-700/80 dark:text-amber-200/70 leading-relaxed">{rejectedFiles.join(', ')}</p>
             </div>
             <button 
@@ -525,8 +528,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         )}
 
         {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-800 dark:text-red-200 rounded-xl text-sm font-medium flex items-start gap-3" role="alert" aria-live="assertive">
-            <svg className="w-5 h-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <div className="p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-200 rounded-xl text-sm font-medium flex items-start gap-3" role="alert" aria-live="assertive">
+            <svg className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{error}</span>
@@ -546,9 +549,9 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 fileInputRef.current?.click();
               }
             }}
-            className={`group relative border-2 border-dashed rounded-2xl p-12 sm:p-16 text-center cursor-pointer transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2 ${
+            className={`group relative border-2 border-dashed rounded-2xl p-12 sm:p-16 text-center cursor-pointer transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2 ${
               isDragging 
-                ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-900/50' 
+                ? 'border-zinc-900 dark:border-white bg-zinc-50 dark:bg-zinc-900/50' 
                 : 'border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30'
             }`}
             role="button"
@@ -580,122 +583,121 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
             </div>
             
             <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
-              {isDragging ? 'Drop files to upload' : 'Click or drag files to upload'}
+              {isDragging ? 'Drop files to ingest' : 'Click or drag files to ingest'}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 font-medium">
-              Supports JPG, PNG, GIF, MP4, WebM • Max 50MB per file
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 font-mono uppercase tracking-wide">
+              JPG, PNG, GIF, MP4, WebM • Max 50MB
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            {/* Preview & Navigation */}
-            <div className="relative">
-              {mediaItems.length > 1 && (
-                <>
-                  <button
-                    onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
-                    disabled={currentIndex === 0 || isLoading}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-full shadow-md border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2"
-                    aria-label="Previous media"
-                  >
-                    <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setCurrentIndex(prev => Math.min(mediaItems.length - 1, prev + 1))}
-                    disabled={currentIndex === mediaItems.length - 1 || isLoading}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-full shadow-md border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2"
-                    aria-label="Next media"
-                  >
-                    <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </>
-              )}
-
-              <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 transition-colors duration-300">
-                <div className="flex flex-col sm:flex-row gap-6">
-                  {/* Media Preview */}
-                  <div className="shrink-0 mx-auto sm:mx-0 w-full sm:w-auto">
-                    {currentItem.file.type.startsWith('image/') ? (
-                      <Image 
-                        src={currentItem.previewUrl!} 
-                        alt="Preview"
-                        width={256}
-                        height={256}
-                        className="w-full sm:w-64 h-64 object-cover rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm bg-white dark:bg-zinc-950 transition-colors duration-300"
-                        unoptimized
-                      />
-                    ) : (
-                      <video 
-                        src={currentItem.previewUrl}
-                        className="w-full sm:w-64 h-64 object-cover rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm bg-black transition-colors duration-300"
-                        controls
-                        aria-label="Video preview"
-                      />
-                    )}
-                  </div>
-
-                  {/* Metadata & Thumbnails */}
-                  <div className="flex-1 min-w-0 space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate transition-colors duration-300" title={currentItem.file.name}>{currentItem.file.name}</p>
-                        <div className="flex items-center gap-2 mt-2 font-medium text-xs text-zinc-500 dark:text-zinc-400">
-                          <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded transition-colors duration-300">{formatBytes(currentItem.file.size)}</span>
-                          <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-                          <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded transition-colors duration-300">{currentItem.file.type.split('/')[1].toUpperCase()}</span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => removeItem(currentIndex)}
-                        disabled={isLoading}
-                        className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                        aria-label="Remove this file"
+            {/* Left Column: Preview & Queue */}
+            <div className="lg:col-span-5 space-y-6">
+               {/* Preview Window */}
+              <div className="relative bg-zinc-100 dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner aspect-square flex items-center justify-center group">
+                 {currentItem.file.type.startsWith('image/') ? (
+                    <Image 
+                      src={currentItem.previewUrl!} 
+                      alt="Preview"
+                      width={500}
+                      height={500}
+                      className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                      unoptimized
+                    />
+                  ) : (
+                    <video 
+                      src={currentItem.previewUrl}
+                      className="max-w-full max-h-full object-contain"
+                      controls
+                      aria-label="Video preview"
+                    />
+                  )}
+                  
+                  {/* Navigation Arrows */}
+                  {mediaItems.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
+                        disabled={currentIndex === 0 || isLoading}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
+                        aria-label="Previous media"
                       >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                       </button>
-                    </div>
-
-                    {currentItem.gpsDetected && (
-                      <div className="flex items-center gap-2 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 px-3 py-2 rounded-lg w-fit transition-colors duration-300">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <button
+                        onClick={() => setCurrentIndex(prev => Math.min(mediaItems.length - 1, prev + 1))}
+                        disabled={currentIndex === mediaItems.length - 1 || isLoading}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
+                        aria-label="Next media"
+                      >
+                        <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
-                        GPS coordinates detected
-                      </div>
-                    )}
+                      </button>
+                    </>
+                  )}
+              </div>
 
-                    {mediaItems.length > 1 && (
-                      <div className="pt-2">
-                        <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">Queue</p>
-                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                          {mediaItems.map((item, idx) => (
-                            <ThumbnailItem
-                              key={idx}
-                              item={item}
-                              idx={idx}
-                              currentIndex={currentIndex}
-                              onClick={() => setCurrentIndex(idx)}
-                              isLoading={isLoading}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
+              {/* Film Strip Queue */}
+              {mediaItems.length > 1 && (
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3">
+                  <div className="flex items-center justify-between mb-2 px-1">
+                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Queue ({mediaItems.length})</span>
+                     <button 
+                        onClick={() => removeItem(currentIndex)}
+                        disabled={isLoading}
+                        className="text-[10px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-colors"
+                      >
+                        Remove Current
+                      </button>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
+                    {mediaItems.map((item, idx) => (
+                      <ThumbnailItem
+                        key={idx}
+                        item={item}
+                        idx={idx}
+                        currentIndex={currentIndex}
+                        onClick={() => setCurrentIndex(idx)}
+                        isLoading={isLoading}
+                      />
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+            {/* Right Column: Metadata Editor */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* File Info Header */}
+              <div className="flex items-start justify-between gap-4 pb-6 border-b border-zinc-100 dark:border-zinc-800">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate" title={currentItem.file.name}>{currentItem.file.name}</p>
+                    <div className="flex items-center gap-3 mt-2 font-mono text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                      <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{formatBytes(currentItem.file.size)}</span>
+                      <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                      <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{currentItem.file.type.split('/')[1].toUpperCase()}</span>
+                      {currentItem.gpsDetected && (
+                         <>
+                          <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
+                            GPS Detected
+                          </span>
+                         </>
+                      )}
+                    </div>
+                  </div>
+              </div>
+
+              {/* Form Fields */}
+              <div className="space-y-5">
                 <CustomTextfield 
                   id={captionId}
                   type="text" 
@@ -705,9 +707,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   placeholder="Describe this asset..."
                   label="Caption"
                 />
-              </div>
 
-              <div>
                 <CustomTextfield
                   id={locationId}
                   type="text" 
@@ -715,76 +715,76 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   onChange={(e) => updateCurrentItem({ locationName: e.target.value })}
                   disabled={isLoading}
                   placeholder="e.g., Silverstone Circuit, UK"
-                  label="Location"
+                  label="Location Name"
                 />
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                      GPS Coordinates
+                    </span>
+                    {!currentItem.gpsDetected && (
+                      <CustomButton
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={detectLocation}
+                        disabled={isLoading || isDetectingLocation}
+                        className="text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 h-8 px-3 text-[10px] uppercase tracking-wider"
+                      >
+                        {isDetectingLocation ? (
+                          <>
+                            <svg className="animate-spin h-3 w-3 mr-1.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg> 
+                            Detecting...
+                          </>
+                        ) : 'Auto-Detect'}
+                      </CustomButton>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <CustomTextfield
+                      id={latId}
+                      type="number"
+                      step="any"
+                      value={currentItem.coordinates.lat}
+                      onChange={(e) => updateCurrentItem({ coordinates: { ...currentItem.coordinates, lat: e.target.value } })}
+                      disabled={isLoading || currentItem.gpsDetected}
+                      placeholder="00.000000"
+                      label="Latitude"
+                    />
+                    <CustomTextfield
+                      id={lngId}
+                      type="number"
+                      step="any"
+                      value={currentItem.coordinates.lng}
+                      onChange={(e) => updateCurrentItem({ coordinates: { ...currentItem.coordinates, lng: e.target.value } })}
+                      disabled={isLoading || currentItem.gpsDetected}
+                      placeholder="00.000000"
+                      label="Longitude"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="md:col-span-2">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
-                    GPS Coordinates
-                  </span>
-                  {!currentItem.gpsDetected && (
-                    <CustomButton
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={detectLocation}
-                      disabled={isLoading || isDetectingLocation}
-                      className="text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800"
-                    >
-                      {isDetectingLocation ? (
-                        <>
-                          <svg className="animate-spin h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                          </svg> 
-                          Detecting...
-                        </>
-                      ) : 'Detect Location'}
-                    </CustomButton>
-                  )}
+              {/* Upload Progress */}
+              {isLoading && (
+                <div className="space-y-3 pt-6 border-t border-zinc-100 dark:border-zinc-800" role="progressbar" aria-valuenow={Math.round(uploadProgress)} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
+                  <div className="flex justify-between text-xs font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <span>Uploading asset {currentUploadIndex + 1} of {mediaItems.length}</span>
+                    <span className="text-zinc-900 dark:text-zinc-100 font-bold">{Math.round(uploadProgress)}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden transition-colors duration-300">
+                    <div 
+                      className="h-full bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 ease-out rounded-full"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <CustomTextfield
-                    id={latId}
-                    type="number"
-                    step="any"
-                    value={currentItem.coordinates.lat}
-                    onChange={(e) => updateCurrentItem({ coordinates: { ...currentItem.coordinates, lat: e.target.value } })}
-                    disabled={isLoading || currentItem.gpsDetected}
-                    placeholder="00.000000"
-                    label="Latitude"
-                  />
-                  <CustomTextfield
-                    id={lngId}
-                    type="number"
-                    step="any"
-                    value={currentItem.coordinates.lng}
-                    onChange={(e) => updateCurrentItem({ coordinates: { ...currentItem.coordinates, lng: e.target.value } })}
-                    disabled={isLoading || currentItem.gpsDetected}
-                    placeholder="00.000000"
-                    label="Longitude"
-                  />
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* Upload Progress */}
-            {isLoading && (
-              <div className="space-y-3 pt-2" role="progressbar" aria-valuenow={Math.round(uploadProgress)} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
-                <div className="flex justify-between text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                  <span>Uploading asset {currentUploadIndex + 1} of {mediaItems.length}</span>
-                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{Math.round(uploadProgress)}%</span>
-                </div>
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden transition-colors duration-300">
-                  <div 
-                    className="h-full bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 ease-out rounded-full"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

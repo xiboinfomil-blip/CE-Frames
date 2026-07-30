@@ -236,11 +236,10 @@ export default function CreateGalleryModal({
       <CustomButton
         type="submit"
         form="gallery-form-id"
-        variant="continue"
+        variant="primary"
         size="lg"
         isLoading={isLoading}
         disabled={isLoading || !formData.title.trim()}
-        className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         {isEditMode ? 'Save Changes' : 'Create Gallery'}
       </CustomButton>
@@ -257,170 +256,174 @@ export default function CreateGalleryModal({
         onClose={onClose}
         title={modalTitle}
         subtitle={isEditMode ? 'Update gallery details' : 'Create a new collection'}
-        maxWidth="lg"
+        maxWidth="2xl"
         isLoading={isLoading}
         footer={footerActions}
       >
-        <form id="gallery-form-id" onSubmit={handleSubmit} className="space-y-6 relative z-10">
+        <form id="gallery-form-id" onSubmit={handleSubmit} className="space-y-8 relative z-10">
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 text-red-700 dark:text-red-300 text-sm font-medium flex items-center gap-2" role="alert">
-              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2" role="alert">
+              <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 8v4m0 4h.01" />
               </svg>
-              <span>{error}</span>
+              <span className="font-medium">{error}</span>
             </div>
           )}
 
-          <CustomTextfield
-            id={titleId}
-            name="title"
-            type="text"
-            label="Gallery Title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            maxLength={255}
-            placeholder="e.g., Summer Track Day 2024"
-          />
-
-          <div className="space-y-1.5">
-            <label htmlFor={descId} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Description</label>
-            <textarea
-              id={descId}
-              name="description"
-              value={formData.description || ''}
+          <div className="space-y-6">
+            <CustomTextfield
+              id={titleId}
+              name="title"
+              type="text"
+              label="Gallery Title"
+              value={formData.title}
               onChange={handleChange}
-              rows={3}
-              placeholder="Add context about this collection..."
-              className="w-full px-4 py-3 rounded-xl text-sm bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2 transition-all duration-200 resize-none"
+              required
+              maxLength={255}
+              placeholder="e.g., Summer Track Day 2024"
             />
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor={visibilityId} className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Visibility</label>
-              <div className="relative group">
-                <select
-                  id={visibilityId}
-                  name="visibility"
-                  value={formData.visibility}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl text-sm bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2 appearance-none cursor-pointer transition-all duration-200"
-                >
-                  {VISIBILITY_STATUSES.map((status) => (
-                    <option key={status} value={status}>
-                      {status === 'public' ? 'Public' : status === 'private' ? 'Private' : status === 'password_protected' ? 'Password Protected' : status === 'unlisted' ? 'Unlisted' : status}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+              <label htmlFor={descId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Description</label>
+              <textarea
+                id={descId}
+                name="description"
+                value={formData.description || ''}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Add context about this collection..."
+                className="w-full px-4 py-3.5 rounded-2xl text-sm bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 border border-zinc-200/60 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-zinc-100/50 dark:focus-visible:ring-zinc-800/50 focus:border-zinc-400 dark:focus:border-zinc-600 transition-all duration-300 resize-none shadow-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-1.5">
+                <label htmlFor={visibilityId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Visibility</label>
+                <div className="relative group">
+                  <select
+                    id={visibilityId}
+                    name="visibility"
+                    value={formData.visibility}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3.5 rounded-2xl text-sm bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-zinc-100/50 dark:focus-visible:ring-zinc-800/50 focus:border-zinc-400 dark:focus:border-zinc-600 appearance-none cursor-pointer transition-all duration-300 shadow-sm"
+                  >
+                    {VISIBILITY_STATUSES.map((status) => (
+                      <option key={status} value={status}>
+                        {status === 'public' ? 'Public' : status === 'private' ? 'Private' : status === 'password_protected' ? 'Password Protected' : status === 'unlisted' ? 'Unlisted' : status}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
+              </div>
+
+              <div className={`space-y-1.5 transition-all duration-300 ${formData.visibility === 'password_protected' ? 'opacity-100 translate-y-0 relative' : 'opacity-0 translate-y-2 pointer-events-none absolute'}`}>
+                {formData.visibility === 'password_protected' && (
+                  <>
+                    <CustomTextfield
+                      id={passwordId}
+                      name="password"
+                      type="password"
+                      label="Access Password"
+                      value={formData.password || ''}
+                      onChange={handleChange}
+                      required={!isEditMode}
+                      placeholder="••••••••"
+                    />
+                    {isEditMode && <p className="text-xs text-zinc-500 mt-1 pl-1">Leave empty to retain current password</p>}
+                  </>
+                )}
               </div>
             </div>
 
-            <div className={`space-y-1.5 transition-all duration-300 ${formData.visibility === 'password_protected' ? 'opacity-100 translate-y-0 relative' : 'opacity-0 translate-y-2 pointer-events-none absolute'}`}>
-              {formData.visibility === 'password_protected' && (
-                <>
-                  <CustomTextfield
-                    id={passwordId}
-                    name="password"
-                    type="password"
-                    label="Access Password"
-                    value={formData.password || ''}
-                    onChange={handleChange}
-                    required={!isEditMode}
-                    placeholder="••••••••"
-                  />
-                  {isEditMode && <p className="text-xs text-zinc-500 mt-1">Leave empty to retain current password</p>}
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Layout Configuration</label>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { value: 'column', label: 'Column', icon: 'M5 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z' },
-                { value: 'row', label: 'Row', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4z' },
-                { value: 'masonry', label: 'Masonry', icon: 'M4 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zM14 15a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5z' },
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, layoutStyle: option.value as LayoutStyle }))}
-                  className={`group relative flex flex-col items-center justify-center px-3 py-3 rounded-xl border text-xs font-medium transition-all duration-200 gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 focus-visible:ring-offset-2 ${
-                    formData.layoutStyle === option.value
-                      ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                      : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={option.icon} />
-                  </svg>
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Cover Image</label>
-            <div
-              onClick={() => isEditMode && openMediaPicker()}
-              className={`group relative w-full h-40 rounded-xl border-2 flex items-center justify-center transition-all duration-300 overflow-hidden ${
-                isEditMode
-                  ? 'border-dashed border-zinc-300 dark:border-zinc-700 cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
-                  : 'border-solid border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 cursor-not-allowed opacity-60'
-              }`}
-            >
-              {formData.coverMediaId && currentCoverObj ? (
-                <div className="relative w-full h-full">
-                  <MediaViewport
-                    mediaType={currentCoverObj.type}
-                    fullResUrl={currentCoverObj.fullResUrl || currentCoverObj.thumbnailUrl}
-                    thumbnailUrl={currentCoverObj.thumbnailUrl}
-                    caption={currentCoverObj.caption}
-                    originalFilename={currentCoverObj.originalFilename}
-                    className="rounded-none ring-0 shadow-none h-full"
-                    priority={false}
-                  />
-                  {isEditMode && (
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-30">
-                      <span className="text-white text-xs font-medium flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Change Cover
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-300">
-                  <div className={`p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 transition-colors duration-300 ${isEditMode ? 'group-hover:scale-110' : ''}`}>
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            {/* Visual Layout Selector */}
+            <div className="space-y-3">
+              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Layout Style</label>
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { value: 'column', label: 'Column', icon: 'M5 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z' },
+                  { value: 'row', label: 'Row', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4z' },
+                  { value: 'masonry', label: 'Masonry', icon: 'M4 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zM14 15a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5z' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, layoutStyle: option.value as LayoutStyle }))}
+                    className={`group relative flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2 ${
+                      formData.layoutStyle === option.value
+                        ? 'border-zinc-900 dark:border-white bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-md scale-[1.02]'
+                        : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                    }`}
+                  >
+                    <svg className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={option.icon} />
                     </svg>
+                    <span className="text-xs font-bold uppercase tracking-wider">{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cover Image Selector */}
+            <div className="space-y-3">
+              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Cover Image</label>
+              <div
+                onClick={() => isEditMode && openMediaPicker()}
+                className={`group relative w-full h-48 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 overflow-hidden ${
+                  isEditMode
+                    ? 'border-dashed border-zinc-300 dark:border-zinc-700 cursor-pointer hover:border-zinc-900 dark:hover:border-white hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
+                    : 'border-solid border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 cursor-not-allowed opacity-60'
+                }`}
+              >
+                {formData.coverMediaId && currentCoverObj ? (
+                  <div className="relative w-full h-full">
+                    <MediaViewport
+                      mediaType={currentCoverObj.type}
+                      fullResUrl={currentCoverObj.fullResUrl || currentCoverObj.thumbnailUrl}
+                      thumbnailUrl={currentCoverObj.thumbnailUrl}
+                      caption={currentCoverObj.caption}
+                      originalFilename={currentCoverObj.originalFilename}
+                      className="rounded-none ring-0 shadow-none h-full object-cover"
+                      priority={false}
+                    />
+                    {isEditMode && (
+                      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-30">
+                        <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          Change Cover
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <span className="text-xs font-medium">
-                    {isEditMode ? 'Select from Gallery Media' : 'Add Media First'}
-                  </span>
-                </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors duration-300">
+                    <div className={`p-4 rounded-full bg-zinc-100 dark:bg-zinc-800 transition-all duration-300 ${isEditMode ? 'group-hover:scale-110 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700' : ''}`}>
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest">
+                      {isEditMode ? 'Select from Gallery' : 'Add Media First'}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {!isEditMode && (
+                <p className="text-xs text-zinc-500 text-right flex items-center justify-end gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Create gallery and add media to set a cover
+                </p>
               )}
             </div>
-            {!isEditMode && (
-              <p className="text-xs text-zinc-500 text-right flex items-center justify-end gap-1.5">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Create gallery and add media to set a cover
-              </p>
-            )}
           </div>
         </form>
       </BaseModal>
@@ -457,16 +460,16 @@ export default function CreateGalleryModal({
             />
           </div>
 
-          <div className="relative min-h-100 bg-zinc-50/50 dark:bg-zinc-900/20 p-6">
+          <div className="relative min-h-[400px] bg-zinc-50/50 dark:bg-zinc-900/20 p-6">
             {isFetchingMedia ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <div className="w-8 h-8 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin" />
-                <span className="text-xs font-medium text-zinc-500">Loading media...</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Loading media...</span>
               </div>
             ) : availableMedia.length === 0 ? (
               <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">
-                <p className="font-medium text-sm">No Media Found</p>
-                <p className="text-xs mt-2">Add media to this gallery first.</p>
+                <p className="font-bold text-sm uppercase tracking-widest">No Media Found</p>
+                <p className="text-xs mt-2 font-medium">Add media to this gallery first.</p>
               </div>
             ) : (
               <>
@@ -479,10 +482,10 @@ export default function CreateGalleryModal({
                       <button
                         key={media.id}
                         onClick={() => handleSelectCover(media.id)}
-                        className={`group relative cursor-pointer rounded-xl overflow-hidden transition-all duration-200 bg-white dark:bg-zinc-900 border ${
+                        className={`group relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 bg-white dark:bg-zinc-900 border ${
                           isSelected
-                            ? 'ring-2 ring-zinc-900 dark:ring-zinc-100 ring-offset-2 dark:ring-offset-zinc-950 shadow-md scale-[1.02]'
-                            : 'border-zinc-200 dark:border-zinc-800 hover:shadow-md hover:-translate-y-0.5 hover:border-zinc-300 dark:hover:border-zinc-700'
+                            ? 'ring-2 ring-zinc-900 dark:ring-white ring-offset-2 dark:ring-offset-zinc-950 shadow-lg scale-[1.02] z-10'
+                            : 'border-zinc-200 dark:border-zinc-800 hover:shadow-md hover:-translate-y-1 hover:border-zinc-300 dark:hover:border-zinc-700'
                         }`}
                       >
                         <MediaViewport
@@ -491,12 +494,12 @@ export default function CreateGalleryModal({
                           thumbnailUrl={media.thumbnailUrl}
                           caption={media.caption}
                           originalFilename={media.originalFilename}
-                          className="aspect-square rounded-none ring-0 shadow-none"
+                          className="aspect-square rounded-none ring-0 shadow-none object-cover"
                           priority={false}
                         />
-                        <div className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-sm border transition-all duration-200 z-20 ${
+                        <div className={`absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center shadow-sm border transition-all duration-300 z-20 ${
                           isSelected
-                            ? 'bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100 scale-100'
+                            ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white scale-100'
                             : 'bg-white/90 dark:bg-zinc-800/90 border-zinc-200 dark:border-zinc-700 scale-0 group-hover:scale-100'
                         }`}>
                           {isSelected ? (

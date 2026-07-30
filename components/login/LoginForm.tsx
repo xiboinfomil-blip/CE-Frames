@@ -59,11 +59,11 @@ export default function LoginForm() {
 
   if (status === "loading") {
     return (
-      <div className="h-full w-full flex items-center justify-center">
+      <div className="h-full w-full flex items-center justify-center bg-white dark:bg-zinc-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-stone-200 border-t-stone-800 rounded-full animate-spin" />
-          <span className="text-xs font-medium text-stone-400 uppercase tracking-widest">
-            Loading...
+          <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-zinc-100 rounded-full animate-spin" />
+          <span className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">
+            Authenticating...
           </span>
         </div>
       </div>
@@ -75,26 +75,26 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="max-w-md w-full mx-auto">
+    <div className="max-w-md w-full mx-auto px-6 sm:px-0">
       <header className="mb-10">
-        <h2 className="text-3xl font-bold text-stone-900 tracking-tight mb-2">Welcome Back</h2>
-        <p className="text-stone-500">Please enter your details to access the dashboard.</p>
+        <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-2">Welcome Back</h2>
+        <p className="text-zinc-500 dark:text-zinc-400 font-medium">Please enter your details to access the studio.</p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Error Message */}
         {error && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" x2="12" y1="8" y2="12"/>
               <line x1="12" x2="12.01" y1="16" y2="16"/>
             </svg>
-            <span>{error}</span>
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <CustomTextfield
             label="Email Address"
             name="email"
@@ -120,7 +120,7 @@ export default function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="p-1 rounded-md hover:bg-stone-100 transition-colors focus:outline-none text-stone-400 hover:text-stone-600"
+                className="p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
               >
                 {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
               </button>
@@ -130,10 +130,10 @@ export default function LoginForm() {
           />
         </div>
 
-        <div className="pt-4">
+        <div className="pt-2">
           <CustomButton
             type="submit"
-            variant="default"
+            variant="primary"
             size="lg"
             disabled={isLoading}
             isLoading={isLoading}
@@ -146,7 +146,7 @@ export default function LoginForm() {
       </form>
 
       <footer className="mt-12 text-center">
-        <p className="text-xs text-stone-400">
+        <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium uppercase tracking-widest">
           © 2026 OramaCreativ. All rights reserved.
         </p>
       </footer>

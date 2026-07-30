@@ -1,54 +1,40 @@
 'use client';
 
-import { FaImages } from 'react-icons/fa';
+import { FolderOpen } from 'lucide-react';
 
 export default function EmptyState() {
   return (
-    <div className="relative flex flex-col items-center justify-center py-20 sm:py-32 px-4">
-      {/* Background Decorative Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-linear-to-br from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl"></div>
-        
-        {/* Subtle Racing Lines */}
-        <div className="absolute top-1/2 left-0 right-0 h-px bg-linear-to-r from-transparent via-gray-200 to-transparent opacity-50"></div>
-        <div className="absolute top-1/2 left-0 right-0 h-px bg-linear-to-r from-transparent via-blue-200 to-transparent opacity-30 transform -translate-y-2"></div>
-        <div className="absolute top-1/2 left-0 right-0 h-px bg-linear-to-r from-transparent via-cyan-200 to-transparent opacity-30 transform translate-y-2"></div>
+    <div className="relative flex flex-col items-center justify-center py-24 sm:py-32 px-4">
+      {/* Subtle Background Texture */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03] dark:opacity-[0.05]">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 text-center max-w-lg mx-auto">
+      <div className="relative z-10 text-center max-w-md mx-auto">
         
-        {/* Icon Wrapper with Glass Effect */}
-        <div className="inline-flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 mb-8 relative">
-          {/* Outer Ring */}
-          <div className="absolute inset-0 border-2 border-dashed border-blue-200 rounded-full animate-[spin_10s_linear_infinite]"></div>
-          
-          {/* Inner Glow */}
-          <div className="absolute inset-2 bg-white/80 backdrop-blur-md rounded-full shadow-xl border border-white/50 flex items-center justify-center">
-            <FaImages className="text-6xl sm:text-7xl text-transparent bg-clip-text bg-linear-to-br from-blue-400 to-cyan-500" />
+        {/* Icon Wrapper - Clean & Static */}
+        <div className="inline-flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 mb-8 relative">
+          <div className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800/50 rounded-3xl rotate-3 transition-transform duration-500 hover:rotate-6"></div>
+          <div className="relative w-full h-full bg-white dark:bg-zinc-900 rounded-3xl shadow-lg border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center transition-transform duration-500 hover:-translate-y-1">
+            <FolderOpen className="w-10 h-10 sm:w-12 sm:h-12 text-zinc-400 dark:text-zinc-500" strokeWidth={1.5} />
           </div>
-          
-          {/* Accent Dot */}
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg"></div>
         </div>
 
         {/* Text Content */}
-        <h3 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 tracking-tight">
-          Track Clear
+        <h3 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 tracking-tight">
+          No galleries found
         </h3>
         
-        <p className="text-gray-500 text-lg sm:text-xl leading-relaxed">
-          No galleries match your current criteria. 
-          <span className="block mt-2 text-base text-gray-400">
-            Adjust your filters or search terms to find what you&apos;re looking for.
-          </span>
+        <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg leading-relaxed font-medium">
+          Try adjusting your filters or search terms to find what you&apos;re looking for.
         </p>
 
-        {/* Decorative Bottom Line */}
-        <div className="mt-10 flex items-center justify-center space-x-2">
-          <div className="w-12 h-1 bg-blue-400 rounded-full opacity-60"></div>
-          <div className="w-2 h-1 bg-cyan-400 rounded-full opacity-40"></div>
-          <div className="w-12 h-1 bg-blue-400 rounded-full opacity-60"></div>
+        {/* Decorative Bottom Line - Minimalist */}
+        <div className="mt-10 flex items-center justify-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></div>
         </div>
       </div>
     </div>

@@ -3,24 +3,19 @@
 import { useState, useEffect, useTransition, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-// ✅ Updated Import: Using GallerySummary from your consolidated types
 import { GallerySummary } from '@/types/types'; 
-
-// Your Custom Components
 import MediaLibraryHeader from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination'; 
 import CardGrid from '@/components/displayGrid'; 
 import MediaViewport from '@/components/media-viewport';
 import EmptyState from '@/components/gallery/EmptyState';
-
-// Utilities
+import { Lock, User, Calendar } from 'lucide-react';
 import { 
   getUnlockedGalleries, 
   saveUnlockedGallery
 } from '@/lib/gallery-utils';
 
 interface GalleryClientProps {
-  // ✅ Updated Prop Types to match GallerySummary
   initialGalleries: GallerySummary[];
   totalGalleries: number;
   currentPage: number;
@@ -52,12 +47,10 @@ export default function GalleryClient({
   
   const [isPending, startTransition] = useTransition();
   
-  // Local State for Inputs
   const [searchQuery, setSearchQuery] = useState(initialParams.search);
   const [sortBy, setSortBy] = useState<SortOption>(initialParams.sort as SortOption);
   const [filterType, setFilterType] = useState<FilterOption>(initialParams.filter as FilterOption);
 
-  // ✅ Wrapped in useCallback and moved above useEffect to fix hook dependency & declaration errors
   const updateUrl = useCallback((params: Record<string, string>) => {
     startTransition(() => {
       const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -74,7 +67,6 @@ export default function GalleryClient({
     });
   }, [searchParams, pathname, router, startTransition]);
 
-  // Debounce Search to update URL
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery !== initialParams.search) {
@@ -99,22 +91,20 @@ export default function GalleryClient({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Password Protection Logic
-  // ✅ Updated Argument Type to GallerySummary
   const handleGalleryClick = async (gallery: GallerySummary) => {
     const unlockedGalleries = getUnlockedGalleries();
 
     if (gallery.visibility === 'password_protected' && !unlockedGalleries.includes(gallery.id)) {
       
       const result = await Swal.fire({
-        title: '<span class="text-xl font-light text-slate-800">Protected Gallery</span>',
+        title: '<span class="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Protected Gallery</span>',
         html: `
           <div class="text-left space-y-4 mt-2">
-            <p class="text-slate-500 text-sm">Please enter the access key to view this collection.</p>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm">Please enter the access key to view this collection.</p>
             <input 
               type="password" 
               id="gallery-password" 
-              class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-slate-700 bg-white"
+              class="w-full px-4 py-3 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:border-zinc-900 dark:focus:border-white focus:ring-4 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all outline-none text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900"
               placeholder="Enter password"
               style="margin: 0;"
             />
@@ -124,9 +114,9 @@ export default function GalleryClient({
         confirmButtonText: 'Unlock',
         cancelButtonText: 'Cancel',
         customClass: {
-          popup: 'rounded-2xl shadow-xl border-0',
-          confirmButton: 'bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors',
-          cancelButton: 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 px-6 py-2.5 rounded-lg text-sm font-medium transition-colors',
+          popup: 'rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950',
+          confirmButton: 'bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors',
+          cancelButton: 'bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-6 py-2.5 rounded-xl text-sm font-medium transition-colors',
         },
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -147,7 +137,7 @@ export default function GalleryClient({
 
       Swal.fire({
         title: '',
-        html: '<div class="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-slate-900 mx-auto"></div>',
+        html: '<div class="animate-spin rounded-full h-8 w-8 border-2 border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-white mx-auto"></div>',
         showConfirmButton: false,
         allowOutsideClick: false,
         background: 'transparent',
@@ -172,15 +162,19 @@ export default function GalleryClient({
             title: 'Access Denied',
             text: data.message || 'Incorrect password',
             confirmButtonText: 'Try Again',
-            customClass: { confirmButton: 'bg-slate-900 text-white rounded-lg' }
+            customClass: { 
+              popup: 'rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-800',
+              confirmButton: 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl' 
+            }
           });
         }
-      } catch { // ✅ Removed unused 'error' variable
+      } catch {
         Swal.close();
         Swal.fire({ 
           icon: 'error', 
           title: 'Error', 
           text: 'Failed to verify password',
+          customClass: { popup: 'rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-800' }
         });
       }
     } else {
@@ -191,20 +185,17 @@ export default function GalleryClient({
   const displayedGalleries = initialGalleries;
 
   return (
-    <div className="min-h-screen bg-white relative flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 relative flex flex-col font-sans selection:bg-rose-500/30 selection:text-rose-900 dark:selection:text-rose-100">
       
-      {/* Subtle Top Accent */}
-      <div className="h-1 w-full bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-80" />
-
       {/* Content */}
       <div className="relative z-10 grow">
         
         {/* Header & Controls */}
-        <div className="bg-white/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-30 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-300">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Gallery</h1>
-              <p className="text-slate-500 mt-1">Explore our curated collections</p>
+              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Gallery</h1>
+              <p className="text-zinc-500 dark:text-zinc-400 mt-1 font-medium">Explore our curated collections</p>
             </div>
 
             <MediaLibraryHeader
@@ -235,22 +226,20 @@ export default function GalleryClient({
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {isPending && (
-             <div className="fixed inset-0 z-40 bg-white/60 backdrop-blur-sm flex items-center justify-center pointer-events-none">
-               <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-100 border-t-blue-600"></div>
+             <div className="fixed inset-0 z-40 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center pointer-events-none">
+               <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-white"></div>
              </div>
           )}
 
-          <div className="min-h-100">
+          <div className="min-h-[400px]">
             <CardGrid
               items={displayedGalleries}
               getKey={(item) => item.id}
               emptyState={<EmptyState />}
               ariaLabel="Photo Galleries"
               renderItem={(gallery, index) => {
-                // ✅ FIX: Use randomMedia for list previews. 
-                // coverMedia is not available in GallerySummary, only coverMediaId.
                 const displayMedia = gallery.randomMedia; 
                 
                 // --- Fallback State (No Media) ---
@@ -258,15 +247,15 @@ export default function GalleryClient({
                   return (
                     <button
                       onClick={() => handleGalleryClick(gallery)}
-                      className="group relative w-full aspect-4/3 bg-slate-50 rounded-xl border border-dashed border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-300 flex flex-col items-center justify-center text-center p-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className="group relative w-full aspect-[4/3] bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-900 dark:hover:border-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 flex flex-col items-center justify-center text-center p-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
                     >
-                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <svg className="w-6 h-6 text-slate-400 group-hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-6 h-6 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <h3 className="text-slate-700 font-medium">{gallery.title}</h3>
-                      <p className="text-xs text-slate-400 mt-1">Empty Collection</p>
+                      <h3 className="text-zinc-700 dark:text-zinc-300 font-bold">{gallery.title}</h3>
+                      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 uppercase tracking-widest">Empty Collection</p>
                     </button>
                   );
                 }
@@ -278,7 +267,7 @@ export default function GalleryClient({
                     className="group flex flex-col h-full cursor-pointer focus:outline-none"
                   >
                     {/* Image Container */}
-                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 transition-all duration-500 ease-out group-hover:shadow-xl group-hover:-translate-y-1 group-hover:ring-blue-500/20">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out group-hover:-translate-y-1">
                       <MediaViewport
                         mediaType={displayMedia.type}
                         fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
@@ -290,16 +279,14 @@ export default function GalleryClient({
                       />
                       
                       {/* Hover Overlay Gradient */}
-                      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       
                       {/* Locked Badge */}
                       {gallery.visibility === 'password_protected' && (
                         <div className="absolute top-3 right-3">
-                          <div className="bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-blue-600">
-                              <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-                            </svg>
-             protected
+                          <div className="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md text-zinc-700 dark:text-zinc-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-full shadow-sm border border-white/20 dark:border-zinc-800 flex items-center gap-1.5">
+                            <Lock className="w-3 h-3" />
+                            Protected
                           </div>
                         </div>
                       )}
@@ -309,11 +296,11 @@ export default function GalleryClient({
                     <div className="mt-4 px-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-slate-900 font-semibold text-base leading-snug truncate group-hover:text-blue-600 transition-colors">
+                          <h3 className="text-zinc-900 dark:text-zinc-100 font-bold text-base leading-snug truncate group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors tracking-tight">
                             {gallery.title}
                           </h3>
                           {gallery.description && (
-                            <p className="text-slate-500 text-sm mt-1 line-clamp-2 leading-relaxed">
+                            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1 line-clamp-2 leading-relaxed font-medium">
                               {gallery.description}
                             </p>
                           )}
@@ -321,21 +308,22 @@ export default function GalleryClient({
                       </div>
                       
                       {/* Meta Footer */}
-                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100">
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                         {gallery.owner ? (
                           <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-400 to-purple-400 flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                            <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase">
                               {gallery.owner.username.charAt(0)}
                             </div>
-                            <span className="text-xs font-medium text-slate-600">@{gallery.owner.username}</span>
+                            <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">@{gallery.owner.username}</span>
                           </div>
                         ) : (
-                          <div className="w-5 h-5 rounded-full bg-slate-200" />
+                          <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
                         )}
                         
-                        <span className="text-slate-300 text-xs">•</span>
+                        <span className="text-zinc-300 dark:text-zinc-700 text-xs">•</span>
                         
-                        <time className="text-xs text-slate-400 font-medium">
+                        <time className="text-xs text-zinc-400 dark:text-zinc-500 font-medium flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
                           {new Date(gallery.createdAt).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric', 
@@ -353,7 +341,7 @@ export default function GalleryClient({
       </div>
 
       {/* Pagination Footer */}
-      <div className="bg-white border-t border-slate-100 py-12 relative z-10">
+      <div className="bg-white dark:bg-zinc-950 border-t border-zinc-200/60 dark:border-zinc-800/60 py-12 relative z-10 transition-colors duration-300">
         <Pagination 
           currentPage={currentPage}
           totalPages={totalPages}

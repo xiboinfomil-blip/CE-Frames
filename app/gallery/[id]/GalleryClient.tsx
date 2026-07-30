@@ -6,6 +6,7 @@ import GalleryHeader from './components/GalleryHeader';
 import PhotoGrid from './components/PhotoGrid';
 import GalleryLightbox from '@/components/GalleryLightbox';
 import { GalleryDetail } from '@/types/types';
+import { Loader2 } from 'lucide-react';
 
 interface GalleryClientProps {
   initialGallery: GalleryDetail | null;
@@ -66,10 +67,16 @@ export default function GalleryClient({ initialGallery, galleryId }: GalleryClie
     return <PasswordGate onUnlock={handleUnlock} isLoading={isLoading} error={error} />;
   }
 
-  if (!gallery) return <div className="min-h-screen bg-white animate-pulse" />;
+  if (!gallery) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-zinc-400 dark:text-zinc-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-rose-500/30 selection:text-rose-900 dark:selection:text-rose-100">
       <GalleryHeader gallery={gallery} />
       
       <main className="container mx-auto px-4 md:px-6 py-8 max-w-[1600px]">

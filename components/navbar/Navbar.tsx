@@ -63,18 +63,18 @@ const DesktopLink = ({ item, isActive, href }: DesktopLinkProps) => {
   return (
     <Link 
       href={href} 
-      className={`group relative px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-200 ease-in-out 
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded-md
+      className={`group relative px-1 py-2 text-sm font-medium tracking-wide transition-colors duration-300 ease-in-out 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 rounded-md
         ${isActive 
-          ? 'text-stone-900 dark:text-stone-100' 
-          : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100'
+          ? 'text-zinc-900 dark:text-zinc-100' 
+          : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
         }`}
-      data-cursor="hover"
       aria-current={isActive ? 'page' : undefined}
     >
       {item.label}
+      {/* Animated Underline */}
       <span 
-        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-stone-900 dark:bg-stone-100 transition-all duration-300 ease-out rounded-full
+        className={`absolute bottom-1 left-0 h-px bg-zinc-900 dark:bg-zinc-100 transition-all duration-300 ease-out
           ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
       />
     </Link>
@@ -106,12 +106,9 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ✅ Block-level disable ensures the rule is suppressed for the setState call inside the effect
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => { 
     setIsMenuOpen(false); 
   }, [pathname]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -144,43 +141,42 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out
         ${isScrolled 
-          ? 'bg-white/80 dark:bg-stone-950/80 backdrop-blur-xl border-b border-stone-200/60 dark:border-stone-800/60 shadow-sm' 
-          : 'bg-white/50 dark:bg-stone-950/50 backdrop-blur-md border-b border-transparent'
+          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800/60 shadow-sm py-2' 
+          : 'bg-transparent border-b border-transparent py-4'
         }`}
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-12">
           
           {/* Logo */}
           <div className="shrink-0">
             <Link 
               href="/" 
-              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded-lg p-1 -ml-1"
-              data-cursor="hover"
+              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 rounded-lg p-1 -ml-1"
               aria-label="OramaCreativ Home"
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-stone-900 dark:bg-stone-100 flex items-center justify-center shadow-sm"
+                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center shadow-sm overflow-hidden"
               >
                 <Image 
                   src="/logo.png" 
                   alt="OramaCreativ Logo" 
-                  width={40} 
-                  height={40} 
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain invert dark:invert-0" 
+                  width={32} 
+                  height={32} 
+                  className="w-5 h-5 sm:w-6 sm:h-6 object-contain invert dark:invert-0" 
                   priority 
                 />
               </motion.div>
               <div className="flex flex-col justify-center">
-                <span className="font-bold text-lg sm:text-xl tracking-tight text-stone-900 dark:text-stone-100 leading-none">
-                  Orama<span className="text-stone-500 dark:text-stone-400 font-light">Creativ</span>
+                <span className="font-bold text-lg sm:text-xl tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
+                  Orama<span className="text-zinc-500 dark:text-zinc-400 font-light">Creativ</span>
                 </span>
               </div>
             </Link>
@@ -188,7 +184,7 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">
-            <ul className="flex items-center gap-1" role="menubar">
+            <ul className="flex items-center gap-6" role="menubar">
               {desktopItems.map((item) => {
                 const isActive = pathname === item.href || 
                   (item.activePaths && item.activePaths.some((path: string) => 
@@ -229,14 +225,13 @@ export default function Navbar() {
               })}
             </ul>
 
-            <div className="w-px h-6 bg-stone-200 dark:bg-stone-800" aria-hidden="true" />
+            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
 
             <div className="flex items-center gap-3">
               {!isAuthenticated ? (
                 <Link 
                   href={AUTH_ITEMS.login.href || '#'} 
-                  data-cursor="hover" 
-                  className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-stone-900 dark:bg-stone-100 dark:text-stone-900 rounded-lg shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+                  className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg shadow-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
                 >
                   <span>{AUTH_ITEMS.login.label}</span>
                 </Link>
@@ -244,8 +239,7 @@ export default function Navbar() {
                 <motion.button 
                   whileTap={{ scale: 0.96 }} 
                   onClick={handleLogout} 
-                  data-cursor="hover" 
-                  className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800/50 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
                   aria-label="Log out of your account"
                 >
                   {AUTH_ITEMS.logout.label}
@@ -259,11 +253,10 @@ export default function Navbar() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              data-cursor="hover"
-              className={`relative p-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2
+              className={`relative p-2.5 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2
                 ${isMenuOpen 
-                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100' 
-                  : 'bg-stone-100/50 dark:bg-stone-800/50 text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-700/50'
+                  ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100' 
+                  : 'bg-zinc-100/50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
                 }`}
               aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMenuOpen}

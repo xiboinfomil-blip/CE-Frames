@@ -2,13 +2,15 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Swal, { SweetAlertOptions } from 'sweetalert2'; // ✅ Imported SweetAlertOptions
+import Swal, { SweetAlertOptions } from 'sweetalert2';
 import MediaCard from './components/MediaCard'; 
 import AddMediaModal from './components/AddMediaModal'; 
 import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import CardGrid from '@/components/displayGrid';
+import { CustomButton } from '@/components/ui/CustomButton';
+import { FolderOpen, GripVertical } from 'lucide-react';
 
 // DnD Kit Imports
 import {
@@ -130,15 +132,16 @@ function SortableMediaCard({
     <div 
       ref={setNodeRef} 
       style={style} 
-      {...attributes} 
-      {...listeners} 
-      className="cursor-grab active:cursor-grabbing relative group"
+      className={`relative group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
-      {/* Visual Drag Handle Indicator (appears on hover) */}
-      <div className="absolute top-2 left-2 z-10 bg-black/60 text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-        </svg>
+      {/* Visual Drag Handle Indicator */}
+      <div 
+        {...attributes} 
+        {...listeners}
+        className="absolute top-3 left-3 z-20 p-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-black/80 cursor-grab active:cursor-grabbing touch-none"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical className="w-4 h-4" />
       </div>
       
       <MediaCard 
@@ -168,7 +171,7 @@ export default function ManageGalleryClient({
   const [gallerySearchInput, setGallerySearchInput] = useState(initialFilters.gallerySearch);
   const [modalSearchInput, setModalSearchInput] = useState(initialFilters.search);
 
-  // Sync server state to local state when server data changes (e.g., after router.refresh())
+  // Sync server state to local state when server data changes
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setGallerySearchInput(initialFilters.gallerySearch);
@@ -177,7 +180,7 @@ export default function ManageGalleryClient({
   }, [initialFilters.gallerySearch, initialFilters.search, galleryMediaItems]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  // --- Shared Reorder Logic (Used by both DnD and Manual Order) ---
+  // --- Shared Reorder Logic ---
   const applyNewOrder = useCallback(async (newItems: MediaItem[], previousItems: MediaItem[]) => {
     setLocalMediaItems(newItems);
     const orderedMediaIds = newItems.map((item) => item.mediaId);
@@ -194,7 +197,6 @@ export default function ManageGalleryClient({
     } catch (error) {
       console.error('Failed to reorder media', error);
       Swal.fire('Error', 'Failed to update order. Please try again.', 'error');
-      // Revert optimistic update on failure
       setLocalMediaItems(previousItems);
     }
   }, [gallery.id]);
@@ -226,7 +228,6 @@ export default function ManageGalleryClient({
     const currentIndex = localMediaItems.findIndex(item => item.id === mediaId);
     if (currentIndex === -1) return;
 
-    // ✅ Explicitly typed as SweetAlertOptions, with inputAttributes values as strings
     const swalOptions: SweetAlertOptions = {
       title: 'Set Position',
       text: `Enter a position between 1 and ${localMediaItems.length}`,
@@ -241,8 +242,13 @@ export default function ManageGalleryClient({
       showCancelButton: true,
       confirmButtonText: 'Update Position',
       cancelButtonText: 'Cancel',
-      confirmButtonColor: '#3b82f6',
-      cancelButtonColor: '#94a3b8',
+      confirmButtonColor: '#18181b',
+      cancelButtonColor: '#e4e4e7',
+      customClass: {
+        popup: 'rounded-2xl shadow-xl border border-zinc-100',
+        confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-zinc-800',
+        cancelButton: 'px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-600 hover:bg-zinc-100'
+      }
     };
 
     const result = await Swal.fire(swalOptions);
@@ -256,9 +262,8 @@ export default function ManageGalleryClient({
     }
 
     const targetIndex = targetPosition - 1;
-    if (targetIndex === currentIndex) return; // No change needed
+    if (targetIndex === currentIndex) return;
 
-    // Move item to new position (shifts other items)
     const newItems = [...localMediaItems];
     const [movedItem] = newItems.splice(currentIndex, 1);
     newItems.splice(targetIndex, 0, movedItem);
@@ -271,7 +276,9 @@ export default function ManageGalleryClient({
         title: 'Position Updated',
         text: `Moved to position ${targetPosition}`,
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
+        background: '#ffffff',
+        customClass: { popup: 'rounded-2xl shadow-xl border border-zinc-100' }
       });
     }
   }, [localMediaItems, applyNewOrder]);
@@ -372,6 +379,11 @@ export default function ManageGalleryClient({
       confirmButtonColor: '#dc2626',
       cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Yes, remove it',
+      customClass: {
+        popup: 'rounded-2xl shadow-xl border border-zinc-100',
+        confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-red-700',
+        cancelButton: 'px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-600 hover:bg-zinc-100'
+      }
     });
 
     if (!result.isConfirmed) return;
@@ -408,9 +420,11 @@ export default function ManageGalleryClient({
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans relative">
+    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans relative selection:bg-rose-500/30">
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md border-b border-slate-200">
+        
+        {/* Sticky Header */}
+        <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-300">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <MediaLibraryHeader
               searchValue={gallerySearchInput}
@@ -429,7 +443,7 @@ export default function ManageGalleryClient({
           </div>
         </header>
 
-        <main className="flex-1 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -451,24 +465,30 @@ export default function ManageGalleryClient({
                 )}
                 getKey={(item: MediaItem) => item.id}
                 emptyState={
-                  <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-slate-200">
-                    <h3 className="text-2xl font-bold text-slate-900">
+                  <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm">
+                    <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100 dark:border-zinc-800">
+                      <FolderOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+                    </div>
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
                       {mainPagination.total === 0 ? 'Gallery is Empty' : 'No Matches Found'}
                     </h3>
-                    <p className="text-slate-500 text-sm mt-2">
-                      {mainPagination.total === 0 ? 'No assets assigned to this gallery yet.' : 'Try adjusting your search.'}
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">
+                      {mainPagination.total === 0 ? 'Start curating by adding your first asset.' : 'Try adjusting your search parameters.'}
                     </p>
                     {mainPagination.total === 0 && (
-                      <button 
+                      <CustomButton 
+                        variant="primary"
+                        size="lg"
                         onClick={() => setIsAddModalOpen(true)}
-                        className="mt-6 px-6 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors"
+                        className="mt-8"
+                        leftIcon={<FolderOpen className="w-4 h-4" />}
                       >
                         Add Asset
-                      </button>
+                      </CustomButton>
                     )}
                   </div>
                 }
-                className="w-full min-h-100 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"
+                className="w-full min-h-[400px] grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"
                 ariaLabel="Gallery media items"
               />
             </SortableContext>
