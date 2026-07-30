@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import type { MediaSchema } from '@/app/media-library/components/MediaCard';
 import { MEDIA_TYPES } from '@/db/schema';
+import Skeleton from '@/components/Skeleton'; // Adjust path if your Skeleton component is located elsewhere
 
 export const metadata = {
   title: 'Media Library | Racecar Portfolio',
@@ -59,7 +60,6 @@ export default async function MediaLibraryPage({ searchParams }: MediaLibraryPag
     exifData: m.exifData as Record<string, unknown> | null,
     caption: m.caption,
     locationName: m.locationName,
-    // ✅ Access coordinates as an array/tuple using indices [0] and [1]
     coordinates: m.coordinates 
       ? [Number(m.coordinates[0]), Number(m.coordinates[1])] as [number, number] 
       : null,
@@ -92,11 +92,26 @@ export default async function MediaLibraryPage({ searchParams }: MediaLibraryPag
 
 function MediaLibrarySkeleton() {
   return (
-    <div className="space-y-4">
-      <div className="h-10 bg-gray-200 rounded animate-pulse" />
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="w-full px-6 lg:px-12 py-12">
+      {/* Header Skeleton */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+           <div className="absolute inset-0 skeleton-shimmer" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid Skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="aspect-square bg-gray-200 rounded animate-pulse" />
+          <Skeleton key={i} variant="grid-card" />
         ))}
       </div>
     </div>

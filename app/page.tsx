@@ -74,14 +74,14 @@ export default function Home() {
                 href="/gallery" 
                 className="group flex items-center gap-3 px-8 py-4 bg-white text-zinc-900 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all duration-300 shadow-xl shadow-black/20"
               >
-                View Portfolio
+                Explore
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <Link 
                 href="/contact" 
                 className="px-8 py-4 bg-transparent border border-white/20 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm"
               >
-                Book Now
+                Contact Us
               </Link>
             </div>
           </FadeIn>
@@ -235,48 +235,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 6. FOOTER CTA */}
-      <section className="py-32 bg-zinc-900 dark:bg-black text-white text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-        </div>
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <FadeIn>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8">
-              READY TO CREATE?
-            </h2>
-            <p className="text-zinc-400 text-lg mb-12 max-w-xl mx-auto font-medium">
-              Whether you&apos;re chasing podiums or saying &quot;I do&quot;, let&apos;s make something timeless together.
-            </p>
-            <Link 
-              href="/contact" 
-              className="group inline-flex items-center gap-3 px-10 py-5 bg-white dark:bg-zinc-100 text-zinc-900 dark:text-zinc-900 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 dark:hover:text-white transition-all duration-300 shadow-2xl shadow-black/50 hover:-translate-y-1"
-            >
-              Start Your Project
-              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* SIMPLE FOOTER */}
-      <footer className="bg-zinc-950 text-zinc-500 py-12 border-t border-zinc-900">
-        <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-white font-black tracking-tighter text-xl">
-            ORAMA<span className="text-rose-600">.</span>
-          </div>
-          <div className="text-sm font-medium">
-            © {new Date().getFullYear()} Orama Creativ. All rights reserved.
-          </div>
-          <div className="flex gap-6 text-sm font-bold uppercase tracking-wider">
-            <Link href="#" className="hover:text-white transition-colors">Instagram</Link>
-            <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
-            <Link href="#" className="hover:text-white transition-colors">Email</Link>
-          </div>
-        </div>
-      </footer>
 
     </main>
   );

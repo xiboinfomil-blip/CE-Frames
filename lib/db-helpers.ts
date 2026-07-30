@@ -26,6 +26,12 @@ type GalleryWithItems = GalleryRow & {
 };
 type GalleryMediaWithDetails = GalleryMediaRow & { media: MediaRow };
 
+// Simple UUID validation regex
+const isValidUUID = (id: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
+
 // ==========================================
 // 1. USERS HELPERS
 // ==========================================
@@ -118,10 +124,12 @@ export const mediaHelpers = {
   },
   
   update: async (id: string, data: Partial<typeof media.$inferInsert>) => {
+    if (!isValidUUID(id)) return [];
     return await db.update(media).set(data).where(eq(media.id, id)).returning();
   },
   
   delete: async (id: string) => {
+    if (!isValidUUID(id)) return [];
     return await db.delete(media).where(eq(media.id, id)).returning();
   }
 };
@@ -133,7 +141,10 @@ export const galleryHelpers = {
   create: async (data: typeof galleries.$inferInsert) => {
     return await db.insert(galleries).values(data).returning();
   },
+  
   findByNotPrivateId: async (id: string): Promise<GalleryWithItems | undefined> => {
+    if (!isValidUUID(id)) return undefined;
+
     const gallery = await db.query.galleries.findFirst({
       where: and(
         eq(galleries.id, id),
@@ -162,6 +173,8 @@ export const galleryHelpers = {
   },
   
   findById: async (id: string): Promise<GalleryWithItems | undefined> => {
+    if (!isValidUUID(id)) return undefined;
+
     const gallery = await db.query.galleries.findFirst({
       where: eq(galleries.id, id),
       with: { 
@@ -418,14 +431,20 @@ export const galleryHelpers = {
   },
 
   update: async (id: string, data: Partial<typeof galleries.$inferInsert>) => {
+    if (!isValidUUID(id)) return [];
     return await db.update(galleries).set(data).where(eq(galleries.id, id)).returning();
   },
 
   delete: async (id: string) => {
+    if (!isValidUUID(id)) return [];
     return await db.delete(galleries).where(eq(galleries.id, id)).returning();
   },
 
   verifyGalleryPassword: async (galleryId: string, password: string): Promise<PasswordVerificationResult> => {
+    if (!isValidUUID(galleryId)) {
+      return { success: false, error: 'Invalid gallery ID format' };
+    }
+
     const gallery = await db.query.galleries.findFirst({
       where: eq(galleries.id, galleryId),
       columns: { passwordHash: true, visibility: true }
@@ -458,10 +477,13 @@ export const galleryHelpers = {
 // ==========================================
 export const galleryMediaHelpers = {
   addMediaToGallery: async (galleryId: string, mediaId: string, position: number) => {
+    if (!isValidUUID(galleryId) || !isValidUUID(mediaId)) return [];
     return await db.insert(galleryMedia).values({ galleryId, mediaId, position }).returning();
   },
 
   addMediaToGalleryEnd: async (galleryId: string, mediaId: string) => {
+    if (!isValidUUID(galleryId) || !isValidUUID(mediaId)) return [];
+
     const lastItem = await db.query.galleryMedia.findFirst({
       where: eq(galleryMedia.galleryId, galleryId),
       orderBy: [desc(galleryMedia.position)],
@@ -478,6 +500,7 @@ export const galleryMediaHelpers = {
   },
 
   getGalleryMediaWithDetails: async (galleryId: string) => {
+    if (!isValidUUID(galleryId)) return [];
     const items = await db.query.galleryMedia.findMany({
       where: eq(galleryMedia.galleryId, galleryId),
       orderBy: [asc(galleryMedia.position)],
@@ -490,7 +513,7 @@ export const galleryMediaHelpers = {
   },
 
   reorderGallery: async (galleryId: string, orderedMediaIds: string[]) => {
-    if (orderedMediaIds.length === 0) return [];
+    if (!isValidUUID(galleryId) || orderedMediaIds.length === 0) return [];
     
     const firstQuery = db.update(galleryMedia)
       .set({ position: 0 })
@@ -506,6 +529,7 @@ export const galleryMediaHelpers = {
   },
   
   removeMediaFromGallery: async (galleryId: string, mediaId: string) => {
+    if (!isValidUUID(galleryId) || !isValidUUID(mediaId)) return [];
     return await db.delete(galleryMedia)
       .where(and(eq(galleryMedia.galleryId, galleryId), eq(galleryMedia.mediaId, mediaId)))
       .returning();
@@ -518,6 +542,10 @@ export const galleryMediaHelpers = {
     filter?: string;
     sortBy?: 'newest' | 'oldest' | 'name' | 'position';
   }): Promise<PaginatedResponse<GalleryMediaWithDetails>> => {
+    if (!isValidUUID(galleryId)) {
+      return { items: [], total: 0, hasMore: false };
+    }
+
     const { limit = 50, offset = 0, search, filter, sortBy = 'position' } = options || {};
     
     let mediaIdFilter: string[] | undefined = undefined;

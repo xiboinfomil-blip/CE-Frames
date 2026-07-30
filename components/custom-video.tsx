@@ -17,6 +17,7 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
     ...props 
   }, ref) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    
 
     const handleReady = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
       setIsLoaded(true);

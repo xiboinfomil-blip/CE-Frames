@@ -1,7 +1,8 @@
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleryClient from './GalleryClient';
-// ✅ Updated Import: Using GallerySummary instead of the old Gallery type
 import { GallerySummary } from '@/types/types'; 
+import { Suspense } from 'react';
+import Skeleton from '@/components/Skeleton'; // Adjust path if your Skeleton component is located elsewhere
 
 export const dynamic = 'force-dynamic';
 
@@ -12,14 +13,41 @@ interface SearchParams {
   page?: string;
 }
 
-// ✅ Updated Result Type to match GallerySummary
 type FindPublicResult = {
   items: GallerySummary[];
   total: number;
   hasMore: boolean;
 };
 
-export default async function GalleryPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+function GalleryPageLoading() {
+  return (
+    <div className="min-h-screen bg-white px-6 lg:px-12 py-12">
+      {/* Header Skeleton */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+           <div className="absolute inset-0 skeleton-shimmer" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid Skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        {[...Array(12)].map((_, i) => (
+          <Skeleton key={i} variant="grid-card" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function GalleryContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
   
   const currentPage = Number(params.page) || 1;
@@ -37,9 +65,6 @@ export default async function GalleryPage({ searchParams }: { searchParams: Prom
       filter: params.filter || 'all'
     });
     
-    // ✅ Safe Assignment: Assuming galleryHelpers returns a shape compatible with GallerySummary
-    // If your helper returns Prisma objects directly, you might need a small mapping function here
-    // to ensure dates are Date objects and not strings, and nested objects match the interface.
     result = res as FindPublicResult; 
   } catch (err) {
     console.error('Error fetching galleries:', err);
@@ -61,5 +86,13 @@ export default async function GalleryPage({ searchParams }: { searchParams: Prom
         filter: params.filter || 'all'
       }}
     />
+  );
+}
+
+export default async function GalleryPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  return (
+    <Suspense fallback={<GalleryPageLoading />}>
+      <GalleryContent searchParams={searchParams} />
+    </Suspense>
   );
 }

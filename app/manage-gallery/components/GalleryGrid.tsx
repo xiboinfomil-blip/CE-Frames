@@ -4,7 +4,7 @@ import { GallerySummary } from '@/types/types';
 import { GalleryCard } from './GalleryCard';
 import CardGrid from '@/components/displayGrid'; 
 import { CustomButton } from '@/components/ui/CustomButton';
-import { FolderOpen } from 'lucide-react';
+import { Images, Plus } from 'lucide-react';
 
 interface GalleryGridProps {
   galleries: GallerySummary[];
@@ -14,40 +14,53 @@ interface GalleryGridProps {
 
 export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGridProps) {
   
-  // Custom empty state specific to Galleries
   const galleryEmptyState = (
-    <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm">
-      <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100 dark:border-zinc-800">
-        <FolderOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+    <div className="flex flex-col items-center justify-center py-24 md:py-40 text-center w-full animate-in fade-in zoom-in-95 duration-500">
+      <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-50 rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-zinc-100 shadow-sm">
+        <Images className="w-10 h-10 md:w-12 md:h-12 text-zinc-300" />
       </div>
-      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No galleries yet</h3>
-      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">Create your first collection to start organizing your masterpieces.</p>
+      <h3 className="text-2xl md:text-3xl font-light text-zinc-900 tracking-tight">
+        No collections yet
+      </h3>
+      <p className="text-zinc-600 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
+        Your portfolio is waiting. Create your first curated gallery to start organizing your visual stories.
+      </p>
       <CustomButton 
         variant="primary"
         size="lg"
         onClick={() => onEdit({} as GallerySummary)}
-        className="mt-8"
-        leftIcon={<FolderOpen className="w-4 h-4" />}
+        className="mt-10 px-8 py-4 text-base font-medium tracking-wide shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+        leftIcon={<Plus className="w-5 h-5" />}
       >
-        Create Gallery
+        Create First Gallery
       </CustomButton>
     </div>
   );
 
   return (
-    <CardGrid
-      items={galleries}
-      ariaLabel="Photo galleries"
-      emptyState={galleryEmptyState}
-      getKey={(gallery) => gallery.id}
-      renderItem={(gallery, index) => (
-        <GalleryCard 
-          gallery={gallery} 
-          onEdit={() => onEdit(gallery)}
-          onDelete={() => onDelete(gallery.id)}
-          priority={index < 4}
-        />
-      )}
-    />
+    <div className="w-full min-h-[60vh] flex flex-col">
+      <CardGrid
+        items={galleries}
+        ariaLabel="Photo galleries"
+        emptyState={galleryEmptyState}
+        getKey={(gallery) => gallery.id}
+        /* 
+           RESPONSIVE PHOTOGRAPHY GRID LAYOUT:
+           - Replaced rigid minmax(500px) with fluid, breakpoint-driven columns.
+           - Ensures 3:4 cards remain at an optimal, elegant viewing size across all devices.
+           - 1 col (mobile), 2 cols (tablet), 3 cols (laptop), 4 cols (large desktop).
+           - Generous, breathing gaps that scale with the viewport.
+        */
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 xl:gap-10 p-4 md:p-8 lg:p-12 w-full max-w-[1920px] mx-auto"
+        renderItem={(gallery, index) => (
+          <GalleryCard 
+            gallery={gallery} 
+            onEdit={() => onEdit(gallery)}
+            onDelete={() => onDelete(gallery.id)}
+            priority={index < 4} // Prioritize LCP (Largest Contentful Paint) for the first row only
+          />
+        )}
+      />
+    </div>
   );
 }

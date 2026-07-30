@@ -3,9 +3,10 @@ import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
 import GalleriesContent from './GalleriesContent';
 import { Suspense } from 'react';
-// ✅ Updated Import
-import { GallerySummary, MediaSummary } from '@/types/types';
-import { VISIBILITY_STATUSES, MediaType } from '@/db/schema';
+import Skeleton from '@/components/Skeleton';
+// ✅ Import shared types to ensure consistency
+import { GallerySummary, MediaSummary, PaginatedResponse } from '@/types/types';
+import { VISIBILITY_STATUSES, MediaType, LayoutStyle } from '@/db/schema';
 
 export const metadata = {
   title: 'My Galleries',
@@ -21,20 +22,86 @@ interface PageProps {
   }>;
 }
 
+// ✅ FIX: Define EnrichedGallery with proper optionality
+interface EnrichedGallery {
+  id: string | number;
+  title: string;
+  slug: string;
+  description: string | null;
+  visibility: typeof VISIBILITY_STATUSES[number];
+  layoutStyle: LayoutStyle; // Uses shared enum type
+  coverMediaId: string | number | null;
+  createdAt: Date | string;
+  // ✅ FIX: Make updatedAt truly optional (?) to match DB reality
+  updatedAt?: Date | string | null; 
+  _count?: {
+    galleryMedia: number;
+  };
+  randomMedia?: {
+    id: string | number;
+    type: MediaType;
+    thumbnailUrl: string;
+    fullResUrl: string | null;
+    caption: string | null;
+    width: number | string | null;
+    height: number | string | null;
+    durationSeconds: number | string | null;
+    originalFilename: string | null;
+    uploadedAt: Date | string;
+    exifData?: Record<string, unknown>;
+    locationName: string | null;
+  } | null;
+  user?: {
+    id: string | number;
+    username: string;
+    avatarUrl: string | null;
+  } | null;
+}
+
 function GalleriesLoading() {
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-mono text-sm uppercase tracking-widest animate-pulse">Loading Telemetry...</p>
+    <div className="min-h-screen bg-white">
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-zinc-100 py-6 px-6 lg:px-12 mb-8">
+        <div className="flex justify-between items-end mb-8">
+          <div className="space-y-3">
+            <div className="h-10 w-48 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+              <div className="absolute inset-0 skeleton-shimmer" />
+            </div>
+            <div className="h-5 w-32 rounded-md bg-zinc-50 dark:bg-zinc-800/50 overflow-hidden relative">
+              <div className="absolute inset-0 skeleton-shimmer" />
+            </div>
+          </div>
+          <div className="hidden md:block h-4 w-24 rounded-full bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+            <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="h-12 flex-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+            <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+          <div className="flex gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-12 w-28 rounded-xl bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+                <div className="absolute inset-0 skeleton-shimmer" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      <main className="w-full px-6 lg:px-12 py-12 min-h-[60vh]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 xl:gap-8">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} variant="grid-card" />
+          ))}
+        </div>
+      </main>
     </div>
   );
 }
 
-// ✅ Transformation Function: Maps EnrichedGallery (DB shape) to GallerySummary (UI shape)
-function mapToGallerySummary(gallery: any): GallerySummary {
-  // Map randomMedia if it exists in the DB response
+function mapToGallerySummary(gallery: EnrichedGallery): GallerySummary {
   const randomMedia: MediaSummary | null = gallery.randomMedia ? {
     id: String(gallery.randomMedia.id),
     type: gallery.randomMedia.type as MediaType,
@@ -52,24 +119,18 @@ function mapToGallerySummary(gallery: any): GallerySummary {
     locationName: gallery.randomMedia.locationName || null,
   } : null;
 
-  // Map owner/user info
-  const owner = gallery.user ? {
-    id: String(gallery.user.id),
-    username: String(gallery.user.username || ''),
-    avatarUrl: gallery.user.avatarUrl ? String(gallery.user.avatarUrl) : null,
-  } : undefined;
-
   return {
     id: String(gallery.id),
     title: String(gallery.title),
     slug: String(gallery.slug),
     description: gallery.description ? String(gallery.description) : null,
     visibility: gallery.visibility,
-    layoutStyle: gallery.layoutStyle, // Ensure this field exists in DB response
+    layoutStyle: gallery.layoutStyle, // Now type-safe via LayoutStyle import
     coverMediaId: gallery.coverMediaId ? String(gallery.coverMediaId) : null,
     createdAt: gallery.createdAt instanceof Date 
       ? gallery.createdAt 
       : new Date(String(gallery.createdAt)),
+    // ✅ FIX: Safely handle optional updatedAt
     updatedAt: gallery.updatedAt ? (
       gallery.updatedAt instanceof Date 
         ? gallery.updatedAt 
@@ -77,7 +138,7 @@ function mapToGallerySummary(gallery: any): GallerySummary {
     ) : undefined,
     mediaCount: gallery._count?.galleryMedia ? Number(gallery._count.galleryMedia) : undefined,
     randomMedia,
-    owner,
+    owner: undefined,
   };
 }
 
@@ -100,16 +161,15 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
     );
   }
 
-  // Fetch galleries - returns PaginatedResponse<EnrichedGallery>
+  // ✅ Type the response explicitly
   const response = await galleryHelpers.findAll({
     search: params.search,
     sortBy: params.sortBy || 'newest',
     filter: params.visibility,
     limit,
     offset,
-  });
+  }) as PaginatedResponse<EnrichedGallery>;
 
-  // ✅ Transform each gallery to match GallerySummary interface
   const transformedGalleries: GallerySummary[] = response.items.map(mapToGallerySummary);
 
   const totalPages = Math.ceil(response.total / limit);

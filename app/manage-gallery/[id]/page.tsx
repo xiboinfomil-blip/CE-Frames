@@ -4,6 +4,7 @@ import { galleryHelpers, mediaHelpers, galleryMediaHelpers } from '@/lib/db-help
 import ManageGalleryClient from './ManageGalleryClient';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import Skeleton from '@/components/Skeleton'; // Adjust path if your Skeleton component is located elsewhere
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,10 +20,27 @@ interface PageProps {
 
 function ManageGalleryLoading() {
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-mono text-sm uppercase tracking-widest animate-pulse">Loading Gallery Telemetry...</p>
+    <div className="min-h-screen bg-white px-6 lg:px-12 py-12">
+      {/* Header Skeleton */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+           <div className="absolute inset-0 skeleton-shimmer" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+          <div className="h-10 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
+             <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid Skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        {[...Array(8)].map((_, i) => (
+          <Skeleton key={i} variant="grid-card" />
+        ))}
       </div>
     </div>
   );
