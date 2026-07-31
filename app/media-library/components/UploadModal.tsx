@@ -10,6 +10,18 @@ import BaseModal from '@/components/BaseModal';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
 import StorageIndicator from './StorageIndicator';
+import { 
+  HiPlay, 
+  HiArrowUpTray, 
+  HiExclamationTriangle, 
+  HiXMark, 
+  HiExclamationCircle, 
+  HiMapPin, 
+  HiArrowPath,
+  HiChevronLeft,
+  HiChevronRight,
+  HiTrash
+} from 'react-icons/hi2';
 
 interface ExifData {
   make: string | null;
@@ -72,7 +84,6 @@ const VALID_TYPES = getValidMimeTypes();
 const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
 // --- Sub-Components ---
-// (ThumbnailItem remains exactly the same as your original code)
 const ThumbnailItem = memo(({ 
   item, 
   idx, 
@@ -108,10 +119,7 @@ const ThumbnailItem = memo(({
       />
     ) : (
       <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-        <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <HiPlay className="w-6 h-6 text-zinc-400" />
       </div>
     )}
     <div className="absolute top-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md">
@@ -495,11 +503,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           onClick={handleSubmit}
           disabled={mediaItems.length === 0 || isLoading || isCheckingStorage}
           isLoading={isLoading}
-          leftIcon={!isCheckingStorage && !isLoading ? (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-          ) : undefined}
+          leftIcon={!isCheckingStorage && !isLoading ? <HiArrowUpTray className="w-4 h-4" /> : undefined}
           className="flex-1 sm:flex-none"
         >
           {isCheckingStorage ? 'Checking...' : `Upload ${mediaItems.length > 1 ? `${mediaItems.length} Assets` : 'Asset'}`}
@@ -526,9 +530,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
         {rejectedFiles.length > 0 && (
           <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 rounded-xl text-sm font-medium flex items-start gap-3" role="alert" aria-live="polite">
-            <svg className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+            <HiExclamationTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
             <div className="flex-1">
               <p className="font-semibold text-amber-800 dark:text-amber-300 text-xs mb-1 uppercase tracking-wide">Files Excluded</p>
               <p className="text-amber-700/80 dark:text-amber-200/70 leading-relaxed">{rejectedFiles.join(', ')}</p>
@@ -538,18 +540,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               className="p-1.5 text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label="Dismiss exclusion notice"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <HiXMark className="w-4 h-4" />
             </button>
           </div>
         )}
 
         {error && (
           <div className="p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-200 rounded-xl text-sm font-medium flex items-start gap-3" role="alert" aria-live="assertive">
-            <svg className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <HiExclamationCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
             <span>{error}</span>
           </div>
         )}
@@ -594,9 +592,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300' 
                 : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 group-hover:text-zinc-600 dark:group-hover:text-zinc-300'
             }`}>
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
+              <HiArrowUpTray className="w-8 h-8" />
             </div>
             
             <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
@@ -636,9 +632,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
                         aria-label="Previous media"
                       >
-                        <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <HiChevronLeft className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
                       </button>
                       <button
                         onClick={() => setCurrentIndex(prev => Math.min(mediaItems.length - 1, prev + 1))}
@@ -646,9 +640,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
                         aria-label="Next media"
                       >
-                        <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <HiChevronRight className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
                       </button>
                     </>
                   )}
@@ -694,9 +686,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                          <>
                           <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
                           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
+                            <HiMapPin className="w-3 h-3" />
                             GPS Detected
                           </span>
                          </>
@@ -742,10 +732,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                       >
                         {isDetectingLocation ? (
                           <>
-                            <svg className="animate-spin h-3 w-3 mr-1.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg> 
+                            <HiArrowPath className="animate-spin h-3 w-3 mr-1.5" /> 
                             Detecting...
                           </>
                         ) : 'Auto-Detect'}

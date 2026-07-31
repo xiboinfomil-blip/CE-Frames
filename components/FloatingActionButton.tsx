@@ -1,6 +1,7 @@
 'use client';
 
 import React, { memo } from 'react';
+import { HiPlus } from 'react-icons/hi2';
 
 interface FloatingActionButtonProps {
   onClick: () => void;
@@ -10,26 +11,10 @@ interface FloatingActionButtonProps {
   className?: string;
 }
 
-// Clean, modern Plus Icon optimized for gallery aesthetics
-const PlusIcon = () => (
-  <svg 
-    className="w-6 h-6 sm:w-7 sm:h-7" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor"
-    strokeWidth={1.5}
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 5v14M5 12h14" />
-  </svg>
-);
-
 const FloatingActionButton = memo(function FloatingActionButton({ 
   onClick, 
   label = "Add New", 
-  icon = <PlusIcon />,
+  icon = <HiPlus className="w-6 h-6 sm:w-7 sm:h-7" />,
   position = 'bottom-right',
   className = ""
 }: FloatingActionButtonProps) {

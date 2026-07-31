@@ -210,10 +210,13 @@ export const GalleryCard = memo(function GalleryCard({
 
         {/* Elegant "Manage" Hint - Appears on Hover (Clipped beautifully at the bottom edge) */}
         <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out pointer-events-none p-4 md:p-6">
-          <div className="pointer-events-auto w-full bg-white/90 backdrop-blur-xl border border-white/50 text-zinc-900 text-sm md:text-base font-semibold px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 hover:bg-white transition-all">
+          <Link
+            href={`/manage-gallery/${gallery.id}`}
+            className="pointer-events-auto w-full bg-white/90 backdrop-blur-xl border border-white/50 text-zinc-900 text-sm md:text-base font-semibold px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 hover:bg-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+          >
             Manage Gallery
             <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
-          </div>
+          </Link>
         </div>
       </div>
 

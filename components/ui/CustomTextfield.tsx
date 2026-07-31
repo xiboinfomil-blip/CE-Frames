@@ -1,4 +1,5 @@
 import * as React from "react";
+import { HiExclamationCircle } from 'react-icons/hi2';
 import { cn } from "@/lib/utils";
 
 export interface CustomTextfieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -94,11 +95,7 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
         {/* Error Message (Editorial Warning) */}
         {error && (
           <p className="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5 mt-1 pl-1 animate-in fade-in slide-in-from-top-1 duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" x2="12" y1="8" y2="12"/>
-              <line x1="12" x2="12.01" y1="16" y2="16"/>
-            </svg>
+            <HiExclamationCircle className="w-3 h-3" />
             {error}
           </p>
         )}

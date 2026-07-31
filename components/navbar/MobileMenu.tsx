@@ -4,6 +4,7 @@ import { motion, Variants } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar';
+import { HiArrowRightOnRectangle } from 'react-icons/hi2';
 
 // --- Type Definitions ---
 interface Category {
@@ -249,9 +250,7 @@ export default function MobileMenu({
                 onClick={handleLogout}
                 className="group relative flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl bg-transparent border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-sm tracking-wide hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
               >
-                <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
+                <HiArrowRightOnRectangle className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
                 <span>{AUTH_ITEMS.logout.mobileLabel || AUTH_ITEMS.logout.label || 'Sign Out'}</span>
               </motion.button>
             </motion.div>

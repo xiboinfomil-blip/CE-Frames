@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { HiXMark } from 'react-icons/hi2';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -169,9 +170,7 @@ export default function BaseModal({
               className="group flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
               aria-label="Close modal"
             >
-              <svg className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <HiXMark className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" />
             </button>
           </div>
 

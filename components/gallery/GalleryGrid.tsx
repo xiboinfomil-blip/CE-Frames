@@ -3,6 +3,7 @@
 // ✅ Updated Import: Using GallerySummary from consolidated types
 import { GallerySummary } from '@/types/types';
 import MediaViewport from '@/components/media-viewport';
+import { HiPhoto, HiLockClosed } from 'react-icons/hi2';
 
 interface GalleryGridProps {
   galleries: GallerySummary[];
@@ -26,20 +27,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
             >
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center p-4">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-12 w-12 mx-auto text-slate-600 mb-2" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={1.5} 
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                    />
-                  </svg>
+                  <HiPhoto className="h-12 w-12 mx-auto text-slate-600 mb-2" />
                   <p className="text-slate-500 text-sm">No media</p>
                 </div>
               </div>
@@ -52,9 +40,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
                 <h3 className="text-white font-bold text-lg truncate">{gallery.title}</h3>
                 {gallery.visibility === 'password_protected' && (
                   <div className="mt-2 flex items-center gap-2 text-xs text-red-400 font-mono uppercase tracking-widest">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                      <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-                    </svg>
+                    <HiLockClosed className="w-3 h-3" />
                     <span>Locked</span>
                   </div>
                 )}
@@ -97,9 +83,7 @@ const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
                 {gallery.visibility === 'password_protected' && (
                   <div className="shrink-0 mt-1">
                     <div className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-                      </svg>
+                      <HiLockClosed className="w-3 h-3" />
                       Locked
                     </div>
                   </div>

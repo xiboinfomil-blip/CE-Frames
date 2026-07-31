@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
+import { HiOutlineUser, HiOutlineLockClosed, HiArrowRight, HiExclamationCircle } from 'react-icons/hi2';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
 
@@ -44,11 +44,7 @@ export default function LoginForm() {
         {/* Refined Error Message */}
         {error && (
           <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" x2="12" y1="8" y2="12"/>
-              <line x1="12" x2="12.01" y1="16" y2="16"/>
-            </svg>
+            <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4" />
             <span className="font-medium">{error}</span>
           </div>
         )}
@@ -59,7 +55,7 @@ export default function LoginForm() {
             name="email"
             type="email"
             placeholder="name@company.com"
-            leftIcon={<FiUser size={18} />}
+            leftIcon={<HiOutlineUser size={18} />}
             autoComplete="email"
             required
           />
@@ -69,7 +65,7 @@ export default function LoginForm() {
             name="password"
             type="password"
             placeholder="••••••••"
-            leftIcon={<FiLock size={18} />}
+            leftIcon={<HiOutlineLockClosed size={18} />}
             autoComplete="current-password"
             required
           />
@@ -83,7 +79,7 @@ export default function LoginForm() {
             disabled={isLoading}
             isLoading={isLoading}
             className="w-full"
-            rightIcon={!isLoading && <FiArrowRight size={18} />}
+            rightIcon={!isLoading && <HiArrowRight size={18} />}
           >
             {isLoading ? 'Authenticating...' : 'Sign in'}
           </CustomButton>

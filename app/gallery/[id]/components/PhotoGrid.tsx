@@ -5,7 +5,7 @@ import PhotoAlbum from 'react-photo-album';
 import "react-photo-album/styles.css";
 import MediaViewport from '@/components/media-viewport';
 import { MediaSummary } from '@/types/types';
-import { MapPin } from 'lucide-react';
+import { HiMapPin, HiPhoto } from 'react-icons/hi2';
 
 interface PhotoItem {
   src: string;
@@ -44,9 +44,7 @@ export default function PhotoGrid({ photos, layoutStyle, onPhotoClick }: PhotoGr
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4 text-center">
         <div className="w-20 h-20 mb-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-zinc-100 dark:border-zinc-800 shadow-sm">
-          <svg className="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+          <HiPhoto className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
         </div>
         <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 tracking-tight">No media found</h3>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 max-w-xs font-light leading-relaxed">
@@ -144,7 +142,7 @@ export default function PhotoGrid({ photos, layoutStyle, onPhotoClick }: PhotoGr
             <div className="flex flex-col gap-1.5 backdrop-blur-sm bg-white/10 rounded-lg p-3 border border-white/10">
               {locationName && (
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-300 drop-shadow-md">
-                  <MapPin className="w-3 h-3" />
+                  <HiMapPin className="w-3 h-3" />
                   {locationName}
                 </span>
               )}

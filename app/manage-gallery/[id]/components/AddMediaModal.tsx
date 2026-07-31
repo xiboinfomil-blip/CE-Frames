@@ -7,6 +7,7 @@ import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/Searc
 import Pagination from '@/components/Pagination';
 import BaseModal from '@/components/BaseModal';
 import { CustomButton } from '@/components/ui/CustomButton';
+import { HiCheck, HiPlus, HiPhoto } from 'react-icons/hi2';
 
 // --- Types ---
 interface MediaOption {
@@ -104,9 +105,7 @@ function MediaCard({ media, isSelected, onToggle, onPreview, isAdding }: MediaCa
               : 'bg-white/90 dark:bg-zinc-800/90 border-zinc-200 dark:border-zinc-700 text-transparent scale-90 hover:scale-100 hover:border-zinc-400'
           }`}
         >
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+          <HiCheck className="h-3.5 w-3.5" />
         </div>
       </div>
 
@@ -235,11 +234,7 @@ export default function AddMediaModal({
           onClick={handleAdd}
           disabled={isAdding || selectedIds.size === 0}
           isLoading={isAdding}
-          leftIcon={!isAdding && (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-          )}
+          leftIcon={!isAdding && <HiPlus className="w-4 h-4" />}
           className="flex-1 sm:flex-none"
         >
           {isAdding ? 'Processing...' : 'Add to Gallery'}
@@ -299,9 +294,7 @@ export default function AddMediaModal({
           {availableMedia.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center px-4">
               <div className="w-20 h-20 mb-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-zinc-200 dark:border-zinc-800">
-                <svg className="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <HiPhoto className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
               </div>
               <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No Assets Found</h3>
               <p className="text-zinc-500 dark:text-zinc-400 mt-2 text-sm max-w-xs font-medium">

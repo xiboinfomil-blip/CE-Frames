@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { v2 as cloudinary } from 'cloudinary';
+import { authOptions } from '@/lib/auth'; // Adjust path to your auth options
 
 // Helper function to format bytes
 function formatBytes(bytes: number | undefined | null, decimals = 2) {
@@ -18,24 +20,31 @@ function calculatePercentage(used: number | undefined | null, limit: number | un
 }
 
 export async function GET() {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (!cloudName || !apiKey || !apiSecret) {
-    return NextResponse.json(
-      { error: 'Server configuration error: Missing Cloudinary credentials' }, 
-      { status: 500 }
-    );
-  }
-
-  cloudinary.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
-  });
-
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing Cloudinary credentials' }, 
+        { status: 500 }
+      );
+    }
+
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    });
+
     const usage = await cloudinary.api.usage();
     
     // FIX: Make the check case-insensitive since the API returns "Free" with a capital 'F'

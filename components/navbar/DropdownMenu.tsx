@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { HiChevronDown } from 'react-icons/hi';
+import { HiChevronDown, HiArrowPath } from 'react-icons/hi2';
 
 export default function DropdownMenu({ title, categories, loading, error, basePath }: any) {
   const visibleCategories = categories?.filter((cat: any) => cat.isVisible !== false) || [];
@@ -46,10 +46,7 @@ export default function DropdownMenu({ title, categories, loading, error, basePa
           <div className="p-3">
             {loading ? (
               <div className="flex items-center justify-center gap-3 px-3 py-8 text-sm text-zinc-500 dark:text-zinc-400">
-                <svg className="animate-spin h-4 w-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <HiArrowPath className="animate-spin h-4 w-4 text-zinc-400" aria-hidden="true" />
                 <span className="font-medium">Loading...</span>
               </div>
             ) : error ? (

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, memo } from 'react';
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi2';
 
 interface PaginationProps {
   currentPage: number;
@@ -60,9 +61,7 @@ const Pagination = memo(function Pagination({
           className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
           aria-label="Previous Page"
         >
-          <svg className="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <HiChevronLeft className="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform duration-300" />
         </button>
 
         {/* Divider */}
@@ -104,9 +103,7 @@ const Pagination = memo(function Pagination({
           className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
           aria-label="Next Page"
         >
-          <svg className="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
+          <HiChevronRight className="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform duration-300" />
         </button>
       </nav>
 

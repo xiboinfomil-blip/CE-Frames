@@ -11,7 +11,7 @@ export default function NavbarSkeleton() {
       className="fixed w-full z-40 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border-b border-transparent h-20 transition-all duration-500 ease-out"
     >
       {/* Top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-40" />
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-red-500 to-transparent opacity-40" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">

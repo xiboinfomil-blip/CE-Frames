@@ -9,6 +9,17 @@ import Pagination from '@/components/Pagination';
 import MediaViewport from '@/components/media-viewport';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
+import { 
+  HiChevronDown, 
+  HiExclamationCircle, 
+  HiPhoto, 
+  HiCheck, 
+  HiInformationCircle,
+  HiArrowPath,
+  HiOutlineViewColumns,
+  HiOutlineListBullet,
+  HiSquaresPlus
+} from 'react-icons/hi2';
 
 interface GalleryData {
   id?: string;
@@ -263,10 +274,7 @@ export default function CreateGalleryModal({
         <form id="gallery-form-id" onSubmit={handleSubmit} className="space-y-8 relative z-10">
           {error && (
             <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2" role="alert">
-              <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4m0 4h.01" />
-              </svg>
+              <HiExclamationCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span className="font-medium">{error}</span>
             </div>
           )}
@@ -315,9 +323,7 @@ export default function CreateGalleryModal({
                     ))}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <HiChevronDown className="w-4 h-4" />
                   </div>
                 </div>
               </div>
@@ -346,9 +352,9 @@ export default function CreateGalleryModal({
               <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Layout Style</label>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { value: 'column', label: 'Column', icon: 'M5 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z' },
-                  { value: 'row', label: 'Row', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4z' },
-                  { value: 'masonry', label: 'Masonry', icon: 'M4 4a1 1 0 011-1h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zM14 15a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5z' },
+                  { value: 'column', label: 'Column', icon: <HiOutlineViewColumns className="w-6 h-6" /> },
+                  { value: 'row', label: 'Row', icon: <HiOutlineListBullet className="w-6 h-6" /> },
+                  { value: 'masonry', label: 'Masonry', icon: <HiSquaresPlus className="w-6 h-6" /> },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -360,9 +366,9 @@ export default function CreateGalleryModal({
                         : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
                     }`}
                   >
-                    <svg className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={option.icon} />
-                    </svg>
+                    <span className="transition-transform duration-300 group-hover:scale-110 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">
+                      {option.icon}
+                    </span>
                     <span className="text-xs font-bold uppercase tracking-wider">{option.label}</span>
                   </button>
                 ))}
@@ -394,9 +400,7 @@ export default function CreateGalleryModal({
                     {isEditMode && (
                       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-30">
                         <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
+                          <HiPhoto className="w-4 h-4" />
                           Change Cover
                         </span>
                       </div>
@@ -405,9 +409,7 @@ export default function CreateGalleryModal({
                 ) : (
                   <div className="flex flex-col items-center gap-3 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors duration-300">
                     <div className={`p-4 rounded-full bg-zinc-100 dark:bg-zinc-800 transition-all duration-300 ${isEditMode ? 'group-hover:scale-110 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700' : ''}`}>
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <HiPhoto className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-bold uppercase tracking-widest">
                       {isEditMode ? 'Select from Gallery' : 'Add Media First'}
@@ -417,9 +419,7 @@ export default function CreateGalleryModal({
               </div>
               {!isEditMode && (
                 <p className="text-xs text-zinc-500 text-right flex items-center justify-end gap-1.5">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <HiInformationCircle className="w-3.5 h-3.5" />
                   Create gallery and add media to set a cover
                 </p>
               )}
@@ -463,7 +463,7 @@ export default function CreateGalleryModal({
           <div className="relative min-h-100 bg-zinc-50/50 dark:bg-zinc-900/20 p-6">
             {isFetchingMedia ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="w-8 h-8 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin" />
+                <HiArrowPath className="w-8 h-8 text-zinc-400 animate-spin" />
                 <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Loading media...</span>
               </div>
             ) : availableMedia.length === 0 ? (
@@ -503,9 +503,7 @@ export default function CreateGalleryModal({
                             : 'bg-white/90 dark:bg-zinc-800/90 border-zinc-200 dark:border-zinc-700 scale-0 group-hover:scale-100'
                         }`}>
                           {isSelected ? (
-                            <svg className="w-3.5 h-3.5 text-white dark:text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
+                            <HiCheck className="w-3.5 h-3.5 text-white dark:text-zinc-900" />
                           ) : (
                             <div className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full" />
                           )}

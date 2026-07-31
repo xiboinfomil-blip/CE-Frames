@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { VISIBILITY_STATUSES } from '@/db/schema';
+import { HiLockClosed } from 'react-icons/hi2';
 
 interface VisibilityBadgeProps {
   type: typeof VISIBILITY_STATUSES[number];
@@ -37,9 +38,7 @@ export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
       textColor: 'text-amber-700 dark:text-amber-400',
       borderColor: 'border-amber-200/50 dark:border-amber-800/50',
       icon: (
-        <svg className="w-3 h-3 ml-1 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
+        <HiLockClosed className="w-3 h-3 ml-1 opacity-70" />
       )
     },
     unlisted: {
