@@ -150,7 +150,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-150">
             {/* Large Feature Item */}
             <FadeIn delay={100} className="md:col-span-2 h-full min-h-100">
-              <Link href="/gallery/motorsport" className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-900 shadow-lg">
+              <div className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-900 shadow-lg">
                 <Image 
                   src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1200&auto=format&fit=crop" 
                   alt="Motorsport Photography" 
@@ -169,12 +169,12 @@ export default function Home() {
                   <h3 className="text-3xl font-bold text-white mb-2">Motorsport</h3>
                   <p className="text-zinc-300 max-w-md font-medium">Raw power. Mechanical beauty. The chaos of the track frozen in time.</p>
                 </div>
-              </Link>
+              </div>
             </FadeIn>
 
             {/* Secondary Item */}
             <FadeIn delay={200} className="h-full min-h-100">
-              <Link href="/gallery/weddings" className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+              <div className="group relative block w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                 <Image 
                   src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop" 
                   alt="Wedding Photography" 
@@ -187,7 +187,7 @@ export default function Home() {
                   <h3 className="text-3xl font-bold text-white mb-2 drop-shadow-md">Weddings</h3>
                   <p className="text-white/90 text-sm font-medium drop-shadow-sm">Intimate. Editorial. Timeless.</p>
                 </div>
-              </Link>
+              </div>
             </FadeIn>
           </div>
           
