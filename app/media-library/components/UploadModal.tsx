@@ -11,6 +11,18 @@ import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
 import StorageIndicator from './StorageIndicator';
 
+interface ExifData {
+  make: string | null;
+  model: string | null;
+  lensModel: string | null;
+  dateTime: string | Date | null;
+  exposureTime: number | null;
+  fNumber: number | null;
+  iso: number | null;
+  focalLength: number | null;
+  software: string | null;
+}
+
 interface MediaItem {
   file: File;
   caption: string;
@@ -18,6 +30,7 @@ interface MediaItem {
   coordinates: { lat: string; lng: string };
   gpsDetected: boolean;
   previewUrl?: string;
+  exifData?: ExifData | null; // ✅ Replaced 'any' with specific ExifData interface
 }
 
 interface StorageUsage {
@@ -37,7 +50,6 @@ interface UploadModalProps {
   onClose: () => void;
 }
 
-// Type for Cloudinary Upload Response
 interface CloudinaryUploadResponse {
   public_id: string;
   secure_url: string;
@@ -60,7 +72,7 @@ const VALID_TYPES = getValidMimeTypes();
 const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
 // --- Sub-Components ---
-
+// (ThumbnailItem remains exactly the same as your original code)
 const ThumbnailItem = memo(({ 
   item, 
   idx, 
@@ -102,7 +114,6 @@ const ThumbnailItem = memo(({
         </svg>
       </div>
     )}
-    {/* Index Badge */}
     <div className="absolute top-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md">
       {idx + 1}
     </div>
@@ -131,7 +142,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const [storageUsage, setStorageUsage] = useState<StorageUsage | null>(null);
   const [rejectedFiles, setRejectedFiles] = useState<string[]>([]);
 
-  // Helper to reset state cleanly
   const resetModalState = useCallback(() => {
     setMediaItems(prev => {
       prev.forEach(item => {
@@ -147,7 +157,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     setIsDragging(false);
   }, []);
 
-  // Cleanup object URLs on unmount only
   useEffect(() => {
     return () => {
       mediaItems.forEach(item => {
@@ -171,16 +180,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     }
   }, []);
 
-  // Fetch storage when modal opens - handled via conditional call in render or effect with safe pattern
-  // Since we removed the effect, we'll call this in a safe way below or keep a minimal effect 
-  // that only triggers side effects that don't cause cascading renders of the parent.
-  // However, for simple data fetching on open, an effect is standard IF it doesn't set state 
-  // that triggers a re-render of the parent before the child is ready. 
-  // To strictly satisfy the linter which dislikes setState in effect for "initialization",
-  // we can use a ref to track if we've fetched for this session.
-  
   const hasFetchedRef = useRef(false);
-
   useEffect(() => {
     if (isOpen && !hasFetchedRef.current) {
       fetchStorageUsage();
@@ -223,17 +223,34 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         coordinates: { lat: '', lng: '' },
         gpsDetected: false,
         previewUrl,
+        exifData: null,
       };
 
       if (file.type.startsWith('image/')) {
         try {
           const exif = await exifr.parse(file, { gps: true });
-          if (exif && exif.latitude && exif.longitude) {
-            newItem.coordinates = {
-              lat: exif.latitude.toFixed(6),
-              lng: exif.longitude.toFixed(6)
+          
+          if (exif) {
+            if (exif.latitude && exif.longitude) {
+              newItem.coordinates = {
+                lat: exif.latitude.toFixed(6),
+                lng: exif.longitude.toFixed(6)
+              };
+              newItem.gpsDetected = true;
+            }
+
+            // ✅ Type-safe EXIF extraction
+            newItem.exifData = {
+              make: exif.Make || null,
+              model: exif.Model || null,
+              lensModel: exif.LensModel || null,
+              dateTime: exif.DateTimeOriginal || exif.DateTime || null,
+              exposureTime: exif.ExposureTime || null,
+              fNumber: exif.FNumber || null,
+              iso: exif.ISO || null,
+              focalLength: exif.FocalLength || null,
+              software: exif.Software || null,
             };
-            newItem.gpsDetected = true;
           }
         } catch (err) {
           console.warn('EXIF parse failed:', err);
@@ -408,6 +425,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               : null,
             originalFilename: item.file.name,
             mimeType: item.file.type,
+            exifData: item.exifData || null, // ✅ Send extracted EXIF data to API
           }),
         });
 
@@ -451,7 +469,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
   const currentItem = mediaItems[currentIndex];
 
-  // Wrap onClose to ensure cleanup happens before the modal visually closes
   const handleClose = useCallback(() => {
     resetModalState();
     onClose();
@@ -502,14 +519,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       footer={footerActions}
     >
       <div className="space-y-6">
-        
-        {/* Storage Indicator Component */}
         <StorageIndicator 
           storage={storageUsage?.storage || null} 
           isLoading={isCheckingStorage} 
         />
 
-        {/* Alerts */}
         {rejectedFiles.length > 0 && (
           <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 rounded-xl text-sm font-medium flex items-start gap-3" role="alert" aria-live="polite">
             <svg className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -540,7 +554,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           </div>
         )}
 
-        {/* Main Content Area */}
         {mediaItems.length === 0 ? (
           <div 
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -595,10 +608,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Column: Preview & Queue */}
             <div className="lg:col-span-5 space-y-6">
-               {/* Preview Window */}
               <div className="relative bg-zinc-100 dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner aspect-square flex items-center justify-center group">
                  {currentItem.file.type.startsWith('image/') ? (
                     <Image 
@@ -618,7 +628,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     />
                   )}
                   
-                  {/* Navigation Arrows */}
                   {mediaItems.length > 1 && (
                     <>
                       <button
@@ -645,7 +654,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   )}
               </div>
 
-              {/* Film Strip Queue */}
               {mediaItems.length > 1 && (
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3">
                   <div className="flex items-center justify-between mb-2 px-1">
@@ -674,10 +682,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               )}
             </div>
 
-            {/* Right Column: Metadata Editor */}
             <div className="lg:col-span-7 space-y-6">
-              
-              {/* File Info Header */}
               <div className="flex items-start justify-between gap-4 pb-6 border-b border-zinc-100 dark:border-zinc-800">
                   <div className="flex-1 min-w-0">
                     <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate" title={currentItem.file.name}>{currentItem.file.name}</p>
@@ -700,7 +705,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   </div>
               </div>
 
-              {/* Form Fields */}
               <div className="space-y-5">
                 <CustomTextfield 
                   id={captionId}
@@ -773,7 +777,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 </div>
               </div>
 
-              {/* Upload Progress */}
               {isLoading && (
                 <div className="space-y-3 pt-6 border-t border-zinc-100 dark:border-zinc-800" role="progressbar" aria-valuenow={Math.round(uploadProgress)} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
                   <div className="flex justify-between text-xs font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">

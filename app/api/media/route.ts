@@ -15,7 +15,6 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
     
-    // Removed unused 'format' and 'fileSize' to satisfy ESLint
     const {
       cloudinaryPublicId,
       url,
@@ -27,6 +26,7 @@ export async function POST(req: Request) {
       coordinates,
       originalFilename,
       mimeType,
+      exifData, // ✅ Added: Destructure EXIF data from request
     } = data;
 
     if (!cloudinaryPublicId || !url) {
@@ -56,8 +56,8 @@ export async function POST(req: Request) {
       caption: title || null,
       width: parseInt(width, 10) || null,
       height: parseInt(height, 10) || null,
-      durationSeconds: null, // Can be added if needed from Cloudinary response
-      exifData: null, // Extracted client-side or skipped
+      durationSeconds: null, 
+      exifData: exifData || null, // ✅ Save EXIF data to database
       locationName: locationName || null,
       coordinates: parsedCoordinates,
     });
@@ -84,7 +84,6 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    // Query directly since findById was removed from mediaHelpers
     const mediaItem = await db.query.media.findFirst({
       where: eq(media.id, id)
     });
@@ -92,12 +91,6 @@ export async function DELETE(req: Request) {
     if (!mediaItem) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
-
-    // Delete from Cloudinary (uncomment and implement when ready)
-    // const resourceType = mediaItem.type === 'video' ? 'video' : 'image';
-    // if (mediaItem.cloudinaryPublicId) {
-    //    await deleteFromCloudinary(mediaItem.cloudinaryPublicId, resourceType);
-    // }
 
     await mediaHelpers.delete(id);
     
