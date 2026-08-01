@@ -110,7 +110,7 @@ export default function GalleryClient({
             filters={[
               { value: 'all', label: 'All Views' },
               { value: 'public', label: 'Public' },
-              { value: 'password_protected', label: 'Private' }
+              { value: 'password_protected', label: 'Password Protected' }
             ]}
             
             activeSort={sortBy}
