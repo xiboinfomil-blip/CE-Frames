@@ -9,10 +9,9 @@ import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Video from 'yet-another-react-lightbox/plugins/video';
 import "yet-another-react-lightbox/plugins/captions.css";
 
-// 🛡️ Type Safety: Alias the library's native Slide type.
+// 🛡️ Type Safety
 export type MediaItem = Slide;
 
-// 🛡️ Extended slide type to safely access optional properties without `any`
 type ExtendedSlide = MediaItem & {
   src?: string;
   sources?: { src: string; type?: string }[];
@@ -29,14 +28,11 @@ interface GalleryLightboxProps {
 
 export default function GalleryLightbox({ index, slides, onClose }: GalleryLightboxProps) {
   
-  // 🛡️ Normalize slides to prevent crashes when video data is malformed.
-  // The Video plugin strictly requires: 1) `type: "video"`, 2) a `sources` array.
   const normalizedSlides = useMemo(() => {
     return slides.map((slide) => {
       const extended = slide as ExtendedSlide;
       const srcString = extended.src || extended.sources?.[0]?.src || '';
       
-      // Detect if this is meant to be a video based on type or file extension
       const isVideo = 
         slide.type === 'video' || 
         (typeof srcString === 'string' && /\.(mp4|webm|ogg|mov|mkv)$/i.test(srcString));
@@ -45,12 +41,7 @@ export default function GalleryLightbox({ index, slides, onClose }: GalleryLight
         return {
           ...slide,
           type: 'video' as const,
-          sources: [
-            {
-              src: srcString,
-              type: extended.sources?.[0]?.type || 'video/mp4',
-            },
-          ],
+          sources: [{ src: srcString, type: extended.sources?.[0]?.type || 'video/mp4' }],
           poster: extended.poster,
           width: extended.width,
           height: extended.height,
@@ -60,10 +51,7 @@ export default function GalleryLightbox({ index, slides, onClose }: GalleryLight
     });
   }, [slides]);
 
-  // Prevent rendering if index is invalid or slides are empty
-  if (index < 0 || normalizedSlides.length === 0) {
-    return null;
-  }
+  if (index < 0 || normalizedSlides.length === 0) return null;
 
   return (
     <>
@@ -75,7 +63,7 @@ export default function GalleryLightbox({ index, slides, onClose }: GalleryLight
         plugins={[Zoom, Captions, Fullscreen, Video]}
         
         carousel={{ 
-          finite: true,
+          finite: false,
           preload: 2,
           padding: 0,
           spacing: 0,
@@ -92,7 +80,6 @@ export default function GalleryLightbox({ index, slides, onClose }: GalleryLight
           closeOnPullDown: true,
         }}
         
-        // 🎬 Video-specific UX: Safer default to prevent mobile browser autoplay crashes
         video={{
           autoPlay: false, 
           controls: true,
@@ -100,86 +87,138 @@ export default function GalleryLightbox({ index, slides, onClose }: GalleryLight
         }}
 
         captions={{ 
-          descriptionTextAlign: 'start',
+          descriptionTextAlign: 'center',
           descriptionMaxLines: 3,
         }}
 
         styles={{
           container: { 
-            backgroundColor: 'rgba(255, 255, 255, 0.88)',
-            backdropFilter: 'blur(24px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            // Ultra-premium "Studio White" backdrop
+            backgroundColor: 'rgba(252, 252, 252, 0.98)',
+            backdropFilter: 'blur(40px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(200%)',
           },
           root: { 
-            '--yarl__color_button': '#71717a',
-            '--yarl__color_button_active': '#18181b',
-            '--yarl__color_button_hover': '#27272a',
-            '--yarl__color_icon': '#52525b',
-            '--yarl__color_focus_ring': 'rgba(24, 24, 27, 0.4)',
-            '--yarl__color_text': '#18181b',
-            '--yarl__color_background': 'transparent',
-            '--yarl__size_button': '44px',
-            '--yarl__size_icon': '22px',
-            '--yarl__transition_button': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            '--yarl__slide_title_color': '#18181b',
-            '--yarl__slide_title_font_size': '1.25rem',
-            '--yarl__slide_title_font_weight': '600',
-            '--yarl__slide_title_letter_spacing': '-0.025em',
-            '--yarl__slide_description_color': '#52525b',
-            '--yarl__slide_description_font_size': '1rem',
-            '--yarl__slide_description_line_height': '1.6',
-            '--yarl__color_captions_background': 'rgba(255, 255, 255, 0.9)',
-            '--yarl__color_captions_text': '#18181b',
-            '--yarl__color_button_dark': '#a1a1aa',
-            '--yarl__color_button_active_dark': '#f4f4f5',
-            '--yarl__color_button_hover_dark': '#e4e4e7',
-            '--yarl__color_icon_dark': '#a1a1aa',
-            '--yarl__color_focus_ring_dark': 'rgba(244, 244, 245, 0.4)',
-            '--yarl__color_text_dark': '#f4f4f5',
-            '--yarl__slide_title_color_dark': '#f4f4f5',
-            '--yarl__slide_description_color_dark': '#a1a1aa',
-            '--yarl__color_captions_background_dark': 'rgba(24, 24, 27, 0.9)',
-            '--yarl__color_captions_text_dark': '#f4f4f5',
+            // Refined Color Palette (Warm Greys for a softer look)
+            '--yarl__color_button': '#78716c', // Stone-500
+            '--yarl__color_button_active': '#1c1917', // Stone-900
+            '--yarl__color_button_hover': '#292524', // Stone-800
+            '--yarl__color_icon': '#57534e', // Stone-600
+            '--yarl__color_focus_ring': 'rgba(28, 25, 23, 0.15)',
+            
+            '--yarl__size_button': '52px', // Larger, more luxurious touch targets
+            '--yarl__size_icon': '26px',
+            
+            '--yarl__transition_button': 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)', // Spring-like physics
+            
+            // Editorial Typography
+            '--yarl__slide_title_color': '#1c1917',
+            '--yarl__slide_title_font_size': '1.75rem',
+            '--yarl__slide_title_font_weight': '300', // Light weight for elegance
+            '--yarl__slide_title_letter_spacing': '-0.03em',
+            
+            '--yarl__slide_description_color': '#78716c',
+            '--yarl__slide_description_font_size': '1.125rem',
+            '--yarl__slide_description_line_height': '1.7',
+            '--yarl__slide_description_font_weight': '400',
+            
+            // Invisible caption background for a cleaner look
+            '--yarl__color_captions_background': 'transparent',
+            '--yarl__color_captions_text': '#1c1917',
+            
+            // Dark Mode Elegance
+            '--yarl__color_button_dark': '#a8a29e',
+            '--yarl__color_button_active_dark': '#fafaf9',
+            '--yarl__color_button_hover_dark': '#f5f5f4',
+            '--yarl__color_icon_dark': '#a8a29e',
+            '--yarl__color_focus_ring_dark': 'rgba(250, 250, 249, 0.15)',
+            '--yarl__slide_title_color_dark': '#fafaf9',
+            '--yarl__slide_description_color_dark': '#a8a29e',
+            '--yarl__color_captions_text_dark': '#fafaf9',
           } as React.CSSProperties & Record<string, string>,
           slide: {
-            padding: 'clamp(16px, 4vw, 48px)',
+            padding: 'clamp(24px, 6vw, 80px)',
           },
         }}
         
         animation={{ 
-          fade: 250,
+          fade: 400, // Slower, more cinematic fade
         }}
       />
       
       <style>{`
+        /* 🖼️ The "Art Frame" Effect */
         .yarl__slide img, 
         .yarl__slide video {
-          border-radius: 4px !important;
-          box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.12) !important;
-          transition: box-shadow 0.3s ease;
+          border-radius: 2px !important; /* Sharp, gallery-style corners */
+          box-shadow: 
+            0 30px 60px -15px rgba(0, 0, 0, 0.1), 
+            0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
         }
-        .yarl__slide_captions_container {
-          background-color: rgba(255, 255, 255, 0.85) !important;
-          backdrop-filter: blur(20px) saturate(180%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-          border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
-          box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.04) !important;
-          padding: clamp(16px, 3vw, 24px) clamp(20px, 4vw, 32px) !important;
-        }
-        .yarl__slide_title { margin-bottom: 8px !important; }
-        .yarl__slide_description { max-width: 65ch !important; }
-        .yarl__button { border-radius: 50% !important; }
-        .yarl__button:hover { background-color: rgba(0, 0, 0, 0.04) !important; }
 
+        /* 📝 Floating Caption Island */
+        .yarl__slide_captions_container {
+          position: relative;
+          margin-top: clamp(20px, 4vw, 40px);
+          padding: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          border: none !important;
+          backdrop-filter: none !important;
+        }
+
+        .yarl__slide_title { 
+          margin-bottom: 8px !important; 
+          font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+          opacity: 0.95;
+        }
+        
+        .yarl__slide_description { 
+          max-width: 45ch !important; 
+          margin: 0 auto !important;
+          opacity: 0.8;
+          font-feature-settings: "liga" 1, "calt" 1; /* Better ligatures */
+        }
+
+        /* 🔘 Minimalist Iconography */
+        .yarl__button { 
+          border-radius: 50% !important; 
+          background-color: transparent !important;
+          border: 1px solid transparent !important;
+          transition: all 0.3s ease !important;
+        }
+        
+        .yarl__button:hover { 
+          background-color: rgba(0, 0, 0, 0.03) !important; 
+          transform: scale(1.1);
+        }
+
+        /* 🌙 Dark Mode: "Midnight Gallery" */
         @media (prefers-color-scheme: dark) {
-          .yarl__container { background-color: rgba(9, 9, 11, 0.92) !important; }
-          .yarl__slide_captions_container {
-            background-color: rgba(24, 24, 27, 0.9) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2) !important;
+          .yarl__container { 
+            background-color: rgba(12, 12, 12, 0.98) !important; 
           }
-          .yarl__slide img, .yarl__slide video { box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.5) !important; }
-          .yarl__button:hover { background-color: rgba(255, 255, 255, 0.1) !important; }
+          
+          .yarl__slide img, .yarl__slide video { 
+            box-shadow: 
+              0 30px 60px -15px rgba(0, 0, 0, 0.5), 
+              0 0 0 1px rgba(255, 255, 255, 0.05) !important; 
+          }
+          
+          .yarl__button:hover { 
+            background-color: rgba(255, 255, 255, 0.05) !important; 
+          }
+        }
+
+        /* ✨ Subtle Entrance Animation for Captions */
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .yarl__slide_captions_container {
+          animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
     </>

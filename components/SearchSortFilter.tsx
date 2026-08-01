@@ -1,10 +1,10 @@
 'use client';
 
 import React, { memo, useCallback } from 'react';
-// Corrected imports for react-icons/hi2 (Heroicons v2 Outline)
 import { HiMagnifyingGlass } from 'react-icons/hi2';
-import { HiFunnel } from 'react-icons/hi2'; // Matches the 3-line sort icon
+import { HiFunnel } from 'react-icons/hi2';
 import { HiXMark } from 'react-icons/hi2';
+import { HiChevronDown } from 'react-icons/hi2';
 
 // --- Types ---
 export interface FilterOption { value: string; label: string; }
@@ -63,19 +63,20 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
   if (!hasSearch && !hasFilters && !hasSort && totalItems === 0) return null;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-100 dark:border-zinc-800/50 transition-colors duration-300">
-      <div className="mx-auto max-w-[1800px] px-4 sm:px-6 lg:px-8 py-3">
+    <header className="sticky top-4 z-50 px-4 md:px-6 pointer-events-none">
+      <div className="container mx-auto max-w-[1800px] pointer-events-auto">
         
-        <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
+        {/* The Floating Rectangular Control Deck */}
+        <div className="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-2xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
           
-          {/* Left Cluster */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          {/* Left Cluster: Search & Filters */}
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             
-            {/* Search Input */}
+            {/* Search Input - Dynamic Width (Only what is needed) */}
             {hasSearch && (
-              <div className="relative group flex items-center w-full md:w-auto md:min-w-[280px] lg:min-w-[360px] h-10 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-900 focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/5 dark:focus-within:ring-white/10 transition-all duration-300">
-                <div className="pl-3.5 text-zinc-500 dark:text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
-                  <HiMagnifyingGlass className="w-[18px] h-[18px]" />
+              <div className="relative group flex items-center w-fit min-w-[240px] h-12 rounded-xl bg-zinc-100/50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-900 focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/5 dark:focus-within:ring-white/10 transition-all duration-300 border border-transparent focus-within:border-zinc-200 dark:focus-within:border-zinc-800">
+                <div className="pl-4 text-zinc-500 dark:text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
+                  <HiMagnifyingGlass className="w-5 h-5" />
                 </div>
                 
                 <input
@@ -84,32 +85,30 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                   value={searchValue || ''}
                   onChange={(e) => onSearchChange?.(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="w-full bg-transparent border-none outline-none px-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400/80 font-medium"
+                  className="w-full bg-transparent border-none outline-none px-3 text-base text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400/80 font-medium min-w-[120px]"
                 />
 
-                <div className="pr-2 flex items-center">
+                <div className="pr-3 flex items-center">
                   {searchValue ? (
-                    <button onClick={handleClear} className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all" aria-label="Clear">
-                      <HiXMark className="w-3.5 h-3.5" />
+                    <button onClick={handleClear} className="p-2 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all" aria-label="Clear">
+                      <HiXMark className="w-4 h-4" />
                     </button>
                   ) : (
                     <button 
                       onClick={onSearchSubmit} 
-                      className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-white opacity-0 group-hover:opacity-100 transition-all" 
+                      className="p-2 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white opacity-0 group-hover:opacity-100 transition-all" 
                       aria-label="Execute search"
                     >
-                      <HiMagnifyingGlass className="w-3.5 h-3.5" />
+                      <HiMagnifyingGlass className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
             )}
 
-            {hasSearch && hasFilters && <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 mx-1 hidden md:block" />}
-
-            {/* Filters */}
+            {/* Filters - Rectangular Tabs */}
             {hasFilters && (
-              <nav className="flex items-center gap-0.5 p-1 rounded-full bg-zinc-100/60 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-zinc-800/50 overflow-x-auto no-scrollbar" role="tablist">
+              <nav className="flex items-center gap-1 p-1 rounded-xl bg-zinc-100/60 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-zinc-800/50 overflow-x-auto no-scrollbar" role="tablist">
                 {filters.map((f) => {
                   const active = activeFilter === f.value;
                   return (
@@ -118,10 +117,10 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                       onClick={() => onFilterChange?.(f.value)}
                       role="tab"
                       aria-selected={active}
-                      className={`relative px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all duration-200 whitespace-nowrap ${
+                      className={`relative px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 whitespace-nowrap ${
                         active 
                           ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' 
-                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
                       }`}
                     >
                       {f.label}
@@ -132,10 +131,10 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
             )}
           </div>
 
-          {/* Right Cluster */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Right Cluster: Sort & Count */}
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
             
-            {/* Sort */}
+            {/* Sort - Rectangular Dropdown */}
             {hasSort && (
               <div className="relative inline-flex items-center group">
                 <select
@@ -147,38 +146,33 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                   {sorts.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
 
-                <div className={`flex items-center gap-2 h-10 px-3 rounded-full border transition-all duration-300 ${
+                <div className={`flex items-center gap-3 h-12 px-4 rounded-xl border transition-all duration-300 ${
                   isDefaultSort
                     ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm pl-2.5'
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm'
                 }`}>
-                  {isDefaultSort ? (
-                    <HiFunnel className="w-8 h-4" />
-                  ) : (
-                    <>
-                      <div className="p-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                        <HiFunnel className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[13px] font-semibold pr-1">{selectedSortLabel}</span>
-                    </>
+                  <HiFunnel className={`w-5 h-5 ${isDefaultSort ? 'opacity-70' : 'text-zinc-900 dark:text-zinc-100'}`} />
+                  {!isDefaultSort && (
+                    <span className="text-sm font-semibold pr-1">{selectedSortLabel}</span>
                   )}
+                  <HiChevronDown className="w-4 h-4 opacity-50" />
                 </div>
               </div>
             )}
 
-            {/* Count Badge */}
+            {/* Count Badge - Rectangular & Clean */}
             {showCount && totalItems > 0 && (
-              <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800/50">
-                <span className="text-[13px] font-bold text-zinc-900 dark:text-zinc-100 tabular-nums tracking-tight">
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800/50">
+                <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums tracking-tight">
                   {totalItems.toLocaleString()}
                 </span>
-                <span className="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-zinc-400">
                   Assets
                 </span>
                 {totalPages > 1 && (
                   <>
-                    <div className="w-px h-3 bg-zinc-200 dark:bg-zinc-800" />
-                    <span className="text-[12px] font-medium text-zinc-500 tabular-nums">
+                    <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
+                    <span className="text-xs font-medium text-zinc-500 tabular-nums">
                       {currentPage}<span className="text-zinc-300 dark:text-zinc-700 mx-0.5">/</span>{totalPages}
                     </span>
                   </>

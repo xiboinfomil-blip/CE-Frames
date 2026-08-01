@@ -117,7 +117,7 @@ export default function GalleryClient({
             onSortChange={handleSortChange}
             sorts={[
               { value: 'newest', label: 'Recent' },
-              { value: 'oldest', label: 'Archive' },
+              { value: 'oldest', label: 'Oldest' },
               { value: 'name', label: 'Name' }
             ]}
             

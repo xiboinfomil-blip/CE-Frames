@@ -121,7 +121,9 @@ export default function BaseModal({
 
   return (
     <AnimatePresence>
+      {/* Added key prop to resolve duplicate key warning */}
       <motion.div 
+        key="base-modal-container"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
