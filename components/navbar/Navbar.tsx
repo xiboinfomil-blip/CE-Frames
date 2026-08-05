@@ -164,15 +164,15 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center shadow-sm overflow-hidden"
-              >
+              > 
                 <Image 
-                  src="/logo.png" 
-                  alt="OramaCreativ Logo" 
-                  width={32} 
-                  height={32} 
-                  className="w-5 h-5 sm:w-6 sm:h-6 object-contain invert dark:invert-0" 
-                  priority 
-                />
+  src="/Logo name.png" 
+  alt="OramaCreativ Logo" 
+  width={32} 
+  height={32} 
+  className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+  priority 
+/>
               </motion.div>
               <div className="flex flex-col justify-center">
                 <span className="font-bold text-lg sm:text-xl tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
