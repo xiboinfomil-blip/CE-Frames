@@ -1,0 +1,111 @@
+﻿'use client';
+
+import { useState, useMemo, KeyboardEvent } from 'react';
+import { MEDIA_TYPES } from '@/db/schema';
+import CustomImage from './custom-image';
+import CustomVideo from './custom-video';
+import { HiPlay, HiMagnifyingGlassPlus } from 'react-icons/hi2';
+
+interface MediaViewportProps {
+  mediaType: typeof MEDIA_TYPES[number];
+  fullResUrl: string;
+  thumbnailUrl: string;
+  caption?: string | null;
+  originalFilename?: string | null;
+  className?: string;
+  priority?: boolean;
+  sizes?: string;
+  onClick?: () => void;
+}
+
+const MediaViewport = ({
+  mediaType,
+  fullResUrl,
+  thumbnailUrl,
+  caption,
+  originalFilename,
+  className = '',
+  priority = false,
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  onClick,
+}: MediaViewportProps) => {
+  const [errorSource, setErrorSource] = useState<string | null>(null);
+
+  const ariaLabel = useMemo(
+    () => `Media preview: ${caption || originalFilename || 'Untitled media'}`,
+    [caption, originalFilename]
+  );
+
+  const hasError = errorSource === fullResUrl;
+  const currentSrc = hasError ? thumbnailUrl : fullResUrl;
+
+  // Handle keyboard interaction when the card acts as a button
+  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  const isInteractive = Boolean(onClick);
+
+  return (
+    <figure
+      role={isInteractive ? 'button' : 'figure'}
+      tabIndex={isInteractive ? 0 : undefined}
+      aria-label={ariaLabel}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      className={`
+        group relative w-full h-full overflow-hidden rounded-2xl
+        bg-slate-900 border border-slate-800
+        transition-all duration-300 ease-out
+        hover:shadow-xl hover:shadow-indigo-950/20 hover:border-slate-700
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
+        ${isInteractive ? 'cursor-pointer' : ''}
+        ${className}
+      `}
+    >
+      {/* Media Engine Render */}
+      {mediaType === 'video' ? (
+        <CustomVideo
+          src={currentSrc}
+          poster={thumbnailUrl || undefined}
+          hoverPlay={true}
+           onError={() => setErrorSource(fullResUrl)}
+        />
+      ) : (
+        <CustomImage
+          src={currentSrc}
+          fallbackSrc={thumbnailUrl}
+          alt={caption || originalFilename || 'Media asset'}
+          priority={priority}
+          sizes={sizes}
+           onError={() => setErrorSource(fullResUrl)}
+        />
+      )}
+
+      {/* Visual Indicator Badges on Hover */}
+      <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/60 text-white flex items-center justify-center shadow-2xl transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          {mediaType === 'video' ? (
+            <HiPlay className="w-6 h-6 ml-0.5 text-indigo-400" />
+          ) : (
+            <HiMagnifyingGlassPlus className="w-5 h-5 text-indigo-400" />
+          )}
+        </div>
+      </div>
+
+      {/* Subtle Caption Overlay (Bottom Bar) */}
+      {(caption || originalFilename) && (
+        <figcaption className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <p className="text-xs font-medium text-slate-200 truncate">
+            {caption || originalFilename}
+          </p>
+        </figcaption>
+      )}
+    </figure>
+  );
+};
+
+export default MediaViewport;

@@ -1,53 +1,79 @@
-import React from "react";
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function BrandingPanel() {
   return (
-    <div className="h-full w-full relative flex flex-col justify-between p-8 sm:p-12 text-zinc-100 overflow-hidden bg-zinc-900">
-      {/* Background Image with Overlay */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000&auto=format&fit=crop')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        {/* Sophisticated Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/90 via-zinc-900/60 to-zinc-900/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent" />
+    <div className="h-full w-full relative flex flex-col justify-between p-8 sm:p-12 text-slate-100 overflow-hidden bg-slate-950 select-none">
+      
+      {/* Background Image with Next.js Optimization */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000&auto=format&fit=crop"
+          alt="Corporate team event"
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover object-center scale-105 transition-transform duration-1000 ease-out"
+        />
+        
+        {/* Dark Slate & Rose Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-950/75 to-rose-950/40 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
       </div>
+
+      {/* Decorative Grid Pattern */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" 
+        aria-hidden="true" 
+      />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full justify-between">
+        
         {/* Top Section */}
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white/90 text-[10px] font-bold uppercase tracking-[0.15em] mb-8 shadow-lg">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/60 text-slate-200 text-[10px] font-bold uppercase tracking-[0.15em] mb-8 shadow-md shadow-slate-950/40">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Studio Online
+            <span>CSE Coverage Studio</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-3 leading-none">
-            Orama<span className="text-zinc-400 font-light">Creativ</span>
+          {/* Brand Heading */}
+          <h1 className="text-4xl sm:text-5xl font-bold text-slate-100 tracking-tight mb-3 leading-none">
+            CE <span className="text-rose-400 font-light">Frames</span>
           </h1>
-          <p className="text-zinc-300 font-medium text-lg tracking-wide">
-            Visual Asset Management
+          <p className="text-slate-400 font-medium text-base sm:text-lg tracking-wide">
+             Comité d&apos;Entreprise Event Photography
           </p>
-        </div>
+        </motion.div>
 
         {/* Bottom Section */}
-        <div className="space-y-8">
-          <div className="h-px w-16 bg-gradient-to-r from-white/50 to-transparent" />
+        <motion.div 
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-6"
+        >
+          <div className="h-px w-16 bg-gradient-to-r from-rose-500/80 via-rose-500/30 to-transparent" />
           
-          <p className="text-zinc-400 text-sm leading-relaxed max-w-xs font-medium">
-            Secure access required for all administrative functions, including asset upload, user management, and gallery telemetry.
+          <p className="text-slate-400 text-sm leading-relaxed max-w-xs font-normal">
+            Secure access for managing event galleries, CSE collections, and employee memories.
           </p>
 
-          <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-bold uppercase tracking-[0.15em]">
+          <div className="flex items-center gap-3 text-slate-500 text-[10px] font-bold uppercase tracking-[0.15em]">
             <span>Est. 2026</span>
-            <span className="w-1 h-1 bg-zinc-500 rounded-full" />
-            <span>v2.4.0</span>
+            <span className="w-1 h-1 bg-slate-700 rounded-full" aria-hidden="true" />
+            <span className="text-slate-400">v2.4.0</span>
           </div>
-        </div>
+        </motion.div>
+
       </div>
     </div>
   );

@@ -1,6 +1,18 @@
 import { v2 as cloudinary } from 'cloudinary';
 import exifr from 'exifr';
 
+type ExifValue = string | number | Date;
+
+interface CloudinaryUploadResult {
+  width?: number;
+  height?: number;
+  duration?: number;
+  format?: string;
+  bytes?: number;
+  public_id: string;
+  secure_url: string;
+}
+
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -57,7 +69,7 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
  * Extracts EXIF data from an image file, including GPS coordinates
  */
 export async function extractExifData(file: File): Promise<{
-  exifData: Record<string, any> | null;
+  exifData: Record<string, ExifValue> | null;
   gpsCoordinates: { lat: number; lng: number } | null;
 }> {
   try {
@@ -87,7 +99,7 @@ export async function extractExifData(file: File): Promise<{
     }
 
     // Clean up EXIF data for storage (remove binary data, keep useful info)
-    const cleanExifData: Record<string, any> = {};
+    const cleanExifData: Record<string, ExifValue> = {};
     
     // Camera info
     if (exif.make) cleanExifData.make = exif.make;
@@ -130,7 +142,7 @@ export async function uploadToCloudinary(file: File): Promise<UploadResult> {
     const resourceType = file.type.startsWith('video') ? 'video' : 'image';
 
     // Upload to Cloudinary
-    const uploadResult = await new Promise<any>((resolve, reject) => {
+    const uploadResult = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
       cloudinary.uploader.upload(
         dataUri,
         {
@@ -148,9 +160,10 @@ export async function uploadToCloudinary(file: File): Promise<UploadResult> {
             ]
           })
         },
-        (error, result) => {
+        (error, result: CloudinaryUploadResult | undefined) => {
           if (error) reject(error);
-          else resolve(result);
+          else if (result) resolve(result);
+          else reject(new Error('Cloudinary returned no upload result'));
         }
       );
     });
@@ -213,7 +226,7 @@ export async function deleteFromCloudinary(publicId: string, resourceType: 'imag
         {
           resource_type: resourceType,
         },
-        (error, result) => {
+        (error) => {
           if (error) reject(error);
           else resolve();
         }

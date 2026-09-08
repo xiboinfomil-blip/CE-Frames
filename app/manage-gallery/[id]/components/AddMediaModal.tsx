@@ -49,16 +49,16 @@ interface AddMediaModalProps {
 
 // --- Static Configurations ---
 const TYPE_FILTERS: FilterOption[] = [
-  { value: 'all', label: 'All Assets' },
+  { value: 'all', label: 'Tous les médias' },
   { value: 'image', label: 'Images' },
-  { value: 'video', label: 'Videos' },
+  { value: 'video', label: 'Vidéos' },
   { value: 'gif', label: 'GIFs' }
 ];
 
 const SORT_OPTIONS: SortOption[] = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' }
+  { value: 'newest', label: 'Plus récents' },
+  { value: 'oldest', label: 'Plus anciens' },
+  { value: 'name', label: 'Nom (A-Z)' }
 ];
 
 // --- Sub-Component: Media Card ---
@@ -81,7 +81,7 @@ function MediaCard({ media, isSelected, onToggle, onPreview, isAdding }: MediaCa
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPreview(); } }}
         tabIndex={0}
         role="button"
-        aria-label={`Preview ${media.title || 'media asset'} in lightbox`}
+        aria-label={`Aperçu de ${media.title || 'élément média'}`}
       >
         <div className="aspect-4/3 relative">
           <MediaViewport
@@ -113,7 +113,7 @@ function MediaCard({ media, isSelected, onToggle, onPreview, isAdding }: MediaCa
       <div className="flex items-center justify-between px-1">
         <div className="min-w-0 flex-1 pr-2">
           <p className="truncate text-xs font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-            {media.title || 'Untitled Asset'}
+            {media.title || 'Média sans titre'}
           </p>
           <p className="mt-0.5 font-mono text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
             {media.type} • {media.id ? media.id.slice(0, 6) : 'N/A'}
@@ -129,7 +129,7 @@ function MediaCard({ media, isSelected, onToggle, onPreview, isAdding }: MediaCa
               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
           }`}
         >
-          {isSelected ? 'Selected' : 'Select'}
+          {isSelected ? 'Sélectionné' : 'Sélectionner'}
         </button>
       </div>
     </div>
@@ -166,7 +166,6 @@ export default function AddMediaModal({
   }, [searchInput, onSearchChange, onSearchSubmit]);
 
   const toggleSelection = useCallback((id: string) => {
-    // Prevent toggling if ID is empty to avoid logic errors in the Set
     if (!id) return;
     setSelectedIds(prev => {
       const newSet = new Set(prev);
@@ -182,7 +181,6 @@ export default function AddMediaModal({
   const isAllSelected = availableMedia.length > 0 && selectedIds.size === availableMedia.length;
 
   const selectAll = useCallback(() => {
-    // Only select items that have valid IDs
     const validIds = availableMedia.filter(m => m.id).map(m => m.id);
     setSelectedIds(isAllSelected ? new Set() : new Set(validIds));
   }, [isAllSelected, availableMedia]);
@@ -193,11 +191,11 @@ export default function AddMediaModal({
     try {
       const results = await Promise.all(Array.from(selectedIds).map(onAddMedia));
       const hasFailures = results.some(r => r === false);
-      if (hasFailures) console.warn('Some media items failed to add.');
+      if (hasFailures) console.warn('Certains médias n\'ont pas pu être ajoutés.');
       setSelectedIds(new Set());
       onClose();
     } catch (err) {
-      console.error('Failed to add media items', err);
+      console.error('Échec de l\'ajout des médias', err);
     } finally {
       setIsAdding(false);
     }
@@ -209,10 +207,10 @@ export default function AddMediaModal({
         {selectedIds.size > 0 ? (
           <span className="text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            {selectedIds.size} ASSETS QUEUED
+            {selectedIds.size} ÉLÉMENT(S) SÉLECTIONNÉ(S)
           </span>
         ) : (
-          <span>NO ASSETS SELECTED</span>
+          <span>AUCUN ÉLÉMENT SÉLECTIONNÉ</span>
         )}
       </div>
       <div className="flex gap-3 w-full sm:w-auto">
@@ -226,7 +224,7 @@ export default function AddMediaModal({
           disabled={isAdding}
           className="flex-1 sm:flex-none"
         >
-          Cancel
+          Annuler
         </CustomButton>
         <CustomButton 
           variant="primary"
@@ -237,7 +235,7 @@ export default function AddMediaModal({
           leftIcon={!isAdding && <HiPlus className="w-4 h-4" />}
           className="flex-1 sm:flex-none"
         >
-          {isAdding ? 'Processing...' : 'Add to Gallery'}
+          {isAdding ? 'Traitement...' : 'Ajouter à l\'album'}
         </CustomButton>
       </div>
     </div>
@@ -247,8 +245,8 @@ export default function AddMediaModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Select Assets"
-      subtitle="ADD EXISTING MEDIA TO GALLERY"
+      title="Sélectionner des médias"
+      subtitle="AJOUTER DES MÉDIAS À L'ALBUM CSE"
       maxWidth="7xl"
       isLoading={isAdding}
       footer={footerActions}
@@ -273,18 +271,18 @@ export default function AddMediaModal({
           />
         </div>
 
-        {/* Telemetry Toolbar */}
+        {/* Collection Toolbar */}
         <div className="px-6 py-3 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200/60 dark:border-zinc-800/60 flex justify-between items-center">
           <span className="text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
-            {modalPagination.total} AVAILABLE ASSETS
+            {modalPagination.total} MÉDIAS DISPONIBLES
           </span>
           <button 
             onClick={selectAll}
             disabled={availableMedia.length === 0 || isAdding}
             className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors disabled:opacity-50 focus:outline-none focus-visible:underline decoration-zinc-900 dark:decoration-white underline-offset-4"
           >
-            {isAllSelected ? 'Deselect All' : 'Select All'}
+            {isAllSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
           </button>
         </div>
 
@@ -296,9 +294,9 @@ export default function AddMediaModal({
               <div className="w-20 h-20 mb-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-zinc-200 dark:border-zinc-800">
                 <HiPhoto className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No Assets Found</h3>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Aucun média trouvé</h3>
               <p className="text-zinc-500 dark:text-zinc-400 mt-2 text-sm max-w-xs font-medium">
-                {initialFilters.search ? 'Try adjusting your search parameters.' : 'Upload new media in the Library first.'}
+                {initialFilters.search ? 'Essayez de modifier vos critères de recherche.' : 'Téléversez d\'abord de nouveaux médias dans la médiathèque.'}
               </p>
             </div>
           ) : (
@@ -306,7 +304,6 @@ export default function AddMediaModal({
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {availableMedia.map((media, index) => (
                   <MediaCard
-                    // FIX: Use index-based key if ID is missing or empty to ensure uniqueness
                     key={media.id && media.id !== '' ? media.id : `media-item-${index}`}
                     media={media}
                     isSelected={selectedIds.has(media.id)}

@@ -2,12 +2,12 @@
 // import { useImageCategories } from './useImageCategories';
 // import { useAnotherApiHook } from './useAnotherApiHook'; // Add future hooks here
 
-export function useNavData(authenticated) {
+export function useNavData() {
   // 1. Dummy data for now (Replace with actual hook calls later)
   // Note: The structure must include the `dataKey` ('imagesFor'), `loading`, and `error` 
   // to match what the Navbar's `getItemData` helper expects.
   const imageCategories = {
-    imagesFor: ['Formula 1', 'MotoGP', 'WEC', 'WRC', 'Drift'],
+    imagesFor: ['Team Events', 'Celebrations', 'Conferences', 'Family Days'],
     loading: false,
     error: null,
   };

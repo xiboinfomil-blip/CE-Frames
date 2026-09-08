@@ -4,7 +4,7 @@ import { galleryHelpers, mediaHelpers, galleryMediaHelpers } from '@/lib/db-help
 import ManageGalleryClient from './ManageGalleryClient';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import Skeleton from '@/components/Skeleton'; // Adjust path if your Skeleton component is located elsewhere
+import Skeleton from '@/components/Skeleton';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -20,7 +20,7 @@ interface PageProps {
 
 function ManageGalleryLoading() {
   return (
-    <div className="min-h-screen bg-white px-6 lg:px-12 py-12">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 px-6 lg:px-12 py-12">
       {/* Header Skeleton */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">
@@ -63,11 +63,10 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  // Security Check: Ensure the user owns this gallery
-  // Cast to unknown first to satisfy TypeScript's strict overlap checks
+  // Security Check: Ensure the user owns or has rights to manage this gallery
   const galleryWithUser = galleryResult as unknown as { userId?: string };
   if (galleryWithUser.userId && galleryWithUser.userId !== session.user.id) {
-    redirect('/manage-gallery');
+    redirect('/gestion-galeries');
   }
 
   // 2. Fetch Paginated/Filtered Gallery Media Items (Main List)
@@ -90,9 +89,8 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     media: {
       id: item.media.id,
       thumbnailUrl: item.media.thumbnailUrl,
-      // Fix: Ensure fullResUrl is always a string, defaulting to empty if null/undefined
       fullResUrl: item.media.fullResUrl || '',
-      title: item.media.originalFilename || item.media.caption || 'Untitled',
+      title: item.media.originalFilename || item.media.caption || 'Sans titre',
       type: item.media.type,
       width: item.media.width,
       height: item.media.height,
@@ -100,7 +98,6 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
   }));
 
   // 3. Fetch Available Media for the "Add" Modal
-  // Lightweight fetch for all media IDs in this gallery to ensure accurate exclusion
   const allGalleryMediaIds = await galleryMediaHelpers.getGalleryMediaWithDetails(id);
   const existingMediaIds = allGalleryMediaIds.map(gm => gm.media.id);
 
@@ -110,7 +107,7 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
 
   const { items: allUserMedia, total: totalAvailableMedia } = await mediaHelpers.findAll({
     search: filters.search,
-    filter: filters.type || 'all', // ✅ Changed 'type' to 'filter' to match mediaHelpers.findAll signature
+    filter: filters.type || 'all',
     sortBy: (filters.sortBy === 'position' ? 'newest' : filters.sortBy) || 'newest',
     limit: modalLimit,
     offset: modalOffset,
@@ -121,10 +118,9 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
   const availableMedia = allUserMedia.map(m => ({
     id: m.id,
     thumbnailUrl: m.thumbnailUrl,
-    // Fix: Ensure fullResUrl is always a string
     fullResUrl: m.fullResUrl || '',
-    title: m.originalFilename || m.caption || 'Untitled',
-    type: m.type,
+    title: m.originalFilename || m.caption || 'Sans titre',
+    type: m.type as 'image' | 'video' | 'gif',
     uploadedAt: m.uploadedAt
   }));
 

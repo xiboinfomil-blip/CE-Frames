@@ -10,6 +10,8 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,10 +21,11 @@ export default function LoginForm() {
     setError(null);
     
     try {
-      // await signIn('credentials', { callbackUrl });
+      // Intégration NextAuth ou API CSE
+      // await signIn('credentials', { email, password, callbackUrl });
       await new Promise(resolve => setTimeout(resolve, 1500)); 
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError('Identifiants invalides. Veuillez réessayer.');
     } finally {
       setIsLoading(false);
     }
@@ -33,10 +36,10 @@ export default function LoginForm() {
       {/* Editorial Header */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-3">
-          Welcome back
+          Bon retour
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm tracking-wide">
-          Enter your studio credentials to continue.
+          Saisissez vos identifiants CSE pour vous connecter à l&apos;espace d&apos;administration.
         </p>
       </div>
 
@@ -51,19 +54,23 @@ export default function LoginForm() {
 
         <div className="space-y-5">
           <CustomTextfield
-            label="Email Address"
+            label="Adresse e-mail"
             name="email"
             type="email"
-            placeholder="name@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="nom@entreprise.com"
             leftIcon={<HiOutlineUser size={18} />}
             autoComplete="email"
             required
           />
 
           <CustomTextfield
-            label="Password"
+            label="Mot de passe"
             name="password"
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             leftIcon={<HiOutlineLockClosed size={18} />}
             autoComplete="current-password"
@@ -81,7 +88,7 @@ export default function LoginForm() {
             className="w-full"
             rightIcon={!isLoading && <HiArrowRight size={18} />}
           >
-            {isLoading ? 'Authenticating...' : 'Sign in'}
+            {isLoading ? 'Connexion en cours...' : 'Se connecter'}
           </CustomButton>
         </div>
       </form>
@@ -89,7 +96,7 @@ export default function LoginForm() {
       {/* Subtle Footer Metadata */}
       <div className="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800/50">
         <p className="text-[10px] text-zinc-400 dark:text-zinc-600 font-bold uppercase tracking-[0.15em] text-center">
-          Secure Studio Access • v2.4.0
+          Espace Sécurisé CSE • Portail Comité d&apos;Entreprise
         </p>
       </div>
     </div>

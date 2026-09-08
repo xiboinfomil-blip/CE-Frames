@@ -25,14 +25,14 @@ export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
       borderColor: 'border-emerald-200/50 dark:border-emerald-800/50',
     },
     private: {
-      label: 'Private',
+      label: 'Privé',
       dotColor: 'bg-zinc-500',
       bgColor: 'bg-zinc-100/80 dark:bg-zinc-900/80',
       textColor: 'text-zinc-700 dark:text-zinc-300',
       borderColor: 'border-zinc-200/50 dark:border-zinc-700/50',
     },
     password_protected: {
-      label: 'Locked',
+      label: 'Protégé',
       dotColor: 'bg-amber-500',
       bgColor: 'bg-amber-50/80 dark:bg-amber-950/80',
       textColor: 'text-amber-700 dark:text-amber-400',
@@ -42,7 +42,7 @@ export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
       )
     },
     unlisted: {
-      label: 'Unlisted',
+      label: 'Non listé',
       dotColor: 'bg-blue-500',
       bgColor: 'bg-blue-50/80 dark:bg-blue-950/80',
       textColor: 'text-blue-700 dark:text-blue-400',
@@ -50,7 +50,7 @@ export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
     }
   };
 
-  const current = config[type];
+  const current = config[type] || config.private;
 
   return (
     <div className={`
@@ -58,7 +58,7 @@ export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
       backdrop-blur-md border shadow-sm transition-all duration-300
       ${current.bgColor} ${current.textColor} ${current.borderColor}
     `}>
-      {/* Status LED with Pulse Effect */}
+      {/* Status Indicator */}
       <span className="relative flex h-1.5 w-1.5">
         <span className={`absolute inline-flex h-full w-full rounded-full opacity-30 animate-ping ${current.dotColor}`}></span>
         <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${current.dotColor}`}></span>

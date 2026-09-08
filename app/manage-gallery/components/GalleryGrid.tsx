@@ -20,10 +20,10 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
         <Images className="w-10 h-10 md:w-12 md:h-12 text-zinc-300" />
       </div>
       <h3 className="text-2xl md:text-3xl font-light text-zinc-900 tracking-tight">
-        No collections yet
+        Aucune galerie pour le moment
       </h3>
       <p className="text-zinc-600 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
-        Your portfolio is waiting. Create your first curated gallery to start organizing your visual stories.
+        Partagez les moments forts des événements et activités du CSE. Créez votre premier album média pour les salariés.
       </p>
       <CustomButton 
         variant="primary"
@@ -32,7 +32,7 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
         className="mt-10 px-8 py-4 text-base font-medium tracking-wide shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
         leftIcon={<Plus className="w-5 h-5" />}
       >
-        Create First Gallery
+        Créer un album
       </CustomButton>
     </div>
   );
@@ -41,15 +41,13 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
     <div className="w-full min-h-[60vh] flex flex-col">
       <CardGrid
         items={galleries}
-        ariaLabel="Photo galleries"
+        ariaLabel="Galeries photos du CSE"
         emptyState={galleryEmptyState}
         getKey={(gallery) => gallery.id}
         /* 
-           RESPONSIVE PHOTOGRAPHY GRID LAYOUT:
-           - Replaced rigid minmax(500px) with fluid, breakpoint-driven columns.
-           - Ensures 3:4 cards remain at an optimal, elegant viewing size across all devices.
-           - 1 col (mobile), 2 cols (tablet), 3 cols (laptop), 4 cols (large desktop).
-           - Generous, breathing gaps that scale with the viewport.
+            RESPONSIVE PHOTOGRAPHY GRID LAYOUT:
+            - Fluid breakpoint-driven columns for 3:4 cards.
+            - 1 col (mobile), 2 cols (tablet), 3 cols (laptop), 4 cols (large desktop).
         */
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 xl:gap-10 p-4 md:p-8 lg:p-12 w-full max-w-[1920px] mx-auto"
         renderItem={(gallery, index) => (
@@ -57,7 +55,7 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
             gallery={gallery} 
             onEdit={() => onEdit(gallery)}
             onDelete={() => onDelete(gallery.id)}
-            priority={index < 4} // Prioritize LCP (Largest Contentful Paint) for the first row only
+            priority={index < 4} // Prioritize LCP for the first row only
           />
         )}
       />

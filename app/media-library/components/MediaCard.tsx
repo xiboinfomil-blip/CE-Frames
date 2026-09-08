@@ -74,21 +74,21 @@ const MediaCard = memo(function MediaCard({
     if (isDeleting) return;
 
     const result = await Swal.fire({
-      title: 'Delete Asset?',
-      html: `<span class="text-zinc-500">You are about to permanently remove <strong class="text-zinc-900">${media.originalFilename || 'this asset'}</strong>.</span>`,
+      title: 'Delete Frame Asset?',
+      html: `<span class="text-zinc-500 text-sm">You are about to permanently remove <strong class="text-zinc-900">${media.originalFilename || 'this asset'}</strong> from CE Frames.</span>`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
+      confirmButtonColor: '#e11d48',
       cancelButtonColor: '#e4e4e7',
-      confirmButtonText: 'Yes, delete it',
+      confirmButtonText: 'Yes, delete asset',
       cancelButtonText: 'Cancel',
       background: '#ffffff',
       customClass: {
-        popup: 'rounded-2xl shadow-xl border border-zinc-100',
-        title: 'font-semibold text-zinc-900 text-lg',
+        popup: 'rounded-2xl shadow-xl border border-zinc-100 p-6',
+        title: 'font-bold text-zinc-900 text-lg tracking-tight',
         htmlContainer: 'mt-2',
-        confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-red-600 hover:shadow-md',
-        cancelButton: 'px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-600 hover:bg-zinc-100'
+        confirmButton: 'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:bg-rose-700 hover:shadow-md cursor-pointer',
+        cancelButton: 'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-600 hover:bg-zinc-100 cursor-pointer'
       }
     });
 
@@ -98,11 +98,11 @@ const MediaCard = memo(function MediaCard({
   }, [isDeleting, onDelete, media.id, media.originalFilename]);
 
   return (
-    <figure className="group relative flex flex-col w-full bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out h-full border border-zinc-100/60 dark:border-zinc-800/60">
+    <figure className="group relative flex flex-col w-full bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out h-full border border-zinc-100 dark:border-zinc-800">
       
       {/* --- Media Viewport Wrapper --- */}
       <div 
-        className="relative aspect-4/3 bg-zinc-50 dark:bg-zinc-950 overflow-hidden cursor-zoom-in shrink-0"
+        className="relative aspect-4/3 bg-zinc-950 overflow-hidden cursor-zoom-in shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
         onClick={onOpenLightbox}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onOpenLightbox(); }}
         role="button"
@@ -120,12 +120,12 @@ const MediaCard = memo(function MediaCard({
           sizes={sizes}
         />
 
-        {/* Gradient Overlay for better contrast on hover */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-        {/* Top Badges (Glassmorphism) */}
+        {/* Top Badges */}
         <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">
-          <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-sm">
+          <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-xs">
             {media.type === 'video' && (
               <HiPlay className="w-3 h-3 text-rose-500" />
             )}
@@ -133,19 +133,19 @@ const MediaCard = memo(function MediaCard({
           </span>
           
           {media.locationName && (
-            <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-sm max-w-32 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+            <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-xs max-w-32 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
               <HiMapPin className="w-3 h-3 text-zinc-500 shrink-0" />
               <span className="truncate">{media.locationName}</span>
             </span>
           )}
         </div>
 
-        {/* Delete Button - Appears on Hover */}
+        {/* Delete Button */}
         <button 
           onClick={handleDeleteClick}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDeleteClick(e); }}
           disabled={isDeleting}
-          className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm border border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2
+          className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-xs border border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer
             ${isDeleting 
               ? 'cursor-not-allowed opacity-60' 
               : 'text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:border-rose-200 dark:hover:border-rose-900/50 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
@@ -160,9 +160,9 @@ const MediaCard = memo(function MediaCard({
           )}
         </button>
 
-        {/* Duration Badge for Video */}
+        {/* Duration Badge */}
         {media.type === 'video' && media.durationSeconds && (
-          <div className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold text-white shadow-sm pointer-events-none">
+          <div className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold text-white shadow-xs pointer-events-none">
             {formatDuration(media.durationSeconds)}
           </div>
         )}
@@ -171,8 +171,8 @@ const MediaCard = memo(function MediaCard({
       {/* --- Content Body --- */}
       <figcaption className="flex flex-col flex-1 p-5 bg-white dark:bg-zinc-900">
         <div className="mb-4">
-          <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug truncate pr-2 transition-colors group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
-            {media.caption || media.originalFilename || 'Untitled'}
+          <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug truncate pr-2 transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400">
+            {media.caption || media.originalFilename || 'Untitled Frame'}
           </h3>
           <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mt-1.5 uppercase tracking-widest">
             {formatDistanceToNow(new Date(media.uploadedAt), { addSuffix: true })}
@@ -183,12 +183,12 @@ const MediaCard = memo(function MediaCard({
           <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800">
             <div className="grid grid-cols-2 gap-y-2 gap-x-4">
               {cameraModelStr && (
-                <div className="col-span-2 flex items-center justify-between text-[10px] pb-2 border-b border-zinc-50 dark:border-zinc-800 mb-1">
+                <div className="col-span-2 flex items-center justify-between text-[10px] pb-2 border-b border-zinc-50 dark:border-zinc-800/50 mb-1">
                   <span className="font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <HiCamera className="w-3 h-3" />
+                    <HiCamera className="w-3 h-3 text-rose-500" />
                     Camera
                   </span>
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">{cameraModelStr}</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]">{cameraModelStr}</span>
                 </div>
               )}
               {isoStr && (
@@ -219,8 +219,8 @@ const MediaCard = memo(function MediaCard({
           </div>
         ) : (
           <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[10px]">
-             <span className="font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">No additional metadata</span>
-             {resolution && <span className="font-mono font-semibold text-zinc-500 dark:text-zinc-400">{resolution}</span>}
+            <span className="font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Standard Frame</span>
+            {resolution && <span className="font-mono font-semibold text-zinc-500 dark:text-zinc-400">{resolution}</span>}
           </div>
         )}
       </figcaption>

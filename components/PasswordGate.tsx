@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
 import { 
   HiLockClosed, 
   HiEye, 
@@ -10,86 +12,86 @@ import {
 interface PasswordGateProps {
   onUnlock: (password: string) => Promise<void>;
   isLoading: boolean;
-  error: string;
+  error?: string;
+  title?: string;
+  subtitle?: string;
 }
 
-export default function PasswordGate({ onUnlock, isLoading, error }: PasswordGateProps) {
+export default function PasswordGate({ 
+  onUnlock, 
+  isLoading, 
+  error,
+  title = "Private Event Gallery",
+  subtitle = "Please enter your password to access the media collection."
+}: PasswordGateProps) {
   const [password, setPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus management for accessibility
+  // Auto-focus password input on mount
   useEffect(() => {
-    if (!isLoading && error) {
-      const timer = setTimeout(() => {
-        // Optional: Clear error after a few seconds for cleaner UX
-        // But we'll keep it visible until user types again based on standard patterns
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error, isLoading]);
+    inputRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) return;
+    if (!password.trim() || isLoading) return;
     await onUnlock(password);
   };
 
   return (
-    <div className="min-h-screen w-full bg-stone-50 flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-stone-200">
+    <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden font-sans">
       
-      {/* Background Texture: Subtle Noise for "Photo Paper" feel */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
+      {/* Glow Orbs & Background Backdrop */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-900/10 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Decorative Blur Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-stone-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-stone-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
-
-      {/* Main Card */}
-      <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-white/50 p-8 md:p-10 relative z-10 transition-all duration-500 ease-out transform translate-y-0 opacity-100">
+      {/* Main Glassmorphism Card */}
+      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-800 shadow-2xl shadow-slate-950 p-8 md:p-10 relative z-10">
         
-        {/* Header Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-100 mb-6 text-stone-800">
-            <HiLockClosed className="w-6 h-6" />
+        {/* Header Icon & Title */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-rose-600/10 border border-rose-500/20 mb-6 text-rose-400">
+            <HiLockClosed className="w-7 h-7" />
           </div>
-          <h1 className="text-3xl font-bold text-stone-900 tracking-tight mb-2">
-            Private Gallery
+          <h1 className="text-2xl font-bold text-white tracking-tight mb-2">
+            {title}
           </h1>
-          <p className="text-stone-500 text-sm font-medium leading-relaxed">
-            Please enter your passkey to access the curated collection.
+          <p className="text-slate-400 text-xs sm:text-sm font-normal leading-relaxed">
+            {subtitle}
           </p>
         </div>
 
-        {/* Form Section */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative group">
-            <label htmlFor="password" className="sr-only">Password</label>
+            <label htmlFor="gallery-password" className="sr-only">Password</label>
             <input
-              id="password"
+              ref={inputRef}
+              id="gallery-password"
               type={isVisible ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Enter gallery password"
               disabled={isLoading}
               autoComplete="current-password"
               className={`
-                w-full px-4 py-4 bg-stone-50 border-2 rounded-xl text-stone-900 placeholder:text-stone-400
-                focus:outline-none focus:ring-4 focus:ring-stone-100 transition-all duration-300
-                ${error ? 'border-red-200 focus:border-red-400 bg-red-50/30' : 'border-stone-100 focus:border-stone-300'}
-                disabled:opacity-60 disabled:cursor-not-allowed
+                w-full pl-4 pr-12 py-3.5 bg-slate-800/80 border rounded-xl text-slate-100 text-sm placeholder:text-slate-500
+                focus:outline-none focus:ring-2 transition-all duration-200
+                ${error 
+                  ? 'border-red-500/80 focus:ring-red-500/50' 
+                  : 'border-slate-700/80 focus:border-rose-500 focus:ring-rose-500/30'
+                }
+                disabled:opacity-50 disabled:cursor-not-allowed
               `}
             />
             
-            {/* Toggle Visibility Button */}
+            {/* Toggle Visibility */}
             <button
               type="button"
               onClick={() => setIsVisible(!isVisible)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-stone-400 hover:text-stone-600 transition-colors focus:outline-none focus:ring-2 focus:ring-stone-200 rounded-full"
+              tabIndex={-1}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-200 transition-colors rounded-lg"
               aria-label={isVisible ? "Hide password" : "Show password"}
             >
               {isVisible ? (
@@ -100,44 +102,44 @@ export default function PasswordGate({ onUnlock, isLoading, error }: PasswordGat
             </button>
           </div>
 
-          {/* Error Message */}
+          {/* Error Banner */}
           {error && (
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-100 animate-in fade-in slide-in-from-top-2 duration-300">
-              <HiExclamationCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-xs font-medium text-red-600 leading-tight">{error}</p>
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-950/40 border border-red-800/50 text-red-300">
+              <HiExclamationCircle className="w-5 h-5 shrink-0 text-red-400" />
+              <p className="text-xs font-medium">{error}</p>
             </div>
           )}
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || !password}
+            disabled={isLoading || !password.trim()}
             className={`
-              w-full py-4 px-6 rounded-xl font-semibold text-white shadow-lg shadow-stone-200
-              transition-all duration-300 transform active:scale-[0.98]
-              flex items-center justify-center gap-2
-              ${isLoading || !password 
-                ? 'bg-stone-300 cursor-not-allowed shadow-none' 
-                : 'bg-stone-900 hover:bg-stone-800 hover:shadow-xl hover:-translate-y-0.5'}
+              w-full py-3.5 px-6 rounded-xl font-semibold text-sm text-white shadow-lg
+              transition-all duration-200 flex items-center justify-center gap-2
+              ${isLoading || !password.trim()
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50' 
+                : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/25 active:scale-[0.99]'}
             `}
           >
             {isLoading ? (
               <>
-                <HiArrowPath className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                <span>Verifying...</span>
+                <HiArrowPath className="animate-spin h-4 w-4 text-white" />
+                <span>Unlocking...</span>
               </>
             ) : (
-              <span>Unlock Gallery</span>
+              <span>Unlock Access</span>
             )}
           </button>
         </form>
 
-        {/* Footer / Hint */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-stone-400">
-            Secured by end-to-end encryption
+        {/* Security Footer */}
+        <div className="mt-8 text-center border-t border-slate-800/80 pt-6">
+          <p className="text-[11px] font-mono text-slate-500">
+            Protected by end-to-end event token authentication
           </p>
         </div>
+
       </div>
     </div>
   );

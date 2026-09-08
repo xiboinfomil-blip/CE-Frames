@@ -29,20 +29,20 @@ interface GalleriesContentProps {
 }
 
 const VISIBILITY_FILTERS: FilterOption[] = [
-  { value: 'all', label: 'All Collections' },
+  { value: 'all', label: 'Toutes les galeries' },
   ...VISIBILITY_STATUSES.map(status => ({
     value: status,
     label: status === 'public' ? 'Public' : 
-           status === 'private' ? 'Private' : 
-           status === 'password_protected' ? 'Locked' : 
-           status === 'unlisted' ? 'Unlisted' : status
+           status === 'private' ? 'Privé' : 
+           status === 'password_protected' ? 'Protégé' : 
+           status === 'unlisted' ? 'Non listé' : status
   }))
 ];
 
 const SORT_OPTIONS: SortOption[] = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' }
+  { value: 'newest', label: 'Plus récents' },
+  { value: 'oldest', label: 'Plus anciens' },
+  { value: 'name', label: 'Nom (A-Z)' }
 ];
 
 export default function GalleriesContent({ 
@@ -119,11 +119,10 @@ export default function GalleriesContent({
   const handleDelete = useCallback(async (id: string) => {
     try {
       const response = await fetch(`/api/galleries/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Failed to delete gallery');
+      if (!response.ok) throw new Error('Échec de la suppression de la galerie');
       router.refresh();
     } catch (error) {
-      console.error('Failed to delete gallery:', error);
-      // Optional: Add a toast notification here for user feedback
+      console.error('Erreur lors de la suppression de la galerie:', error);
     }
   }, [router]);
 
@@ -138,7 +137,7 @@ export default function GalleriesContent({
     <div className="min-h-screen bg-zinc-50/30 text-zinc-900 font-sans selection:bg-rose-100 selection:text-rose-900 relative">
       <div className="relative z-10 flex flex-col min-h-screen">
         
-        {/* Premium Glassmorphic Header */}
+        {/* Glassmorphic Header */}
         <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-zinc-200/50 transition-all duration-300 supports-[backdrop-filter]:bg-white/60">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-5">
             <MediaLibraryHeader
@@ -161,28 +160,28 @@ export default function GalleriesContent({
         {/* Main Content Area */}
         <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           
-          {/* Screen Reader Live Region for Dynamic Updates */}
+          {/* Live Region for Screen Readers */}
           <div className="sr-only" aria-live="polite" aria-atomic="true">
-            Showing {initialGalleries.length} of {pagination.total} galleries.
+            Affichage de {initialGalleries.length} sur {pagination.total} galeries.
           </div>
 
           {initialGalleries.length === 0 ? (
-            // Filtered Empty State (Distinct from the "No Galleries At All" state in GalleryGrid)
+            /* Filtered Empty State */
             <div className="flex flex-col items-center justify-center py-24 md:py-40 text-center w-full animate-in fade-in zoom-in-95 duration-500">
               <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-zinc-100 shadow-sm">
                 <Images className="w-10 h-10 md:w-12 md:h-12 text-zinc-300" />
               </div>
               <h3 className="text-2xl md:text-3xl font-light text-zinc-900 tracking-tight">
-                No collections found
+                Aucun résultat trouvé
               </h3>
               <p className="text-zinc-600 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
-                No galleries match your current filters. Try adjusting your search criteria or clear the filters to see all collections.
+                Aucun album ne correspond à vos critères de recherche actuels. Essayez de modifier vos filtres ou de les réinitialiser.
               </p>
               <button 
                 onClick={handleResetFilters}
                 className="mt-8 px-8 py-3.5 bg-zinc-900 text-white text-base font-medium rounded-2xl hover:bg-zinc-800 transition-all duration-300 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 shadow-sm hover:shadow-md"
               >
-                Clear All Filters
+                Réinitialiser les filtres
               </button>
             </div>
           ) : (
@@ -208,12 +207,12 @@ export default function GalleriesContent({
           )}
         </main>
 
-        {/* Floating Action Button with explicit accessibility label */}
+        {/* Floating Action Button */}
         <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50">
           <FloatingActionButton 
             onClick={handleOpenCreateModal} 
-            label="New Gallery" 
-            aria-label="Create a new photo gallery"
+            label="Nouvel album" 
+            aria-label="Créer un nouvel album photo CSE"
           />
         </div>
 

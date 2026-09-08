@@ -1,52 +1,54 @@
-// components/NavbarSkeleton.jsx
+'use client';
+
 import { motion } from 'framer-motion';
-import Skeleton from '../Skeleton'; // Adjust path if necessary
+import Skeleton from '../Skeleton';
 
 export default function NavbarSkeleton() {
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className="fixed w-full z-40 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border-b border-transparent h-20 transition-all duration-500 ease-out"
+      transition={{ type: "spring", stiffness: 120, damping: 20 }}
+      className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 py-3"
+      role="status"
+      aria-label="Loading navbar"
     >
-      {/* Top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-red-500 to-transparent opacity-40" />
+      {/* Top accent glow line */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div className="flex items-center justify-between h-full">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-11">
           
           {/* Logo Skeleton */}
-          <div className="flex items-center space-x-3">
-            <Skeleton width="w-10" height="h-10" rounded="rounded-xl" />
-            <div className="flex flex-col space-y-1.5">
-              <Skeleton width="w-36" height="h-5" rounded="rounded-md" />
-              <Skeleton width="w-24" height="h-2.5" rounded="rounded-md" className="hidden sm:block" />
+          <div className="flex items-center gap-3">
+            <Skeleton variant="text-line" className="w-8 h-8 sm:w-9 sm:h-9 !rounded-xl" />
+            <div className="flex flex-col gap-1.5">
+              <Skeleton variant="text-line" className="w-28 sm:w-32 h-4 !rounded-md" />
+              <Skeleton variant="text-line" className="w-16 h-2 !rounded-md hidden sm:block" />
             </div>
           </div>
 
           {/* Desktop Menu Skeleton */}
-          <div className="hidden lg:flex items-center space-x-10">
-            <div className="flex items-center space-x-1">
+          <div className="hidden lg:flex items-center gap-8">
+            <div className="flex items-center gap-6">
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} width="w-20" height="h-8" rounded="rounded-lg" />
+                <Skeleton key={i} variant="text-line" className="w-16 h-4 !rounded-md" />
               ))}
             </div>
+
+            <div className="w-px h-5 bg-slate-800" aria-hidden="true" />
             
             {/* Auth Button Skeleton */}
-            <Skeleton width="w-28" height="h-9" rounded="rounded-lg" />
+            <Skeleton variant="text-line" className="w-24 h-9 !rounded-xl" />
           </div>
 
           {/* Mobile Menu Button Skeleton */}
           <div className="lg:hidden flex items-center">
-            <Skeleton width="w-10" height="h-10" rounded="rounded-xl" />
+            <Skeleton variant="text-line" className="w-9 h-9 !rounded-xl" />
           </div>
 
         </div>
       </div>
-
-      {/* Bottom accent line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-0" />
     </motion.nav>
   );
 }

@@ -105,7 +105,7 @@ export const galleryMedia = pgTable('gallery_media', {
 // 3. RELATIONS (Drizzle's Magic)
 // ==========================================
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, () => ({
   // No galleries relation since galleries don't reference users
 }));
 

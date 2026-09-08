@@ -37,7 +37,7 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
     switch (type) {
       case 'video':
         return {
-          label: 'Video',
+          label: 'Vidéo',
           icon: <Video className="w-3 h-3" />,
           className: 'bg-zinc-900/80 text-white border-zinc-700/50'
         };
@@ -84,7 +84,7 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-900">
             <FileImage className="w-10 h-10 opacity-50 mb-2" strokeWidth={1.5} />
-            <span className="text-xs font-medium uppercase tracking-widest">No Preview</span>
+            <span className="text-xs font-medium uppercase tracking-widest">Aperçu indisponible</span>
           </div>
         )}
         
@@ -103,8 +103,8 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
               <button 
                 onClick={handleManualOrderClick}
                 className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md text-zinc-700 dark:text-zinc-300 shadow-lg border border-white/20 dark:border-zinc-800 transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
-                aria-label="Set manual position"
-                title="Reorder"
+                aria-label="Changer l'ordre d'affichage"
+                title="Changer l'ordre"
               >
                 <ArrowUpDown className="h-4 w-4" strokeWidth={2} />
               </button>
@@ -114,8 +114,8 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
               <button 
                 onClick={handleRemove}
                 className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md text-rose-600 dark:text-rose-400 shadow-lg border border-white/20 dark:border-zinc-800 transition-all duration-200 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-                aria-label="Remove media"
-                title="Remove"
+                aria-label="Supprimer le média"
+                title="Supprimer"
               >
                 <Trash2 className="h-4 w-4" strokeWidth={2} />
               </button>
@@ -126,8 +126,8 @@ const MediaCard = memo(function MediaCard({ media, onRemove, onManualOrder, prio
 
       {/* Content Body */}
       <div className="flex flex-col p-4 bg-white dark:bg-zinc-900 shrink-0 grow">
-        <h3 className="truncate text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors mb-3 tracking-tight" title={media.title || 'Untitled Asset'}>
-          {media.title || 'Untitled Asset'}
+        <h3 className="truncate text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors mb-3 tracking-tight" title={media.title || 'Sans titre'}>
+          {media.title || 'Sans titre'}
         </h3>
         
         <div className="mt-auto pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">

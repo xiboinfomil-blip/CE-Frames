@@ -1,110 +1,142 @@
 'use client';
 
-// ✅ Updated Import: Using GallerySummary from consolidated types
-import { GallerySummary } from '@/types/types';
-import MediaViewport from '@/components/media-viewport';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { HiPhoto, HiLockClosed } from 'react-icons/hi2';
+
+import { GallerySummary } from '@/types/types';
+import GalleryCard from './GalleryCard';
+import EmptyState from './EmptyState';
 
 interface GalleryGridProps {
   galleries: GallerySummary[];
   onGalleryClick: (gallery: GallerySummary) => void;
+  useCardComponent?: boolean;
 }
 
-const GalleryGrid = ({ galleries, onGalleryClick }: GalleryGridProps) => {
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+};
+
+export default function GalleryGrid({
+  galleries,
+  onGalleryClick,
+  useCardComponent = true,
+}: GalleryGridProps) {
+  if (galleries.length === 0) {
+    return (
+      <EmptyState
+        title="No galleries found"
+        description="Try adjusting your search criteria or filter options to discover galleries."
+      />
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {galleries.map((gallery, index) => {
-        // ✅ Use randomMedia for list previews since coverMedia object isn't in GallerySummary
-        const displayMedia = gallery.randomMedia;
-        
-        if (!displayMedia) {
-          // Fallback for galleries without any media
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    >
+      {galleries.map((gallery) => {
+        // Render via standard GalleryCard component when enabled
+        if (useCardComponent) {
           return (
-            <div
+            <GalleryCard
               key={gallery.id}
-              onClick={() => onGalleryClick(gallery)}
-              className="group relative aspect-4/3 w-full overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-700 shadow-xl cursor-pointer transition-all duration-300 hover:ring-red-500 hover:shadow-2xl hover:-translate-y-1"
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center p-4">
-                  <HiPhoto className="h-12 w-12 mx-auto text-slate-600 mb-2" />
-                  <p className="text-slate-500 text-sm">No media</p>
-                </div>
-              </div>
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Gallery Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                <h3 className="text-white font-bold text-lg truncate">{gallery.title}</h3>
-                {gallery.visibility === 'password_protected' && (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-red-400 font-mono uppercase tracking-widest">
-                    <HiLockClosed className="w-3 h-3" />
-                    <span>Locked</span>
-                  </div>
-                )}
-              </div>
-            </div>
+              gallery={gallery}
+              onClick={onGalleryClick}
+            />
           );
         }
 
+        const displayMedia = gallery.randomMedia;
+
+        // Custom Grid Card Fallback Mode
         return (
-          <div
+          <motion.div
             key={gallery.id}
+            variants={itemVariants}
             onClick={() => onGalleryClick(gallery)}
-            className="group cursor-pointer"
+            className="group cursor-pointer flex flex-col h-full bg-slate-900/90 rounded-2xl border border-slate-800/80 overflow-hidden shadow-xl shadow-slate-950/50 hover:border-slate-700/80 transition-all duration-300"
           >
-            <MediaViewport
-              mediaType={displayMedia.type}
-              fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
-              thumbnailUrl={displayMedia.thumbnailUrl}
-              caption={gallery.title}
-              originalFilename={null}
-              className="transition-all duration-300 hover:ring-red-500 hover:shadow-2xl hover:-translate-y-1"
-              priority={index === 0} // <-- Eager load ONLY the first item for LCP optimization
-            />
-            
-            {/* Gallery Info - positioned outside MediaViewport for better control */}
-            <div className="mt-3 px-1">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-slate-900 font-bold text-base truncate group-hover:text-red-600 transition-colors">
-                    {gallery.title}
-                  </h3>
-                  {gallery.description && (
-                    <p className="text-slate-600 text-sm mt-1 line-clamp-2">
-                      {gallery.description}
-                    </p>
-                  )}
+            {/* Media Aspect Container */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-950 flex items-center justify-center">
+              {displayMedia?.thumbnailUrl ? (
+                <img
+                  src={displayMedia.thumbnailUrl}
+                  alt={gallery.title}
+                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="text-center p-4">
+                  <HiPhoto className="h-10 w-10 mx-auto text-slate-700 mb-2" />
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    No media
+                  </p>
                 </div>
-                
-                {/* Visibility Badge */}
-                {gallery.visibility === 'password_protected' && (
-                  <div className="shrink-0 mt-1">
-                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                      <HiLockClosed className="w-3 h-3" />
-                      Locked
-                    </div>
-                  </div>
+              )}
+
+              {/* Vignette Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-70 group-hover:opacity-50 transition-opacity" />
+
+              {/* Top Right Status Badge */}
+              {gallery.visibility === 'password_protected' && (
+                <div className="absolute top-3 right-3 z-10">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/80 backdrop-blur-md border border-rose-400/30 text-rose-100 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                    <HiLockClosed className="w-3 h-3" />
+                    Locked
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Gallery Info Details */}
+            <div className="p-4 flex flex-col flex-grow">
+              <h3 className="text-slate-100 font-bold text-base line-clamp-1 group-hover:text-rose-400 transition-colors duration-200">
+                {gallery.title}
+              </h3>
+
+              {gallery.description && (
+                <p className="text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed">
+                  {gallery.description}
+                </p>
+              )}
+
+              <div className="grow min-h-[12px]" />
+
+              {/* Meta Info Line */}
+              <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium pt-3 border-t border-slate-800/60 mt-2">
+                {gallery.owner?.username ? (
+                  <span className="text-slate-400">@{gallery.owner.username}</span>
+                ) : (
+                  <span />
                 )}
-              </div>
-              
-              {/* Meta info */}
-              <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
-                {/* ✅ Updated: Use gallery.owner instead of gallery.user */}
-                {gallery.owner && (
-                  <span className="font-medium">@{gallery.owner.username}</span>
-                )}
-                <span>•</span>
-                <span>{new Date(gallery.createdAt).toLocaleDateString()}</span>
+                <span>
+                  {new Date(gallery.createdAt).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
-};
-
-export default GalleryGrid;
+}

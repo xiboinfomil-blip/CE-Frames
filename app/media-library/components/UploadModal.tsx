@@ -42,7 +42,7 @@ interface MediaItem {
   coordinates: { lat: string; lng: string };
   gpsDetected: boolean;
   previewUrl?: string;
-  exifData?: ExifData | null; // ✅ Replaced 'any' with specific ExifData interface
+  exifData?: ExifData | null;
 }
 
 interface StorageUsage {
@@ -98,6 +98,7 @@ const ThumbnailItem = memo(({
   isLoading: boolean;
 }) => (
   <button
+    type="button"
     onClick={onClick}
     disabled={isLoading}
     className={`group relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2 ${
@@ -105,7 +106,7 @@ const ThumbnailItem = memo(({
         ? 'border-zinc-900 dark:border-white ring-2 ring-zinc-900/10 dark:ring-white/10 scale-105 z-10' 
         : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 opacity-60 hover:opacity-100'
     }`}
-    aria-label={`Select media ${idx + 1}`}
+    aria-label={`Select media asset ${idx + 1}`}
     aria-pressed={idx === currentIndex}
   >
     {item.file.type.startsWith('image/') ? (
@@ -122,7 +123,7 @@ const ThumbnailItem = memo(({
         <HiPlay className="w-6 h-6 text-zinc-400" />
       </div>
     )}
-    <div className="absolute top-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md">
+    <div className="absolute top-1 right-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md">
       {idx + 1}
     </div>
   </button>
@@ -226,7 +227,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       const previewUrl = URL.createObjectURL(file);
       const newItem: MediaItem = {
         file,
-        caption: file.name.split('.')[0],
+        caption: file.name.replace(/\.[^/.]+$/, ''),
         locationName: '',
         coordinates: { lat: '', lng: '' },
         gpsDetected: false,
@@ -247,7 +248,6 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               newItem.gpsDetected = true;
             }
 
-            // ✅ Type-safe EXIF extraction
             newItem.exifData = {
               make: exif.Make || null,
               model: exif.Model || null,
@@ -328,12 +328,16 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const removeItem = useCallback((index: number) => {
     setMediaItems(prev => {
       const item = prev[index];
-      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
       const newItems = prev.filter((_, idx) => idx !== index);
       
-      if (newItems.length === 0) setCurrentIndex(0);
-      else if (currentIndex >= newItems.length) setCurrentIndex(newItems.length - 1);
-      else if (currentIndex > index) setCurrentIndex(currentIndex - 1);
+      if (newItems.length === 0) {
+        setCurrentIndex(0);
+      } else if (currentIndex >= newItems.length) {
+        setCurrentIndex(newItems.length - 1);
+      } else if (currentIndex > index) {
+        setCurrentIndex(currentIndex - 1);
+      }
       
       return newItems;
     });
@@ -366,7 +370,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     setCurrentUploadIndex(0);
 
     try {
-      for (let i = 0; i < mediaItems.length; i++) {
+      const totalCount = mediaItems.length;
+      for (let i = 0; i < totalCount; i++) {
         const item = mediaItems[i];
         setCurrentUploadIndex(i);
         
@@ -387,8 +392,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           
           xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
-              const completedFilesProgress = (i / mediaItems.length) * 100;
-              const currentFileProgress = (event.loaded / event.total) * (100 / mediaItems.length);
+              const completedFilesProgress = (i / totalCount) * 100;
+              const currentFileProgress = (event.loaded / event.total) * (100 / totalCount);
               setUploadProgress(completedFilesProgress + currentFileProgress);
             }
           };
@@ -403,7 +408,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 const errData = JSON.parse(xhr.responseText);
                 errorMsg = errData.error?.message || errorMsg;
               } catch {
-                // Ignore parsing error if we already have a generic message
+                // Fallback to standard message
               }
               reject(new Error(errorMsg));
             }
@@ -433,7 +438,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               : null,
             originalFilename: item.file.name,
             mimeType: item.file.type,
-            exifData: item.exifData || null, // ✅ Send extracted EXIF data to API
+            exifData: item.exifData || null,
           }),
         });
 
@@ -536,6 +541,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <p className="text-amber-700/80 dark:text-amber-200/70 leading-relaxed">{rejectedFiles.join(', ')}</p>
             </div>
             <button 
+              type="button"
               onClick={() => setRejectedFiles([])} 
               className="p-1.5 text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label="Dismiss exclusion notice"
@@ -627,6 +633,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   {mediaItems.length > 1 && (
                     <>
                       <button
+                        type="button"
                         onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentIndex === 0 || isLoading}
                         className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
@@ -635,6 +642,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         <HiChevronLeft className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => setCurrentIndex(prev => Math.min(mediaItems.length - 1, prev + 1))}
                         disabled={currentIndex === mediaItems.length - 1 || isLoading}
                         className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white"
@@ -651,10 +659,12 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   <div className="flex items-center justify-between mb-2 px-1">
                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Queue ({mediaItems.length})</span>
                      <button 
+                        type="button"
                         onClick={() => removeItem(currentIndex)}
                         disabled={isLoading}
-                        className="text-[10px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-colors"
+                        className="text-[10px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-colors flex items-center gap-1"
                       >
+                        <HiTrash className="w-3 h-3" />
                         Remove Current
                       </button>
                   </div>
@@ -681,7 +691,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     <div className="flex items-center gap-3 mt-2 font-mono text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                       <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{formatBytes(currentItem.file.size)}</span>
                       <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-                      <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{currentItem.file.type.split('/')[1].toUpperCase()}</span>
+                      <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{currentItem.file.type.split('/')[1]?.toUpperCase() || 'FILE'}</span>
                       {currentItem.gpsDetected && (
                          <>
                           <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />

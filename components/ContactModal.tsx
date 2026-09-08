@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image'; // Import Next.js Image
+import Image from 'next/image';
 import BaseModal from './BaseModal';
 import { CustomTextfield } from './ui/CustomTextfield';
 import { CustomButton } from './ui/CustomButton';
-import { HiFlag, HiUser, HiEnvelope, HiCheckCircle, HiBolt, HiCamera } from 'react-icons/hi2';
+import { HiBuildingOffice, HiUser, HiEnvelope, HiCheckCircle, HiSparkles, HiCalendarDays, HiPaperAirplane } from 'react-icons/hi2';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -38,124 +38,137 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Trackside Inquiry"
-      subtitle="High-performance photography for motorsport enthusiasts."
+      title="Book Your Event Photography"
+      subtitle="Capturing memorable moments for your Comité d'Entreprise and corporate galas."
       maxWidth="4xl"
-      // Removed className prop as it doesn't exist in BaseModalProps
-      // Styles like shadow-2xl are now handled by BaseModal or internal divs
     >
       <div className="flex flex-col md:flex-row h-full md:h-[600px]">
         
-        {/* LEFT: High-Speed Visuals */}
-        <div className="hidden md:flex w-5/12 relative bg-zinc-950 overflow-hidden group">
-          {/* Dynamic Race Image using Next.js Image */}
+        {/* LEFT: Corporate Visual Highlights */}
+        <div className="hidden md:flex w-5/12 relative bg-slate-950 overflow-hidden group rounded-2xl md:rounded-r-none">
           <Image 
-            src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1000&auto=format&fit=crop" 
-            alt="Race car on track with motion blur" 
+            src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1000&auto=format&fit=crop" 
+            alt="Corporate event celebration" 
             fill
-            className="object-cover opacity-80 transition-transform duration-1000 ease-out group-hover:scale-105"
+            className="object-cover opacity-75 transition-transform duration-1000 ease-out group-hover:scale-105"
             priority
           />
           
-          {/* Speed Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/40 to-transparent" />
+          {/* Subtle Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/50 to-transparent" />
           
-          {/* Telemetry Data Overlay */}
+          {/* Content Overlay */}
           <div className="relative z-10 flex flex-col justify-between p-10 h-full text-white">
-            <div className="flex items-center gap-2 text-xs font-mono text-red-500 tracking-widest uppercase">
-              <HiBolt className="w-4 h-4" />
-              <span>Live Capture Mode</span>
+            <div className="flex items-center gap-2 text-xs font-mono text-rose-400 tracking-widest uppercase">
+              <HiSparkles className="w-4 h-4" />
+              <span>CSE & Event Coverage</span>
             </div>
             
-            <div className="space-y-2">
-              <h2 className="text-4xl font-black italic tracking-tighter leading-none">
-                SPEED <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">CAPTURED.</span>
+            <div className="space-y-3">
+              <h2 className="text-3xl font-black tracking-tight leading-tight">
+                CELEBRATE <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-white to-rose-100">
+                  YOUR TEAM.
+                </span>
               </h2>
-              <p className="text-zinc-400 text-sm font-medium max-w-[200px] leading-relaxed">
-                Freezing 200mph in a single frame. Let&apos;s document your legacy on the asphalt.
+              <p className="text-slate-300 text-sm font-medium max-w-[220px] leading-relaxed">
+                From annual galas to team retreats, we preserve your company culture in high definition.
               </p>
             </div>
 
-            {/* Decorative "Specs" */}
-            <div className="grid grid-cols-2 gap-4 text-[10px] font-mono text-zinc-500 border-t border-white/10 pt-4">
+            {/* Feature Highlights */}
+            <div className="grid grid-cols-2 gap-4 text-[11px] font-mono text-slate-400 border-t border-white/10 pt-4">
               <div>
-                <span className="block text-zinc-300">SHUTTER</span>
-                1/4000s
+                <span className="block text-rose-300 font-bold">DELIVERY</span>
+                Private Web Gallery
               </div>
               <div>
-                <span className="block text-zinc-300">LENS</span>
-                400mm f/2.8
+                <span className="block text-rose-300 font-bold">COVERAGE</span>
+                Full & Half Day
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: Precision Form */}
-        <div className="flex-1 bg-white dark:bg-zinc-950 p-8 md:p-12 overflow-y-auto flex flex-col">
+        {/* RIGHT: Corporate Form */}
+        <div className="flex-1 bg-white dark:bg-slate-950 p-8 md:p-12 overflow-y-auto flex flex-col justify-between">
           
           {isSuccess ? (
             <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in zoom-in-95 duration-500">
-              <div className="w-20 h-20 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 flex items-center justify-center mb-6 border border-zinc-200 dark:border-zinc-800">
+              <div className="w-20 h-20 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-6 border border-rose-200 dark:border-rose-900/50">
                 <HiCheckCircle className="w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 tracking-tight">Pit Stop Complete</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mb-8">
-                Message received. We&apos;ll review your telemetry and get back to you shortly.
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 tracking-tight">Request Received!</h3>
+              <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mb-8 text-sm leading-relaxed">
+                Thank you for reaching out. We&apos;ll review your event details and contact you within 24 hours with a custom proposal.
               </p>
               <CustomButton 
                 variant="outline" 
                 size="md" 
                 onClick={onClose}
-                className="rounded-2xl px-8 border-zinc-200 dark:border-zinc-800"
+                className="rounded-xl px-8 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900"
               >
                 Close Window
               </CustomButton>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
+            <form onSubmit={handleSubmit} className="space-y-5 h-full flex flex-col">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomTextfield
-                  label="Driver Name"
-                  placeholder="Max V."
-                  leftIcon={<HiUser className="w-4 h-4" />}
+                  label="Contact Name"
+                  placeholder="Jean Dupont"
+                  leftIcon={<HiUser className="w-4 h-4 text-slate-400" />}
                   required
                 />
                 
                 <CustomTextfield
-                  label="Contact Email"
+                  label="Work Email"
                   type="email"
-                  placeholder="team@racing.com"
-                  leftIcon={<HiEnvelope className="w-4 h-4" />}
+                  placeholder="j.dupont@company.com"
+                  leftIcon={<HiEnvelope className="w-4 h-4 text-slate-400" />}
                   required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CustomTextfield
+                  label="Company / CSE Name"
+                  placeholder="Comité d'Entreprise Acme"
+                  leftIcon={<HiBuildingOffice className="w-4 h-4 text-slate-400" />}
+                  required
+                />
+
+                <CustomTextfield
+                  label="Event Date & Location"
+                  placeholder="e.g. Nov 15, Paris"
+                  leftIcon={<HiCalendarDays className="w-4 h-4 text-slate-400" />}
                 />
               </div>
               
               <div className="group relative w-full flex flex-col gap-2 flex-1">
-                <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400 pl-1">
-                  Project Details
+                <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400 pl-1">
+                  Event Details & Requirements
                 </label>
-                <div className="relative flex-1 min-h-[120px]">
-                  <HiCamera className="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
+                <div className="relative flex-1 min-h-[110px]">
                   <textarea
                     rows={4}
-                    placeholder="Event date, track location, and specific shot requirements..."
-                    className="w-full h-full rounded-2xl px-4 py-3 pl-11 text-sm font-medium bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-4 focus:ring-zinc-100/50 dark:focus:ring-zinc-800/50 transition-all duration-200 resize-none"
+                    placeholder="Tell us about your event (Annual Gala, Team Building, Family Day), estimated number of attendees, and specific requests..."
+                    className="w-full h-full rounded-2xl px-4 py-3 text-sm font-medium bg-slate-50 dark:bg-slate-900/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-rose-500 dark:focus:border-rose-500 focus:ring-4 focus:ring-rose-100 dark:focus:ring-rose-950/50 transition-all duration-200 resize-none"
                     required
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end mt-auto">
+              <div className="pt-3 flex justify-end mt-auto">
                 <CustomButton 
                   type="submit" 
                   isLoading={isSubmitting} 
                   size="lg" 
-                  className="rounded-2xl px-8 bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 shadow-lg shadow-zinc-500/20"
-                  rightIcon={!isSubmitting && <HiFlag className="w-4 h-4" />}
+                  className="rounded-xl px-8 bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/25 transition-all duration-200"
+                  rightIcon={!isSubmitting && <HiPaperAirplane className="w-4 h-4" />}
                 >
-                  Start Project
+                  Send Inquiry
                 </CustomButton>
               </div>
             </form>

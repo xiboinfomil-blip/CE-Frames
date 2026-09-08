@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orama Creative",
-  description: "Motorsport Media",
+  title: "CE Frames",
+  description: "Professional event photography and digital galleries for Comité d’Entreprise events.",
 };
 
 export default function RootLayout({

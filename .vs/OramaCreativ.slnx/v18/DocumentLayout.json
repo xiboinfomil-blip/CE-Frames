@@ -1,0 +1,795 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-standardize-ce-frames-visual-language.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownSecurePreview"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-audit-and-stabilize-the-ce-frames-application.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownSecurePreview"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\media-viewport.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\media-viewport.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\hooks\\useNavData.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:hooks\\useNavData.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\db\\schema.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:db\\schema.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\storage.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:lib\\storage.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\LoginForm.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\login\\LoginForm.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\api\\gallery-media\\available\\route.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\api\\gallery-media\\available\\route.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Pagination.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\Pagination.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Skeleton.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\Skeleton.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\media-library\\components\\UploadModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\media-library\\components\\UploadModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\layout.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\layout.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\Navbar.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\navbar\\Navbar.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\BrandingPanel.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\login\\BrandingPanel.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\config\\navbar.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:config\\navbar.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryModal.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\gallery\\page.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\gallery\\page.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryGrid.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryGrid.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Footer.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\Footer.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\db.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:lib\\db.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\NavbarSkeleton.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\navbar\\NavbarSkeleton.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\MobileMenu.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\navbar\\MobileMenu.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ContactModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\ContactModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomButton.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\ui\\CustomButton.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomTextfield.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\ui\\CustomTextfield.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\custom-video.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\custom-video.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\BaseModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\BaseModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\SearchSortFilter.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\SearchSortFilter.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\PasswordGate.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\PasswordGate.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\about\\page.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\about\\page.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\FloatingActionButton.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\FloatingActionButton.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\DropdownMenu.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\navbar\\DropdownMenu.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryHeader.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryHeader.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryControls.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryControls.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryModal.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryComponent.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\GalleryComponent.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\EmptyState.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:components\\gallery\\EmptyState.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 29,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:140:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:141:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:142:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:143:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:144:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:145:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:146:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:147:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:148:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:149:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:150:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:151:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:152:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:153:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "plan-standardize-ce-frames-visual-language.md [Preview]",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-standardize-ce-frames-visual-language.md",
+              "RelativeDocumentMoniker": "..\\..\\.copilot\\plans\\plan-standardize-ce-frames-visual-language.md",
+              "ToolTip": "C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-standardize-ce-frames-visual-language.md [Preview]",
+              "RelativeToolTip": "..\\..\\.copilot\\plans\\plan-standardize-ce-frames-visual-language.md [Preview]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-08T09:46:10.521Z",
+              "EditorCaption": " [Preview]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "page.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\gallery\\page.tsx",
+              "RelativeDocumentMoniker": "app\\gallery\\page.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\gallery\\page.tsx",
+              "RelativeToolTip": "app\\gallery\\page.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:08.084Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "GalleryModal.jsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.jsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryModal.jsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.jsx",
+              "RelativeToolTip": "components\\gallery\\GalleryModal.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-09-08T09:41:08.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "navbar.js",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\config\\navbar.js",
+              "RelativeDocumentMoniker": "config\\navbar.js",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\config\\navbar.js",
+              "RelativeToolTip": "config\\navbar.js",
+              "ViewState": "AgIAADoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-09-08T09:41:08.003Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "BrandingPanel.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\BrandingPanel.tsx",
+              "RelativeDocumentMoniker": "components\\login\\BrandingPanel.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\BrandingPanel.tsx",
+              "RelativeToolTip": "components\\login\\BrandingPanel.tsx",
+              "ViewState": "AgIAAA0AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:07.961Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "plan-audit-and-stabilize-the-ce-frames-application.md [Preview]",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-audit-and-stabilize-the-ce-frames-application.md",
+              "RelativeDocumentMoniker": "..\\..\\.copilot\\plans\\plan-audit-and-stabilize-the-ce-frames-application.md",
+              "ToolTip": "C:\\Users\\Sjeetoo\\.copilot\\plans\\plan-audit-and-stabilize-the-ce-frames-application.md [Preview]",
+              "RelativeToolTip": "..\\..\\.copilot\\plans\\plan-audit-and-stabilize-the-ce-frames-application.md [Preview]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-08T09:36:53.719Z",
+              "EditorCaption": " [Preview]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "NavbarSkeleton.jsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\NavbarSkeleton.jsx",
+              "RelativeDocumentMoniker": "components\\navbar\\NavbarSkeleton.jsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\NavbarSkeleton.jsx",
+              "RelativeToolTip": "components\\navbar\\NavbarSkeleton.jsx",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-09-08T09:42:47.792Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "EmptyState.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\EmptyState.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\EmptyState.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\EmptyState.tsx",
+              "RelativeToolTip": "components\\gallery\\EmptyState.tsx",
+              "ViewState": "AgIAAC0AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:44:36.983Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "GalleryComponent.jsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryComponent.jsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryComponent.jsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryComponent.jsx",
+              "RelativeToolTip": "components\\gallery\\GalleryComponent.jsx",
+              "ViewState": "AgIAAFcAAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-09-08T09:44:36.91Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "GalleryModal.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryModal.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryModal.tsx",
+              "RelativeToolTip": "components\\gallery\\GalleryModal.tsx",
+              "ViewState": "AgIAAMIAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:44:36.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "GalleryCard.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryCard.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryCard.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryCard.tsx",
+              "RelativeToolTip": "components\\gallery\\GalleryCard.tsx",
+              "ViewState": "AgIAAB0AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:44:22.422Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "GalleryControls.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryControls.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryControls.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryControls.tsx",
+              "RelativeToolTip": "components\\gallery\\GalleryControls.tsx",
+              "ViewState": "AgIAAEQAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:44:22.342Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "GalleryHeader.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryHeader.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryHeader.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryHeader.tsx",
+              "RelativeToolTip": "components\\gallery\\GalleryHeader.tsx",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:44:22.189Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "AddMediaModal.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx",
+              "RelativeDocumentMoniker": "app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx",
+              "RelativeToolTip": "app\\manage-gallery\\[id]\\components\\AddMediaModal.tsx",
+              "ViewState": "AgIAABABAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:58.046Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "DropdownMenu.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\DropdownMenu.tsx",
+              "RelativeDocumentMoniker": "components\\navbar\\DropdownMenu.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\DropdownMenu.tsx",
+              "RelativeToolTip": "components\\navbar\\DropdownMenu.tsx",
+              "ViewState": "AgIAAEIAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:57.925Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "FloatingActionButton.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\FloatingActionButton.tsx",
+              "RelativeDocumentMoniker": "components\\FloatingActionButton.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\FloatingActionButton.tsx",
+              "RelativeToolTip": "components\\FloatingActionButton.tsx",
+              "ViewState": "AgIAAAoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:57.833Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "page.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\about\\page.tsx",
+              "RelativeDocumentMoniker": "app\\about\\page.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\about\\page.tsx",
+              "RelativeToolTip": "app\\about\\page.tsx",
+              "ViewState": "AgIAACoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:49.287Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "PasswordGate.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\PasswordGate.tsx",
+              "RelativeDocumentMoniker": "components\\PasswordGate.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\PasswordGate.tsx",
+              "RelativeToolTip": "components\\PasswordGate.tsx",
+              "ViewState": "AgIAAHgAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:38.123Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "SearchSortFilter.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\SearchSortFilter.tsx",
+              "RelativeDocumentMoniker": "components\\SearchSortFilter.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\SearchSortFilter.tsx",
+              "RelativeToolTip": "components\\SearchSortFilter.tsx",
+              "ViewState": "AgIAAE4AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:38.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "BaseModal.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\BaseModal.tsx",
+              "RelativeDocumentMoniker": "components\\BaseModal.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\BaseModal.tsx",
+              "RelativeToolTip": "components\\BaseModal.tsx",
+              "ViewState": "AgIAAJoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:37.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "custom-video.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\custom-video.tsx",
+              "RelativeDocumentMoniker": "components\\custom-video.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\custom-video.tsx",
+              "RelativeToolTip": "components\\custom-video.tsx",
+              "ViewState": "AgIAAIUAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:01.617Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "CustomTextfield.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomTextfield.tsx",
+              "RelativeDocumentMoniker": "components\\ui\\CustomTextfield.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomTextfield.tsx",
+              "RelativeToolTip": "components\\ui\\CustomTextfield.tsx",
+              "ViewState": "AgIAAAsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:01.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "CustomButton.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomButton.tsx",
+              "RelativeDocumentMoniker": "components\\ui\\CustomButton.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ui\\CustomButton.tsx",
+              "RelativeToolTip": "components\\ui\\CustomButton.tsx",
+              "ViewState": "AgIAACIAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:43:01.384Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ContactModal.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ContactModal.tsx",
+              "RelativeDocumentMoniker": "components\\ContactModal.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\ContactModal.tsx",
+              "RelativeToolTip": "components\\ContactModal.tsx",
+              "ViewState": "AgIAADwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:42:48.04Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "MobileMenu.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\MobileMenu.tsx",
+              "RelativeDocumentMoniker": "components\\navbar\\MobileMenu.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\MobileMenu.tsx",
+              "RelativeToolTip": "components\\navbar\\MobileMenu.tsx",
+              "ViewState": "AgIAAN4AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:42:47.931Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "GalleryGrid.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryGrid.tsx",
+              "RelativeDocumentMoniker": "components\\gallery\\GalleryGrid.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\gallery\\GalleryGrid.tsx",
+              "RelativeToolTip": "components\\gallery\\GalleryGrid.tsx",
+              "ViewState": "AgIAAGsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:08.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Footer.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Footer.tsx",
+              "RelativeDocumentMoniker": "components\\Footer.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Footer.tsx",
+              "RelativeToolTip": "components\\Footer.tsx",
+              "ViewState": "AgIAAGYAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:08.178Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "db.ts",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\db.ts",
+              "RelativeDocumentMoniker": "lib\\db.ts",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\db.ts",
+              "RelativeToolTip": "lib\\db.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:08.221Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Navbar.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\Navbar.tsx",
+              "RelativeDocumentMoniker": "components\\navbar\\Navbar.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\navbar\\Navbar.tsx",
+              "RelativeToolTip": "components\\navbar\\Navbar.tsx",
+              "ViewState": "AgIAAEsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:07.921Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "layout.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\layout.tsx",
+              "RelativeDocumentMoniker": "app\\layout.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\layout.tsx",
+              "RelativeToolTip": "app\\layout.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:07.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "UploadModal.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\media-library\\components\\UploadModal.tsx",
+              "RelativeDocumentMoniker": "app\\media-library\\components\\UploadModal.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\media-library\\components\\UploadModal.tsx",
+              "RelativeToolTip": "app\\media-library\\components\\UploadModal.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:41:07.842Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Skeleton.jsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Skeleton.jsx",
+              "RelativeDocumentMoniker": "components\\Skeleton.jsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Skeleton.jsx",
+              "RelativeToolTip": "components\\Skeleton.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-09-08T09:41:07.785Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "storage.ts",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\storage.ts",
+              "RelativeDocumentMoniker": "lib\\storage.ts",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\lib\\storage.ts",
+              "RelativeToolTip": "lib\\storage.ts",
+              "ViewState": "AgIAAAwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:37:45.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "schema.ts",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\db\\schema.ts",
+              "RelativeDocumentMoniker": "db\\schema.ts",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\db\\schema.ts",
+              "RelativeToolTip": "db\\schema.ts",
+              "ViewState": "AgIAAGoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:37:45.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "useNavData.js",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\hooks\\useNavData.js",
+              "RelativeDocumentMoniker": "hooks\\useNavData.js",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\hooks\\useNavData.js",
+              "RelativeToolTip": "hooks\\useNavData.js",
+              "ViewState": "AgIAAAMAAAAAAAAAAABQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-09-08T09:37:44.898Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "media-viewport.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\media-viewport.tsx",
+              "RelativeDocumentMoniker": "components\\media-viewport.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\media-viewport.tsx",
+              "RelativeToolTip": "components\\media-viewport.tsx",
+              "ViewState": "AgIAAEMAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:37:44.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "route.ts",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\api\\gallery-media\\available\\route.ts",
+              "RelativeDocumentMoniker": "app\\api\\gallery-media\\available\\route.ts",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\app\\api\\gallery-media\\available\\route.ts",
+              "RelativeToolTip": "app\\api\\gallery-media\\available\\route.ts",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:39:04.496Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Pagination.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Pagination.tsx",
+              "RelativeDocumentMoniker": "components\\Pagination.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\Pagination.tsx",
+              "RelativeToolTip": "components\\Pagination.tsx",
+              "ViewState": "AgIAAEwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:39:04.572Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LoginForm.tsx",
+              "DocumentMoniker": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\LoginForm.tsx",
+              "RelativeDocumentMoniker": "components\\login\\LoginForm.tsx",
+              "ToolTip": "C:\\Users\\Sjeetoo\\Desktop\\OramaCreativ\\components\\login\\LoginForm.tsx",
+              "RelativeToolTip": "components\\login\\LoginForm.tsx",
+              "ViewState": "AgIAAGAAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-08T09:37:45.199Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

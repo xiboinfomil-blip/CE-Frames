@@ -1,0 +1,240 @@
+﻿import { v2 as cloudinary } from 'cloudinary';
+import exifr from 'exifr';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export interface UploadResult {
+  url: string;
+  thumbnailUrl: string;
+  width: number;
+  height: number;
+  duration?: number;
+  format: string;
+  fileSize: number;
+  publicId: string;
+}
+
+/**
+ * Validates file size and type
+ */
+export function validateFile(file: File): { valid: boolean; error?: string } {
+  // Check file size (50MB max)
+  const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+  if (file.size > maxSize) {
+    return { 
+      valid: false, 
+      error: `File size exceeds 50MB limit. Current size: ${(file.size / (1024 * 1024)).toFixed(2)}MB` 
+    };
+  }
+
+  // Check allowed MIME types
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'video/mp4',
+    'video/webm',
+    'video/quicktime', // .mov
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    return { 
+      valid: false, 
+      error: `File type not allowed. Allowed types: ${allowedTypes.join(', ')}` 
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Extracts EXIF data from an image file, including GPS coordinates
+ */
+export async function extractExifData(file: File): Promise<{
+  exifData: Record<string, any> | null;
+  gpsCoordinates: { lat: number; lng: number } | null;
+}> {
+  try {
+    if (!file.type.startsWith('image/')) {
+      return { exifData: null, gpsCoordinates: null };
+    }
+
+    const buffer = await file.arrayBuffer();
+    const exif = await exifr.parse(buffer, {
+      // Request specific tags for better performance
+      gps: true,
+      exif: true,
+      iptc: true,
+    });
+
+    if (!exif) {
+      return { exifData: null, gpsCoordinates: null };
+    }
+
+    // Extract GPS coordinates if available
+    let gpsCoordinates = null;
+    if (exif.latitude && exif.longitude) {
+      gpsCoordinates = {
+        lat: exif.latitude,
+        lng: exif.longitude,
+      };
+    }
+
+    // Clean up EXIF data for storage (remove binary data, keep useful info)
+    const cleanExifData: Record<string, any> = {};
+    
+    // Camera info
+    if (exif.make) cleanExifData.make = exif.make;
+    if (exif.model) cleanExifData.model = exif.model;
+    if (exif.dateTimeOriginal || exif.DateTimeOriginal) {
+      cleanExifData.dateTime = exif.dateTimeOriginal || exif.DateTimeOriginal;
+    }
+    if (exif.exposureTime) cleanExifData.exposureTime = exif.exposureTime;
+    if (exif.fNumber) cleanExifData.fNumber = exif.fNumber;
+    if (exif.iso) cleanExifData.iso = exif.iso;
+    if (exif.focalLength) cleanExifData.focalLength = exif.focalLength;
+    if (exif.lensModel) cleanExifData.lensModel = exif.lensModel;
+    
+    // GPS info (store separately, but also in exif for reference)
+    if (exif.latitude) cleanExifData.latitude = exif.latitude;
+    if (exif.longitude) cleanExifData.longitude = exif.longitude;
+    if (exif.altitude) cleanExifData.altitude = exif.altitude;
+
+    return {
+      exifData: Object.keys(cleanExifData).length > 0 ? cleanExifData : null,
+      gpsCoordinates,
+    };
+  } catch (error) {
+    console.warn('Failed to extract EXIF data:', error);
+    return { exifData: null, gpsCoordinates: null };
+  }
+}
+
+/**
+ * Uploads a file to Cloudinary
+ */
+export async function uploadToCloudinary(file: File): Promise<UploadResult> {
+  try {
+    // Convert File to Buffer
+    const buffer = await file.arrayBuffer();
+    const base64Data = Buffer.from(buffer).toString('base64');
+    const dataUri = `data:${file.type};base64,${base64Data}`;
+
+    // Determine resource type
+    const resourceType = file.type.startsWith('video') ? 'video' : 'image';
+
+    // Upload to Cloudinary
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader.upload(
+        dataUri,
+        {
+          resource_type: resourceType,
+          folder: 'user-media', // Optional: organize uploads in a folder
+          // Automatic optimization and format selection
+          transformation: [
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' }
+          ],
+          // For videos, generate a thumbnail
+          ...(resourceType === 'video' && {
+            eager: [
+              { width: 300, height: 200, crop: 'fill', format: 'jpg' }
+            ]
+          })
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+    });
+
+    // Extract metadata
+    const width = uploadResult.width || 0;
+    const height = uploadResult.height || 0;
+    const duration = uploadResult.duration || undefined;
+    const format = uploadResult.format || 'unknown';
+    const fileSize = uploadResult.bytes || 0;
+    const publicId = uploadResult.public_id;
+
+    // Generate thumbnail URL
+    let thumbnailUrl: string;
+    if (resourceType === 'video') {
+      // For videos, use Cloudinary's video thumbnail generation
+      thumbnailUrl = cloudinary.url(publicId, {
+        resource_type: 'video',
+        width: 300,
+        height: 200,
+        crop: 'fill',
+        format: 'jpg',
+        start_offset: 'auto', // Auto-select a good frame
+      });
+    } else {
+      // For images, create a smaller version
+      thumbnailUrl = cloudinary.url(publicId, {
+        resource_type: 'image',
+        width: 300,
+        height: 200,
+        crop: 'fill',
+        quality: 'auto:good',
+      });
+    }
+
+    return {
+      url: uploadResult.secure_url,
+      thumbnailUrl,
+      width,
+      height,
+      duration,
+      format,
+      fileSize,
+      publicId,
+    };
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw new Error('Failed to upload file to Cloudinary');
+  }
+}
+
+/**
+ * Deletes a file from Cloudinary by public ID
+ */
+export async function deleteFromCloudinary(publicId: string, resourceType: 'image' | 'video' = 'image'): Promise<void> {
+  try {
+    await new Promise<void>((resolve, reject) => {
+      cloudinary.uploader.destroy(
+        publicId,
+        {
+          resource_type: resourceType,
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve();
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Cloudinary delete error:', error);
+    throw new Error('Failed to delete file from Cloudinary');
+  }
+}
+
+/**
+ * Extracts public ID from a Cloudinary URL
+ */
+export function extractPublicIdFromUrl(url: string): string | null {
+  try {
+    // Cloudinary URLs follow this pattern:
+    // https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{version}/{public_id}.{format}
+    const match = url.match(/\/upload\/(?:v\d+\/)?([^/.]+)(?:\.[a-z]+)?$/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}

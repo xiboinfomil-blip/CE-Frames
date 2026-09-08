@@ -4,13 +4,12 @@ import { galleryHelpers } from '@/lib/db-helpers';
 import GalleriesContent from './GalleriesContent';
 import { Suspense } from 'react';
 import Skeleton from '@/components/Skeleton';
-// ✅ Import shared types to ensure consistency
 import { GallerySummary, MediaSummary, PaginatedResponse } from '@/types/types';
 import { VISIBILITY_STATUSES, MediaType, LayoutStyle } from '@/db/schema';
 
 export const metadata = {
-  title: 'My Galleries',
-  description: 'Manage and view your personal galleries',
+  title: 'Galeries Média CSE',
+  description: 'Gérez et consultez les albums médias et événements de votre CSE',
 };
 
 interface PageProps {
@@ -22,17 +21,15 @@ interface PageProps {
   }>;
 }
 
-// ✅ FIX: Define EnrichedGallery with proper optionality
 interface EnrichedGallery {
   id: string | number;
   title: string;
   slug: string;
   description: string | null;
   visibility: typeof VISIBILITY_STATUSES[number];
-  layoutStyle: LayoutStyle; // Uses shared enum type
+  layoutStyle: LayoutStyle;
   coverMediaId: string | number | null;
   createdAt: Date | string;
-  // ✅ FIX: Make updatedAt truly optional (?) to match DB reality
   updatedAt?: Date | string | null; 
   _count?: {
     galleryMedia: number;
@@ -125,12 +122,11 @@ function mapToGallerySummary(gallery: EnrichedGallery): GallerySummary {
     slug: String(gallery.slug),
     description: gallery.description ? String(gallery.description) : null,
     visibility: gallery.visibility,
-    layoutStyle: gallery.layoutStyle, // Now type-safe via LayoutStyle import
+    layoutStyle: gallery.layoutStyle,
     coverMediaId: gallery.coverMediaId ? String(gallery.coverMediaId) : null,
     createdAt: gallery.createdAt instanceof Date 
       ? gallery.createdAt 
       : new Date(String(gallery.createdAt)),
-    // ✅ FIX: Safely handle optional updatedAt
     updatedAt: gallery.updatedAt ? (
       gallery.updatedAt instanceof Date 
         ? gallery.updatedAt 
@@ -161,7 +157,6 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
     );
   }
 
-  // ✅ Type the response explicitly
   const response = await galleryHelpers.findAll({
     search: params.search,
     sortBy: params.sortBy || 'newest',

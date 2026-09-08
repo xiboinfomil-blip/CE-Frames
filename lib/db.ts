@@ -5,12 +5,10 @@ import * as schema from '@/db/schema';
 
 // Next.js automatically loads .env.local, no need for manual dotenv import
 const connectionString = process.env.DATABASE_URL;
+const dbInstance = connectionString
+  ? drizzle(neon(connectionString), { schema })
+  : null;
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set in .env.local');
-}
-
-const sql = neon(connectionString);
-
-// Pass the schema to drizzle to enable db.query API
-export const db = drizzle(sql, { schema });
+// Pass the schema to drizzle to enable db.query API. Database-backed routes
+// require DATABASE_URL at runtime, while the build can still inspect them.
+export const db = dbInstance as NonNullable<typeof dbInstance>;

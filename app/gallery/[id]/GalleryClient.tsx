@@ -16,7 +16,7 @@ interface GalleryClientProps {
 export default function GalleryClient({ initialGallery, galleryId }: GalleryClientProps) {
   const [gallery, setGallery] = useState<GalleryDetail | null>(initialGallery);
   
-  // Initialize isLocked directly to avoid setState in useEffect
+  // Initialisation directe de l'état de verrouillage
   const [isLocked, setIsLocked] = useState(
     initialGallery?.visibility === 'password_protected' && 
     (!initialGallery.items || initialGallery.items.length === 0)
@@ -45,21 +45,21 @@ export default function GalleryClient({ initialGallery, galleryId }: GalleryClie
         }
       } else {
         const errData = await res.json();
-        setError(errData.error || 'Invalid password');
+        setError(errData.error || 'Mot de passe incorrect');
       }
     } catch {
-      setError('Connection failed');
+      setError('Échec de la connexion au serveur');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Transform data for the Grid
+  // Transformation des données pour la grille
   const photos = gallery?.items.map((item) => ({
     src: item.media.fullResUrl || item.media.thumbnailUrl || '', 
     width: item.media.width || 1080,
     height: item.media.height || 720,
-    alt: item.media.caption || item.media.originalFilename || '',
+    alt: item.media.caption || item.media.originalFilename || 'Média CSE',
     mediaItem: item.media 
   })) || [];
 

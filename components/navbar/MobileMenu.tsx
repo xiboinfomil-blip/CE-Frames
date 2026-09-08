@@ -47,31 +47,41 @@ const cubicBezier = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const menuVariants: Variants = {
   closed: { 
     opacity: 0, 
-    y: -20, 
-    transition: { duration: 0.3, ease: cubicBezier } 
+    y: -12,
+    scale: 0.98,
+    transition: { duration: 0.25, ease: cubicBezier } 
   },
   open: { 
     opacity: 1, 
     y: 0, 
-    transition: { duration: 0.4, ease: cubicBezier, staggerChildren: 0.05, delayChildren: 0.1 } 
+    scale: 1,
+    transition: { duration: 0.35, ease: cubicBezier, staggerChildren: 0.04, delayChildren: 0.05 } 
   },
 };
 
 const itemVariants: Variants = {
-  closed: { opacity: 0, x: -10, transition: { duration: 0.2 } },
-  open: { opacity: 1, x: 0, transition: { duration: 0.3, ease: cubicBezier } },
+  closed: { opacity: 0, x: -8, transition: { duration: 0.15 } },
+  open: { opacity: 1, x: 0, transition: { duration: 0.25, ease: cubicBezier } },
 };
 
 // --- Sub-Components ---
-const CategoryLink = ({ category, config, onClick }: { category: Category; config: CategoryListConfig; onClick: () => void }) => {
+const CategoryLink = ({ 
+  category, 
+  config, 
+  onClick 
+}: { 
+  category: Category; 
+  config: CategoryListConfig; 
+  onClick: () => void 
+}) => {
   return (
     <Link 
       href={`${config.basePath}?for=${encodeURIComponent(category.name)}`} 
-      className="group relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+      className="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
       onClick={onClick}
       role="menuitem"
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 transition-colors duration-200" aria-hidden="true" />
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-rose-400 transition-colors duration-200" aria-hidden="true" />
       <span className="capitalize">{category.name}</span>
     </Link>
   );
@@ -106,14 +116,18 @@ export default function MobileMenu({
       initial="closed" 
       animate="open" 
       exit="closed" 
-      className="lg:hidden fixed inset-x-4 top-20 z-60"
+      id="mobile-menu"
+      className="lg:hidden fixed inset-x-4 top-16 z-50 mt-1"
       role="dialog"
       aria-modal="true"
       aria-label="Mobile navigation menu"
     >
-      <div className="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 border border-zinc-200/60 dark:border-zinc-800/60 overflow-hidden">
+      <div className="bg-slate-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-slate-950/80 border border-slate-800/80 overflow-hidden">
         
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
+        {/* Scrollable Container */}
+        <div className="p-5 space-y-5 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+          
+          {/* Main Navigation Items */}
           <motion.ul className="space-y-1" role="menu">
             {mainItems.map((item) => {
               const isActive = pathname === item.href || 
@@ -125,10 +139,10 @@ export default function MobileMenu({
                 <motion.li key={item.id} variants={itemVariants} role="none">
                   <Link 
                     href={item.href || '#'} 
-                    className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400
+                    className={`group relative flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
                       ${isActive 
-                        ? 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100' 
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100'
+                         ? 'bg-rose-600/15 text-rose-300 font-semibold' 
+                        : 'text-slate-300 hover:bg-slate-800/60 hover:text-slate-100'
                       }`}
                     onClick={closeMenu}
                     role="menuitem"
@@ -137,7 +151,7 @@ export default function MobileMenu({
                     {isActive && (
                       <motion.div 
                         layoutId="mobileActiveIndicator" 
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-zinc-900 dark:bg-zinc-100 rounded-r-full" 
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-rose-500 rounded-r-full" 
                         transition={{ type: "spring", stiffness: 400, damping: 30 }} 
                       />
                     )}
@@ -149,33 +163,34 @@ export default function MobileMenu({
           </motion.ul>
 
           {extraItems.length > 0 && (
-            <div className="relative pt-2">
-              <div className="h-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
+            <div className="relative pt-1" aria-hidden="true">
+              <div className="h-px bg-slate-800/80" />
             </div>
           )}
 
+          {/* Extra / Category Items */}
           <motion.div variants={itemVariants} className="space-y-4">
             {extraItems.map((item) => {
-              // 1. Render category list if applicable
+              // 1. Render category list if configured
               if ((item.type === 'gallery' || item.type === 'category-list') && item.mobileCategoryList) {
                 const config = item.mobileCategoryList;
 
                 return (
-                  <div key={item.id} className="space-y-3">
+                  <div key={item.id} className="space-y-2">
                     {config.header.show && (
-                      <div className="flex items-center gap-3 px-4">
-                        <span className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      <div className="flex items-center gap-3 px-3.5">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                           {config.header.title || 'Categories'}
                         </span>
-                        <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
+                        <div className="flex-1 h-px bg-slate-800/80" aria-hidden="true" />
                       </div>
                     )}
                     
-                    <div className="space-y-1 pr-2">
+                    <div className="space-y-0.5">
                       {loading ? (
-                        <div className="px-4 py-3 text-sm text-zinc-400 animate-pulse">Loading categories...</div>
+                        <div className="px-3.5 py-2.5 text-sm text-slate-500 animate-pulse">Loading categories...</div>
                       ) : error ? (
-                        <div className="px-4 py-3 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/50">
+                        <div className="px-3.5 py-2.5 text-sm text-rose-400 bg-rose-950/30 rounded-xl border border-rose-900/40">
                           {error}
                         </div>
                       ) : visibleCategories.length > 0 ? (
@@ -188,7 +203,7 @@ export default function MobileMenu({
                           />
                         ))
                       ) : (
-                        <div className="px-4 py-3 text-sm text-zinc-400">No categories available</div>
+                        <div className="px-3.5 py-2.5 text-sm text-slate-500">No categories available</div>
                       )}
                     </div>
                   </div>
@@ -206,10 +221,10 @@ export default function MobileMenu({
                   <Link 
                     key={item.id}
                     href={item.href || '#'} 
-                    className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400
+                    className={`group relative flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
                       ${isActive 
-                        ? 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100' 
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100'
+                        ? 'bg-rose-600/15 text-rose-300 font-semibold' 
+                        : 'text-slate-300 hover:bg-slate-800/60 hover:text-slate-100'
                       }`}
                     onClick={closeMenu}
                     role="menuitem"
@@ -218,7 +233,7 @@ export default function MobileMenu({
                     {isActive && (
                       <motion.div 
                         layoutId="mobileActiveIndicator" 
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-zinc-900 dark:bg-zinc-100 rounded-r-full" 
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-rose-500 rounded-r-full" 
                         transition={{ type: "spring", stiffness: 400, damping: 30 }} 
                       />
                     )}
@@ -232,12 +247,13 @@ export default function MobileMenu({
           </motion.div>
         </div>
 
-        <div className="relative border-t border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/50 p-6">
+        {/* Footer Actions */}
+        <div className="relative border-t border-slate-800/80 bg-slate-900/60 p-5">
           {!authenticated ? (
             <motion.div variants={itemVariants}>
               <Link 
                 href={AUTH_ITEMS.login.href || '#'} 
-                className="group relative flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-sm tracking-wide hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+                className="group relative flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-rose-600 text-white font-semibold text-sm tracking-wide shadow-lg shadow-rose-600/20 hover:bg-rose-500 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 onClick={closeMenu}
               >
                 <span>{AUTH_ITEMS.login.mobileLabel || AUTH_ITEMS.login.label || 'Sign In'}</span>
@@ -248,9 +264,9 @@ export default function MobileMenu({
               <motion.button 
                 whileTap={{ scale: 0.98 }} 
                 onClick={handleLogout}
-                className="group relative flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl bg-transparent border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-sm tracking-wide hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+                className="group relative flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-semibold text-sm tracking-wide hover:bg-slate-800 hover:text-slate-100 hover:border-slate-700 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
               >
-                <HiArrowRightOnRectangle className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
+                <HiArrowRightOnRectangle className="w-4 h-4 text-slate-400 group-hover:text-slate-200 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
                 <span>{AUTH_ITEMS.logout.mobileLabel || AUTH_ITEMS.logout.label || 'Sign Out'}</span>
               </motion.button>
             </motion.div>

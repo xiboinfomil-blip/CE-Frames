@@ -1,81 +1,162 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { HiChevronDown, HiArrowPath } from 'react-icons/hi2';
 
-export default function DropdownMenu({ title, categories, loading, error, basePath }: any) {
-  const visibleCategories = categories?.filter((cat: any) => cat.isVisible !== false) || [];
+// --- Type Definitions ---
+interface Category {
+  name: string;
+  isVisible?: boolean;
+}
+
+interface DropdownMenuProps {
+  title: string;
+  categories: Category[] | null | undefined;
+  loading: boolean;
+  error: string | null | undefined;
+  basePath: string;
+}
+
+export default function DropdownMenu({
+  title,
+  categories,
+  loading,
+  error,
+  basePath,
+}: DropdownMenuProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const visibleCategories =
+    categories?.filter((cat) => cat.isVisible !== false) || [];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close on Escape key
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+    }
+  };
 
   return (
-    <div className="relative group focus-within">
-      
-      {/* Trigger Button - Minimalist & Clean */}
+    <div
+      ref={containerRef}
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+      onKeyDown={handleKeyDown}
+    >
+      {/* Trigger Button */}
       <button
         type="button"
-        className="group/trigger relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`group/trigger relative flex items-center gap-1.5 px-2 py-2 text-sm font-medium tracking-wide transition-colors duration-200 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
+          ${
+            isOpen
+              ? 'text-slate-100'
+              : 'text-slate-400 hover:text-slate-100'
+          }`}
         aria-haspopup="menu"
-        aria-expanded="false"
+        aria-expanded={isOpen}
       >
         <span>{title}</span>
-        <HiChevronDown 
-          className="w-4 h-4 transition-transform duration-300 ease-out group-hover/trigger:rotate-180 group-focus-within/trigger:rotate-180" 
-          aria-hidden="true" 
+        <HiChevronDown
+          className={`w-4 h-4 text-slate-400 transition-transform duration-200 ease-out group-hover/trigger:text-slate-200
+            ${isOpen ? 'rotate-180 text-slate-100' : ''}`}
+          aria-hidden="true"
         />
-        
-        {/* Subtle Underline Animation */}
-        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-0 bg-zinc-900 dark:bg-zinc-100 rounded-full transition-all duration-300 group-hover/trigger:w-1/2 group-focus-within/trigger:w-1/2" />
-      </button>
-      
-      {/* Dropdown Panel - Premium Glassmorphism */}
-      <div
-        className="absolute left-0 top-full pt-3 w-72 opacity-0 invisible group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) z-50"
-        role="menu"
-        aria-label={`${title} categories`}
-      >
-        <div className="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl shadow-2xl shadow-zinc-200/50 dark:shadow-black/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
-          
-          {/* Panel Header - Editorial Style */}
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-100 dark:border-zinc-800/50">
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
-              {title}
-            </span>
-            <div className="flex-1 h-px bg-zinc-100 dark:bg-zinc-800" aria-hidden="true" />
-          </div>
 
-          {/* Content Area */}
-          <div className="p-3">
-            {loading ? (
-              <div className="flex items-center justify-center gap-3 px-3 py-8 text-sm text-zinc-500 dark:text-zinc-400">
-                <HiArrowPath className="animate-spin h-4 w-4 text-zinc-400" aria-hidden="true" />
-                <span className="font-medium">Loading...</span>
+        {/* Animated Underline */}
+        <span
+          className={`absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-full transition-all duration-300 ease-out
+            ${isOpen ? 'w-full' : 'w-0 group-hover/trigger:w-full'}`}
+        />
+      </button>
+
+      {/* Dropdown Panel */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.96 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute left-0 top-full pt-2 w-72 z-50"
+            role="menu"
+            aria-label={`${title} categories`}
+          >
+            <div className="bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-slate-950/80 border border-slate-800/80 rounded-2xl overflow-hidden ring-1 ring-slate-800/50">
+              
+              {/* Header */}
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800/60">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {title}
+                </span>
+                <div className="flex-1 h-px bg-slate-800/60" aria-hidden="true" />
               </div>
-            ) : error ? (
-              <div className="px-4 py-6 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl text-center border border-zinc-100 dark:border-zinc-800">
-                Unable to load categories.
+
+              {/* Content Area */}
+              <div className="p-2">
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2.5 px-3 py-6 text-sm text-slate-400">
+                    <HiArrowPath
+                      className="animate-spin h-4 w-4 text-rose-400"
+                      aria-hidden="true"
+                    />
+                    <span className="font-medium">Loading...</span>
+                  </div>
+                ) : error ? (
+                  <div className="px-3 py-4 text-xs text-rose-400 bg-rose-950/30 rounded-xl text-center border border-rose-900/40">
+                    Unable to load categories.
+                  </div>
+                ) : visibleCategories.length > 0 ? (
+                  <div className="space-y-0.5 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent pr-1">
+                    {visibleCategories.map((categoryObj) => (
+                      <Link
+                        key={categoryObj.name}
+                        href={`${basePath}?for=${encodeURIComponent(
+                          categoryObj.name
+                        )}`}
+                        onClick={() => setIsOpen(false)}
+                        className="group/item relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                        role="menuitem"
+                      >
+                        {/* Indicator Dot */}
+                        <span
+                          className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover/item:bg-rose-400 group-hover/item:scale-125 transition-all duration-200"
+                          aria-hidden="true"
+                        />
+                        <span className="capitalize truncate">
+                          {categoryObj.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-3 py-6 text-xs text-slate-500 text-center font-medium">
+                    No categories available
+                  </div>
+                )}
               </div>
-            ) : visibleCategories.length > 0 ? (
-              <div className="space-y-1 max-h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent pr-1">
-                {visibleCategories.map((categoryObj: any) => (
-                  <Link
-                    key={categoryObj.name}
-                    href={`${basePath}?for=${encodeURIComponent(categoryObj.name)}`}
-                    className="group/item relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
-                    role="menuitem"
-                  >
-                    {/* Focus Point Indicator */}
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 group-hover/item:bg-zinc-900 dark:group-hover/item:bg-zinc-100 group-hover/item:scale-125 transition-all duration-200" aria-hidden="true" />
-                    <span className="capitalize truncate">{categoryObj.name}</span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="px-4 py-6 text-sm text-zinc-500 dark:text-zinc-400 text-center font-medium">
-                No categories available
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -63,18 +63,18 @@ const DesktopLink = ({ item, isActive, href }: DesktopLinkProps) => {
   return (
     <Link 
       href={href} 
-      className={`group relative px-1 py-2 text-sm font-medium tracking-wide transition-colors duration-300 ease-in-out 
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 rounded-md
+      className={`group relative px-1.5 py-2 text-sm font-medium tracking-wide transition-colors duration-200 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md
         ${isActive 
-          ? 'text-zinc-900 dark:text-zinc-100' 
-          : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+          ? 'text-slate-100' 
+          : 'text-slate-400 hover:text-slate-100'
         }`}
       aria-current={isActive ? 'page' : undefined}
     >
       {item.label}
       {/* Animated Underline */}
       <span 
-        className={`absolute bottom-1 left-0 h-px bg-zinc-900 dark:bg-zinc-100 transition-all duration-300 ease-out
+        className={`absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-full transition-all duration-300 ease-out
           ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
       />
     </Link>
@@ -141,42 +141,42 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-3
         ${isScrolled 
-          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800/60 shadow-sm py-2' 
-          : 'bg-transparent border-b border-transparent py-4'
+          ? 'bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 shadow-md shadow-slate-950/20' 
+          : 'bg-transparent border-b border-transparent'
         }`}
       role="navigation"
       aria-label="Main navigation"
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-12">
+        <div className="flex items-center justify-between h-11">
           
           {/* Logo */}
           <div className="shrink-0">
             <Link 
               href="/" 
-              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 rounded-lg p-1 -ml-1"
-              aria-label="OramaCreativ Home"
+              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-lg p-1 -ml-1"
+                aria-label="CE Frames Home"
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center shadow-sm overflow-hidden"
+                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-rose-600/20 border border-rose-500/30 flex items-center justify-center shadow-sm overflow-hidden"
               > 
                 <Image 
-  src="/Logo name.png" 
-  alt="OramaCreativ Logo" 
-  width={32} 
-  height={32} 
-  className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
-  priority 
-/>
+                  src="/Logo name.png" 
+                  alt="CE Frames Logo" 
+                  width={32} 
+                  height={32} 
+                  className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                  priority 
+                />
               </motion.div>
               <div className="flex flex-col justify-center">
-                <span className="font-bold text-lg sm:text-xl tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
-                  Orama<span className="text-zinc-500 dark:text-zinc-400 font-light">Creativ</span>
+                <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-100 leading-none">
+                  CE <span className="text-rose-400 font-light">Frames</span>
                 </span>
               </div>
             </Link>
@@ -225,13 +225,13 @@ export default function Navbar() {
               })}
             </ul>
 
-            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
+            <div className="w-px h-5 bg-slate-800" aria-hidden="true" />
 
             <div className="flex items-center gap-3">
               {!isAuthenticated ? (
                 <Link 
                   href={AUTH_ITEMS.login.href || '#'} 
-                  className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg shadow-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+                  className="group relative inline-flex items-center justify-center px-4.5 py-2 text-sm font-semibold text-white bg-rose-600 rounded-xl shadow-lg shadow-rose-600/20 hover:bg-rose-500 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 >
                   <span>{AUTH_ITEMS.login.label}</span>
                 </Link>
@@ -239,7 +239,7 @@ export default function Navbar() {
                 <motion.button 
                   whileTap={{ scale: 0.96 }} 
                   onClick={handleLogout} 
-                  className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-300 hover:text-slate-100 hover:bg-slate-800/60 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                   aria-label="Log out of your account"
                 >
                   {AUTH_ITEMS.logout.label}
@@ -253,10 +253,10 @@ export default function Navbar() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`relative p-2.5 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2
+              className={`relative p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
                 ${isMenuOpen 
-                  ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100' 
-                  : 'bg-zinc-100/50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                  ? 'bg-slate-800 text-slate-100' 
+                  : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 border border-slate-800'
                 }`}
               aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMenuOpen}
@@ -269,9 +269,9 @@ export default function Navbar() {
                     initial={{ rotate: -90, opacity: 0 }} 
                     animate={{ rotate: 0, opacity: 1 }} 
                     exit={{ rotate: 90, opacity: 0 }} 
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <HiX className="w-6 h-6" aria-hidden="true" />
+                    <HiX className="w-5 h-5" aria-hidden="true" />
                   </motion.div>
                 ) : (
                   <motion.div 
@@ -279,9 +279,9 @@ export default function Navbar() {
                     initial={{ rotate: 90, opacity: 0 }} 
                     animate={{ rotate: 0, opacity: 1 }} 
                     exit={{ rotate: -90, opacity: 0 }} 
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <HiMenuAlt3 className="w-6 h-6" aria-hidden="true" />
+                    <HiMenuAlt3 className="w-5 h-5" aria-hidden="true" />
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -3,6 +3,19 @@ import { authOptions } from '@/lib/auth';
 import { galleryMediaHelpers } from '@/lib/db-helpers';
 import { NextResponse } from 'next/server';
 
+type MediaType = 'image' | 'video' | 'gif';
+type SortBy = 'newest' | 'oldest' | 'name';
+interface MediaItem {
+  id: string;
+  thumbnailUrl: string;
+  fullResUrl: string;
+  title: string;
+  type: MediaType;
+  uploadedAt: string | Date;
+  originalFilename: string | null;
+  caption: string | null;
+}
+
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -12,8 +25,12 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const galleryId = searchParams.get('galleryId');
   const search = searchParams.get('search') || undefined;
-  const type = searchParams.get('type') === 'all' ? undefined : (searchParams.get('type') as any);
-  const sortBy = (searchParams.get('sortBy') as any) || 'newest';
+  const requestedType = searchParams.get('type');
+  const type: MediaType | undefined = requestedType && requestedType !== 'all'
+    ? (['image', 'video', 'gif'].includes(requestedType) ? requestedType as MediaType : undefined)
+    : undefined;
+  const requestedSort = searchParams.get('sortBy');
+  const sortBy: SortBy = requestedSort === 'oldest' || requestedSort === 'name' ? requestedSort : 'newest';
   const page = Number(searchParams.get('page')) || 1;
   const limit = 12;
   const offset = (page - 1) * limit;
@@ -26,11 +43,10 @@ export async function GET(req: Request) {
     // 1. Get media items associated with this gallery
     const existingItems = await galleryMediaHelpers.getGalleryMediaWithDetails(galleryId);
     
-    let filteredMedia = existingItems.map((item: any) => {
-      // DRIZZLE JOIN FIX: 
-      // Cast to any to bypass incomplete helper return types.
+    let filteredMedia: MediaItem[] = existingItems.map((item) => {
+      const itemRecord = item as typeof item & { media?: typeof item };
       // The media data might be nested in 'item.media' or flat on 'item'.
-      const mediaData = item.media || item; 
+      const mediaData = itemRecord.media || itemRecord;
       
       return {
         id: mediaData.id,
@@ -48,20 +64,20 @@ export async function GET(req: Request) {
 
     // Apply Type Filter
     if (type) {
-      filteredMedia = filteredMedia.filter((m: any) => m.type === type);
+      filteredMedia = filteredMedia.filter((m) => m.type === type);
     }
 
     // Apply Search Filter
     if (search) {
       const lowerSearch = search.toLowerCase();
-      filteredMedia = filteredMedia.filter((m: any) => 
+      filteredMedia = filteredMedia.filter((m) =>
         (m.originalFilename && m.originalFilename.toLowerCase().includes(lowerSearch)) ||
         (m.caption && m.caption.toLowerCase().includes(lowerSearch))
       );
     }
 
     // Apply Sorting
-    filteredMedia.sort((a: any, b: any) => {
+    filteredMedia.sort((a, b) => {
       const dateA = new Date(a.uploadedAt).getTime();
       const dateB = new Date(b.uploadedAt).getTime();
       

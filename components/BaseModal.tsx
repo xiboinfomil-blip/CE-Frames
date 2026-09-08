@@ -121,7 +121,6 @@ export default function BaseModal({
 
   return (
     <AnimatePresence>
-      {/* Added key prop to resolve duplicate key warning */}
       <motion.div 
         key="base-modal-container"
         initial={{ opacity: 0 }}
@@ -134,33 +133,36 @@ export default function BaseModal({
         aria-labelledby="modal-title"
         aria-describedby={subtitle ? "modal-subtitle" : undefined}
       >
-        {/* Backdrop: Deep Immersion */}
+        {/* Backdrop: Deep Glass Blur */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-xl transition-colors duration-300" 
+          className="absolute inset-0 bg-slate-900/50 dark:bg-black/70 backdrop-blur-md transition-colors duration-300" 
           onClick={!isLoading ? onClose : undefined} 
           aria-hidden="true"
         />
         
-        {/* Modal Container: Premium Glass & Curves */}
+        {/* Modal Container */}
         <motion.div 
           ref={modalRef}
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className={`relative w-full ${widthClasses[maxWidth]} bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl shadow-black/10 dark:shadow-black/50 border border-zinc-200/50 dark:border-zinc-800/50 overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh]`}
+          exit={{ opacity: 0, scale: 0.96, y: 16 }}
+          transition={{ type: "spring", stiffness: 380, damping: 28 }}
+          className={`relative w-full ${widthClasses[maxWidth]} bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl shadow-2xl shadow-slate-900/20 dark:shadow-black/70 border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh]`}
         >
+          {/* Top Brand Accent Stripe */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-rose-500 via-rose-600 to-rose-400" />
+
           {/* Header */}
-          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-start bg-white dark:bg-zinc-950 relative z-10">
+          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 dark:border-slate-800/60 flex justify-between items-start bg-white dark:bg-slate-950 relative z-10">
             <div className="pr-8">
-              <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
                 {title}
               </h2>
               {subtitle && (
-                <p id="modal-subtitle" className="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5 font-medium leading-relaxed">
+                <p id="modal-subtitle" className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 font-medium leading-relaxed">
                   {subtitle}
                 </p>
               )}
@@ -169,30 +171,30 @@ export default function BaseModal({
               ref={closeBtnRef}
               onClick={onClose} 
               disabled={isLoading}
-              className="group flex items-center justify-center w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
+              className="group flex items-center justify-center w-10 h-10 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all duration-200 disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-400 focus-visible:ring-offset-2"
               aria-label="Close modal"
             >
               <HiXMark className="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" />
             </button>
           </div>
 
-          {/* Content Area: Clean, scrollable, distraction-free */}
-          <div className="flex-1 overflow-y-auto relative bg-white dark:bg-zinc-950 modal-scroll">
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto relative bg-white dark:bg-slate-950 modal-scroll">
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-8">
               {children}
             </div>
           </div>
 
-          {/* Footer Actions: Frosted Glass Separation */}
+          {/* Footer Actions */}
           {footer && (
-            <div className="px-6 py-4 sm:px-8 sm:py-5 bg-white/80 dark:bg-zinc-950/80 border-t border-zinc-100 dark:border-zinc-800/50 flex justify-end gap-3 relative z-10 backdrop-blur-xl">
+            <div className="px-6 py-4 sm:px-8 sm:py-5 bg-slate-50/80 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800/60 flex justify-end gap-3 relative z-10 backdrop-blur-xl">
               {footer}
             </div>
           )}
         </motion.div>
       </motion.div>
 
-      {/* Inline styles for a premium, dependency-free custom scrollbar */}
+      {/* Styled Scrollbar */}
       <style>{`
         .modal-scroll::-webkit-scrollbar {
           width: 6px;
@@ -201,17 +203,17 @@ export default function BaseModal({
           background: transparent;
         }
         .modal-scroll::-webkit-scrollbar-thumb {
-          background-color: #e4e4e7; /* zinc-200 */
+          background-color: #cbd5e1; /* slate-300 */
           border-radius: 9999px;
         }
         .dark .modal-scroll::-webkit-scrollbar-thumb {
-          background-color: #3f3f46; /* zinc-700 */
+          background-color: #334155; /* slate-700 */
         }
         .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background-color: #d4d4d8; /* zinc-300 */
+          background-color: #94a3b8; /* slate-400 */
         }
         .dark .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background-color: #52525b; /* zinc-600 */
+          background-color: #475569; /* slate-600 */
         }
       `}</style>
     </AnimatePresence>

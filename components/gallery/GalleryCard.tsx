@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
-  FaLock, 
-  FaUnlock, 
-  FaImages, 
-  FaEyeSlash,
-  FaArrowRight
-} from 'react-icons/fa';
-// ✅ Updated Import: Using GallerySummary from consolidated types
+  HiLockClosed, 
+  HiLockOpen, 
+  HiEyeSlash, 
+  HiPhoto, 
+  HiArrowRight 
+} from 'react-icons/hi2';
+
 import { GallerySummary } from '@/types/types';
 import { getUnlockedGalleries } from '@/lib/gallery-utils';
 
@@ -28,118 +28,111 @@ export default function GalleryCard({ gallery, onClick }: GalleryCardProps) {
   const isUnlocked = unlockedGalleries.includes(gallery.id);
   const isProtected = gallery.visibility === 'password_protected' && !isUnlocked;
 
-  // Determine badge style based on visibility
+  // Status badge styling aligned with the CE Frames dark slate/rose theme
   const getBadgeStyle = () => {
     if (isProtected) {
       return {
-        bg: 'bg-red-500/90 backdrop-blur-md',
-        text: 'text-white',
-        icon: <FaLock className="w-3 h-3" />,
-        label: 'Protected'
+        bg: 'bg-rose-500/80 border-rose-400/30 text-rose-100',
+        icon: <HiLockClosed className="w-3 h-3" />,
+        label: 'Protected',
       };
     }
     if (isUnlocked) {
       return {
-        bg: 'bg-emerald-500/90 backdrop-blur-md',
-        text: 'text-white',
-        icon: <FaUnlock className="w-3 h-3" />,
-        label: 'Unlocked'
+        bg: 'bg-emerald-500/80 border-emerald-400/30 text-emerald-100',
+        icon: <HiLockOpen className="w-3 h-3" />,
+        label: 'Unlocked',
       };
     }
     if (gallery.visibility === 'unlisted') {
       return {
-        bg: 'bg-amber-500/90 backdrop-blur-md',
-        text: 'text-white',
-        icon: <FaEyeSlash className="w-3 h-3" />,
-        label: 'Unlisted'
+        bg: 'bg-amber-500/80 border-amber-400/30 text-amber-100',
+        icon: <HiEyeSlash className="w-3 h-3" />,
+        label: 'Unlisted',
       };
     }
     return {
-      bg: 'bg-blue-600/90 backdrop-blur-md',
-      text: 'text-white',
+      bg: 'bg-rose-500/80 border-rose-400/30 text-rose-100',
       icon: null,
-      label: 'Public'
+      label: 'Public',
     };
   };
 
   const badge = getBadgeStyle();
-
-  // ✅ Use randomMedia for preview since coverMedia object isn't in GallerySummary
   const displayMedia = gallery.randomMedia;
 
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -12 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="group relative flex flex-col h-full cursor-pointer"
+      whileHover={{ y: -6 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className="group relative flex flex-col h-full cursor-pointer select-none"
       onClick={() => onClick(gallery)}
     >
       {/* Main Card Container */}
-      <div className="relative flex flex-col h-full bg-white rounded-3xl shadow-sm hover:shadow-2xl border border-gray-100 overflow-hidden transition-shadow duration-500">
+      <div className="relative flex flex-col h-full bg-slate-900/90 rounded-2xl shadow-xl shadow-slate-950/50 border border-slate-800/80 overflow-hidden transition-all duration-300 group-hover:border-slate-700/80">
         
-        {/* Image Section (Taller Aspect Ratio for Photography Focus) */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+        {/* Image Preview Container */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-slate-950">
           {displayMedia?.thumbnailUrl ? (
             <Image
               src={displayMedia.thumbnailUrl}
               alt={gallery.title || 'Gallery cover'}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-50">
-              <FaImages className="text-6xl text-blue-200/50" />
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-slate-700">
+              <HiPhoto className="text-5xl mb-2" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">No Cover</span>
             </div>
           )}
-          
-          {/* Dark Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+
+          {/* Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300" />
 
           {/* Top Right: Status Badge */}
-          <div className="absolute top-4 right-4 z-20">
-            <span className={`px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 shadow-lg ${badge.bg} ${badge.text}`}>
+          <div className="absolute top-3.5 right-3.5 z-20">
+            <span className={`px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 backdrop-blur-md border shadow-lg ${badge.bg}`}>
               {badge.icon}
               {badge.label}
             </span>
           </div>
 
-          {/* Bottom Left: Floating Media Count */}
-          {/* ✅ Updated: Use gallery.mediaCount instead of _count.galleryMedia */}
-          <div className="absolute bottom-4 left-4 z-20">
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white shadow-lg transform translate-y-2 opacity-90 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-              <FaImages className="w-3 h-3 text-blue-300" />
-              <span className="text-xs font-semibold">{gallery.mediaCount || 0}</span>
+          {/* Bottom Left: Media Count Tag */}
+          <div className="absolute bottom-3.5 left-3.5 z-20">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-950/60 backdrop-blur-md border border-slate-700/50 rounded-lg text-slate-200 shadow-md text-xs font-medium">
+              <HiPhoto className="w-3.5 h-3.5 text-rose-400" />
+              <span>{gallery.mediaCount || 0}</span>
             </div>
           </div>
 
-          {/* Center: Action Icon (Appears on Hover) */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
-            <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 shadow-2xl">
-              <FaArrowRight className="text-white w-6 h-6" />
+          {/* Center Action Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="bg-slate-900/80 backdrop-blur-md p-3.5 rounded-full border border-slate-700/80 text-rose-400 shadow-xl transform scale-95 group-hover:scale-100 transition-transform duration-300">
+              <HiArrowRight className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-5 flex flex-col flex-grow bg-white relative z-10">
-          <h3 className="font-bold text-xl text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors duration-300">
+        {/* Card Content Footer */}
+        <div className="p-4 flex flex-col flex-grow bg-slate-900 relative z-10">
+          <h3 className="font-bold text-lg text-slate-100 line-clamp-1 group-hover:text-rose-400 transition-colors duration-200">
             {gallery.title}
           </h3>
-          
+
           {gallery.description && (
-            <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
+            <p className="text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed">
               {gallery.description}
             </p>
           )}
 
-          {/* Spacer to push content up if description is short */}
-          <div className="grow" />
+          <div className="grow min-h-[8px]" />
         </div>
 
-        {/* The "Start Light" Racing Stripe */}
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-center" />
+        {/* Accent Focus Stripe */}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center" />
       </div>
     </motion.div>
   );

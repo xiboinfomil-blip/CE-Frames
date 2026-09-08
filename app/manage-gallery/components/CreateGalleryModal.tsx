@@ -57,16 +57,16 @@ interface CreateGalleryModalProps {
 }
 
 const TYPE_FILTERS: FilterOption[] = [
-  { value: 'all', label: 'All Assets' },
-  { value: 'image', label: 'Images' },
-  { value: 'video', label: 'Videos' },
+  { value: 'all', label: 'Toutes les médias' },
+  { value: 'image', label: 'Photos' },
+  { value: 'video', label: 'Vidéos' },
   { value: 'gif', label: 'GIFs' },
 ];
 
 const SORT_OPTIONS: SortOption[] = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' },
+  { value: 'newest', label: 'Plus récents' },
+  { value: 'oldest', label: 'Plus anciens' },
+  { value: 'name', label: 'Nom A-Z' },
 ];
 
 const DEFAULT_FORM_DATA: GalleryData = {
@@ -79,13 +79,20 @@ const DEFAULT_FORM_DATA: GalleryData = {
   coverMedia: null,
 };
 
+const DEFAULT_FILTERS = {
+  search: '',
+  type: 'all' as 'all' | 'image' | 'video' | 'gif',
+  sortBy: 'newest' as 'newest' | 'oldest' | 'name',
+  page: 1,
+};
+
 export default function CreateGalleryModal({
   isOpen,
   onClose,
   initialData = null,
 }: CreateGalleryModalProps) {
   const router = useRouter();
-  const isEditMode = !!initialData;
+  const isEditMode = Boolean(initialData?.id);
   
   const titleId = useId();
   const descId = useId();
@@ -102,18 +109,12 @@ export default function CreateGalleryModal({
     total: 0, currentPage: 1, totalPages: 1, hasNext: false, hasPrevious: false,
   });
   const [isFetchingMedia, setIsFetchingMedia] = useState(false);
-
-  const [mediaFilters, setMediaFilters] = useState({
-    search: '',
-    type: 'all' as 'all' | 'image' | 'video' | 'gif',
-    sortBy: 'newest' as 'newest' | 'oldest' | 'name',
-    page: 1,
-  });
+  const [mediaFilters, setMediaFilters] = useState(DEFAULT_FILTERS);
 
   useEffect(() => {
     if (isOpen) {
+      setError(null);
       if (initialData) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData({
           id: initialData.id,
           title: initialData.title || '',
@@ -125,53 +126,52 @@ export default function CreateGalleryModal({
           coverMedia: initialData.coverMedia || null,
         });
       } else {
-         
         setFormData(DEFAULT_FORM_DATA);
       }
     }
   }, [isOpen, initialData]);
 
   const executeFetch = useCallback(async (filters: typeof mediaFilters) => {
-     if (!initialData?.id) return;
-     setIsFetchingMedia(true);
-     try {
-       const params = new URLSearchParams({
-         galleryId: initialData.id,
-         search: filters.search,
-         type: filters.type,
-         sortBy: filters.sortBy,
-         page: filters.page.toString(),
-       });
-       const res = await fetch(`/api/gallery-media/available?${params}`);
-       if (res.ok) {
-         const data = await res.json();
-         setAvailableMedia(data.items || []);
-         setPagination(data.pagination);
-       }
-     } catch (err) {
-       console.error('Failed to fetch gallery media', err);
-     } finally {
-       setIsFetchingMedia(false);
-     }
-  }, [initialData]);
+    if (!initialData?.id) return;
+    setIsFetchingMedia(true);
+    try {
+      const params = new URLSearchParams({
+        galleryId: initialData.id,
+        search: filters.search,
+        type: filters.type,
+        sortBy: filters.sortBy,
+        page: filters.page.toString(),
+      });
+      const res = await fetch(`/api/gallery-media/available?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableMedia(data.items || []);
+        setPagination(data.pagination);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des médias', err);
+    } finally {
+      setIsFetchingMedia(false);
+    }
+  }, [initialData?.id]);
 
   const openMediaPicker = useCallback(() => {
     setIsMediaPickerOpen(true);
     if (isEditMode && initialData?.id) {
       executeFetch(mediaFilters);
     }
-  }, [isEditMode, initialData, mediaFilters, executeFetch]);
+  }, [isEditMode, initialData?.id, mediaFilters, executeFetch]);
 
   const closeMediaPicker = useCallback(() => setIsMediaPickerOpen(false), []);
 
   const handleFilterChangeSafe = useCallback((type: string) => {
-    const newFilters = { ...mediaFilters, type: type as 'all' | 'image' | 'video' | 'gif', page: 1 };
+    const newFilters = { ...mediaFilters, type: type as typeof mediaFilters.type, page: 1 };
     setMediaFilters(newFilters);
     if (isMediaPickerOpen && isEditMode) executeFetch(newFilters);
   }, [mediaFilters, isMediaPickerOpen, isEditMode, executeFetch]);
 
   const handleSortChangeSafe = useCallback((sortBy: string) => {
-    const newFilters = { ...mediaFilters, sortBy: sortBy as 'newest' | 'oldest' | 'name', page: 1 };
+    const newFilters = { ...mediaFilters, sortBy: sortBy as typeof mediaFilters.sortBy, page: 1 };
     setMediaFilters(newFilters);
     if (isMediaPickerOpen && isEditMode) executeFetch(newFilters);
   }, [mediaFilters, isMediaPickerOpen, isEditMode, executeFetch]);
@@ -222,13 +222,13 @@ export default function CreateGalleryModal({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save gallery');
+        throw new Error(errorData.message || 'Impossible d\'enregistrer la galerie');
       }
 
       onClose();
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Une erreur s\'est produite');
     } finally {
       setIsLoading(false);
     }
@@ -242,7 +242,7 @@ export default function CreateGalleryModal({
   const footerActions = (
     <div className="flex gap-3 w-full sm:w-auto justify-end">
       <CustomButton variant="ghost" size="lg" onClick={onClose} disabled={isLoading}>
-        Cancel
+        Annuler
       </CustomButton>
       <CustomButton
         type="submit"
@@ -252,13 +252,13 @@ export default function CreateGalleryModal({
         isLoading={isLoading}
         disabled={isLoading || !formData.title.trim()}
       >
-        {isEditMode ? 'Save Changes' : 'Create Gallery'}
+        {isEditMode ? 'Enregistrer les modifications' : 'Créer la galerie'}
       </CustomButton>
     </div>
   );
 
   const currentCoverObj = initialData?.coverMedia || availableMedia.find((m) => m.id === formData.coverMediaId);
-  const modalTitle = isEditMode ? 'Edit Gallery' : 'New Gallery';
+  const modalTitle = isEditMode ? 'Éditer l\'album CSE' : 'Nouvel album CSE';
 
   return (
     <>
@@ -266,7 +266,7 @@ export default function CreateGalleryModal({
         isOpen={isOpen}
         onClose={onClose}
         title={modalTitle}
-        subtitle={isEditMode ? 'Update gallery details' : 'Create a new collection'}
+        subtitle={isEditMode ? 'Mettre à jour les informations de l\'album' : 'Créer un nouvel album d\'activités ou d\'événements'}
         maxWidth="2xl"
         isLoading={isLoading}
         footer={footerActions}
@@ -284,30 +284,34 @@ export default function CreateGalleryModal({
               id={titleId}
               name="title"
               type="text"
-              label="Gallery Title"
+              label="Titre de l'événement / album"
               value={formData.title}
               onChange={handleChange}
               required
               maxLength={255}
-              placeholder="e.g., Summer Track Day 2024"
+              placeholder="ex: Arbre de Noël 2026, Voyage au Japon, Billetterie..."
             />
 
             <div className="space-y-1.5">
-              <label htmlFor={descId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Description</label>
+              <label htmlFor={descId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">
+                Description & Détails
+              </label>
               <textarea
                 id={descId}
                 name="description"
                 value={formData.description || ''}
                 onChange={handleChange}
                 rows={3}
-                placeholder="Add context about this collection..."
+                placeholder="Précisez le contexte, la date, la commission concernée ou les modalités pour les salariés..."
                 className="w-full px-4 py-3.5 rounded-2xl text-sm bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 border border-zinc-200/60 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-zinc-100/50 dark:focus-visible:ring-zinc-800/50 focus:border-zinc-400 dark:focus:border-zinc-600 transition-all duration-300 resize-none shadow-sm"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-1.5">
-                <label htmlFor={visibilityId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Visibility</label>
+                <label htmlFor={visibilityId} className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">
+                  Accès & Visibilité
+                </label>
                 <div className="relative group">
                   <select
                     id={visibilityId}
@@ -318,7 +322,15 @@ export default function CreateGalleryModal({
                   >
                     {VISIBILITY_STATUSES.map((status) => (
                       <option key={status} value={status}>
-                        {status === 'public' ? 'Public' : status === 'private' ? 'Private' : status === 'password_protected' ? 'Password Protected' : status === 'unlisted' ? 'Unlisted' : status}
+                        {status === 'public' 
+                          ? 'Tous les salariés (Public)' 
+                          : status === 'private' 
+                          ? 'Membres du CSE uniquement' 
+                          : status === 'password_protected' 
+                          ? 'Protégé par mot de passe' 
+                          : status === 'unlisted' 
+                          ? 'Lien direct uniquement' 
+                          : status}
                       </option>
                     ))}
                   </select>
@@ -335,26 +347,28 @@ export default function CreateGalleryModal({
                       id={passwordId}
                       name="password"
                       type="password"
-                      label="Access Password"
+                      label="Code d'accès"
                       value={formData.password || ''}
                       onChange={handleChange}
                       required={!isEditMode}
                       placeholder="••••••••"
                     />
-                    {isEditMode && <p className="text-xs text-zinc-500 mt-1 pl-1">Leave empty to retain current password</p>}
+                    {isEditMode && <p className="text-xs text-zinc-500 mt-1 pl-1">Laissez vide pour conserver le code actuel</p>}
                   </>
                 )}
               </div>
             </div>
 
-            {/* Visual Layout Selector */}
+            {/* Layout Options */}
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Layout Style</label>
+              <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1 block">
+                Style d'affichage des photos
+              </span>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { value: 'column', label: 'Column', icon: <HiOutlineViewColumns className="w-6 h-6" /> },
-                  { value: 'row', label: 'Row', icon: <HiOutlineListBullet className="w-6 h-6" /> },
-                  { value: 'masonry', label: 'Masonry', icon: <HiSquaresPlus className="w-6 h-6" /> },
+                  { value: 'column', label: 'Colonnes', icon: <HiOutlineViewColumns className="w-6 h-6" /> },
+                  { value: 'row', label: 'Liste', icon: <HiOutlineListBullet className="w-6 h-6" /> },
+                  { value: 'masonry', label: 'Mosaïque', icon: <HiSquaresPlus className="w-6 h-6" /> },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -375,12 +389,16 @@ export default function CreateGalleryModal({
               </div>
             </div>
 
-            {/* Cover Image Selector */}
+            {/* Cover Picker */}
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1">Cover Image</label>
-              <div
+              <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400 pl-1 block">
+                Image de couverture / Affiche
+              </span>
+              <button
+                type="button"
+                disabled={!isEditMode}
                 onClick={() => isEditMode && openMediaPicker()}
-                className={`group relative w-full h-48 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 overflow-hidden ${
+                className={`group relative w-full h-48 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 overflow-hidden text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white ${
                   isEditMode
                     ? 'border-dashed border-zinc-300 dark:border-zinc-700 cursor-pointer hover:border-zinc-900 dark:hover:border-white hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
                     : 'border-solid border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 cursor-not-allowed opacity-60'
@@ -401,7 +419,7 @@ export default function CreateGalleryModal({
                       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-30">
                         <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">
                           <HiPhoto className="w-4 h-4" />
-                          Change Cover
+                          Changer la couverture
                         </span>
                       </div>
                     )}
@@ -412,15 +430,15 @@ export default function CreateGalleryModal({
                       <HiPhoto className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-bold uppercase tracking-widest">
-                      {isEditMode ? 'Select from Gallery' : 'Add Media First'}
+                      {isEditMode ? 'Choisir depuis l\'album' : 'Ajoutez des photos avant de choisir une couverture'}
                     </span>
                   </div>
                 )}
-              </div>
+              </button>
               {!isEditMode && (
                 <p className="text-xs text-zinc-500 text-right flex items-center justify-end gap-1.5">
                   <HiInformationCircle className="w-3.5 h-3.5" />
-                  Create gallery and add media to set a cover
+                  Créez d'abord l'album puis ajoutez des médias pour définir une couverture
                 </p>
               )}
             </div>
@@ -432,13 +450,13 @@ export default function CreateGalleryModal({
       <BaseModal
         isOpen={isMediaPickerOpen}
         onClose={closeMediaPicker}
-        title="Select Cover"
-        subtitle="Choose an image or video from this gallery"
+        title="Sélectionner la couverture"
+        subtitle="Choisissez une photo ou illustration dans la galerie de cet événement"
         maxWidth="6xl"
         isLoading={isFetchingMedia}
         footer={
           <div className="flex justify-end w-full">
-            <CustomButton variant="ghost" size="md" onClick={closeMediaPicker}>Cancel</CustomButton>
+            <CustomButton variant="ghost" size="md" onClick={closeMediaPicker}>Fermer</CustomButton>
           </div>
         }
       >
@@ -464,12 +482,12 @@ export default function CreateGalleryModal({
             {isFetchingMedia ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <HiArrowPath className="w-8 h-8 text-zinc-400 animate-spin" />
-                <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Loading media...</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Chargement des photos...</span>
               </div>
             ) : availableMedia.length === 0 ? (
               <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">
-                <p className="font-bold text-sm uppercase tracking-widest">No Media Found</p>
-                <p className="text-xs mt-2 font-medium">Add media to this gallery first.</p>
+                <p className="font-bold text-sm uppercase tracking-widest">Aucun média trouvé</p>
+                <p className="text-xs mt-2 font-medium">Ajoutez des fichiers à cet album d'abord.</p>
               </div>
             ) : (
               <>
@@ -481,6 +499,7 @@ export default function CreateGalleryModal({
                     return (
                       <button
                         key={media.id}
+                        type="button"
                         onClick={() => handleSelectCover(media.id)}
                         className={`group relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 bg-white dark:bg-zinc-900 border ${
                           isSelected

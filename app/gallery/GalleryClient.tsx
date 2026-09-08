@@ -86,18 +86,17 @@ export default function GalleryClient({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Simplified click handler - just navigate
   const handleGalleryClick = (gallery: GallerySummary) => {
-    router.push(`/gallery/${gallery.id}`);
+    router.push(`/galeries/${gallery.id}`);
   };
 
   const displayedGalleries = initialGalleries;
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 selection:bg-zinc-900 selection:text-white font-sans antialiased">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-zinc-900 selection:text-white font-sans antialiased">
       
       {/* Sticky Header - Full Width */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-zinc-100 transition-colors duration-300">
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-100 dark:border-zinc-800 transition-colors duration-300">
         <div className="w-full px-6 lg:px-12 py-6">
 
           <MediaLibraryHeader
@@ -108,17 +107,17 @@ export default function GalleryClient({
             activeFilter={filterType}
             onFilterChange={handleFilterChange}
             filters={[
-              { value: 'all', label: 'All Views' },
-              { value: 'public', label: 'Public' },
-              { value: 'password_protected', label: 'Password Protected' }
+              { value: 'all', label: 'Toutes les galeries' },
+              { value: 'public', label: 'Publiques' },
+              { value: 'password_protected', label: 'Mot de passe requis' }
             ]}
             
             activeSort={sortBy}
             onSortChange={handleSortChange}
             sorts={[
-              { value: 'newest', label: 'Recent' },
-              { value: 'oldest', label: 'Oldest' },
-              { value: 'name', label: 'Name' }
+              { value: 'newest', label: 'Plus récentes' },
+              { value: 'oldest', label: 'Plus anciennes' },
+              { value: 'name', label: 'Nom (A-Z)' }
             ]}
             
             totalItems={totalGalleries}
@@ -130,9 +129,9 @@ export default function GalleryClient({
 
       <main className="w-full px-6 lg:px-12 py-12 min-h-[60vh]">
         {isPending && (
-           <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center pointer-events-none transition-opacity duration-300">
-             <div className="animate-spin rounded-full h-8 w-8 border-2 border-zinc-100 border-t-zinc-900"></div>
-           </div>
+          <div className="fixed inset-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center pointer-events-none transition-opacity duration-300">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-zinc-100 dark:border-zinc-800 border-t-zinc-900 dark:border-t-zinc-100"></div>
+          </div>
         )}
 
         <CardGrid
@@ -141,7 +140,7 @@ export default function GalleryClient({
           emptyState={
             <EmptyState />
           }
-          ariaLabel="Photo Galleries"
+          ariaLabel="Galeries photos CSE"
           renderItem={(gallery, index) => {
             const displayMedia = gallery.randomMedia; 
             
@@ -150,13 +149,13 @@ export default function GalleryClient({
               return (
                 <button
                   onClick={() => handleGalleryClick(gallery)}
-                  className="group relative w-full aspect-[4/5] bg-zinc-50 rounded-xl border border-dashed border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100 transition-all duration-300 flex flex-col items-center justify-center text-center p-8 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900"
+                  className="group relative w-full aspect-[4/5] bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all duration-300 flex flex-col items-center justify-center text-center p-8 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900"
                 >
-                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                     <ImageIcon className="w-5 h-5 text-zinc-400" />
                   </div>
-                  <h3 className="text-zinc-900 font-medium">{gallery.title}</h3>
-                  <p className="text-xs text-zinc-400 mt-2 uppercase tracking-widest">Empty Collection</p>
+                  <h3 className="text-zinc-900 dark:text-zinc-100 font-medium">{gallery.title}</h3>
+                  <p className="text-xs text-zinc-400 mt-2 uppercase tracking-widest">Album vide</p>
                 </button>
               );
             }
@@ -167,8 +166,8 @@ export default function GalleryClient({
                 onClick={() => handleGalleryClick(gallery)}
                 className="group flex flex-col h-full cursor-pointer focus:outline-none"
               >
-                {/* Image Container - Aspect Ratio 4:5 for elegant portrait feel */}
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-100 shadow-sm group-hover:shadow-md transition-shadow duration-500">
+                {/* Image Container */}
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900 shadow-sm group-hover:shadow-md transition-shadow duration-500">
                   <MediaViewport
                     mediaType={displayMedia.type}
                     fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
@@ -176,7 +175,7 @@ export default function GalleryClient({
                     caption={gallery.title}
                     originalFilename={null}
                     className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    priority={index < 4} // Prioritize first few images
+                    priority={index < 4}
                   />
                   
                   {/* Subtle Overlay Gradient */}
@@ -184,22 +183,22 @@ export default function GalleryClient({
                   
                   {/* View Button Overlay */}
                   <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="bg-white/90 backdrop-blur-md text-zinc-900 text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center justify-center gap-2">
-                      View Collection
+                    <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md text-zinc-900 dark:text-zinc-100 text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center justify-center gap-2">
+                      Voir l&apos;album
                       <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                 </div>
                 
-                {/* Content Info - Clean & Spacious */}
+                {/* Content Info */}
                 <div className="mt-5 px-1">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-zinc-900 font-medium text-lg leading-snug truncate group-hover:text-zinc-600 transition-colors">
+                      <h3 className="text-zinc-900 dark:text-zinc-100 font-medium text-lg leading-snug truncate group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
                         {gallery.title}
                       </h3>
                       {gallery.description && (
-                        <p className="text-zinc-500 text-sm mt-1.5 line-clamp-2 leading-relaxed font-light">
+                        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1.5 line-clamp-2 leading-relaxed font-light">
                           {gallery.description}
                         </p>
                       )}
@@ -207,12 +206,12 @@ export default function GalleryClient({
                   </div>
                   
                   {/* Meta Footer - Date Only */}
-                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-zinc-100">
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                     <time className="text-xs text-zinc-400 font-medium flex items-center gap-1.5 uppercase tracking-wide">
                       <Calendar className="w-3.5 h-3.5" />
-                      {new Date(gallery.createdAt).toLocaleDateString('en-US', { 
+                      {new Date(gallery.createdAt).toLocaleDateString('fr-FR', { 
+                        day: 'numeric',
                         month: 'short', 
-                        day: 'numeric', 
                         year: 'numeric' 
                       })}
                     </time>
@@ -224,9 +223,9 @@ export default function GalleryClient({
         />
       </main>
 
-      {/* Pagination Footer - Full Width */}
+      {/* Pagination Footer */}
       {(hasNext || hasPrevious) && (
-        <div className="w-full border-t border-zinc-100 py-12 bg-white">
+        <div className="w-full border-t border-zinc-100 dark:border-zinc-800 py-12 bg-white dark:bg-zinc-950">
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}

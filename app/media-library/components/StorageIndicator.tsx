@@ -31,61 +31,61 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
 
   const state = getStorageState();
 
-  // Color configurations for different states
+  // Color configurations for different states (Dark/Light compatible)
   const stateStyles = {
     low: {
-      bg: 'bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/60',
-      border: 'border-emerald-200/60',
-      indicator: 'bg-emerald-400',
-      progress: 'bg-gradient-to-r from-emerald-400 to-teal-500',
-      text: 'text-emerald-700',
-      label: 'text-emerald-600/70',
-      shadow: 'shadow-emerald-100/50',
+      bg: 'bg-linear-to-br from-emerald-50/80 via-white to-teal-50/60 dark:from-emerald-950/20 dark:via-zinc-900 dark:to-teal-950/10',
+      border: 'border-emerald-200/60 dark:border-emerald-900/40',
+      indicator: 'bg-emerald-500',
+      progress: 'bg-linear-to-r from-emerald-400 to-teal-500',
+      text: 'text-emerald-700 dark:text-emerald-400',
+      label: 'text-emerald-600/80 dark:text-emerald-400/80',
+      shadow: 'shadow-emerald-100/50 dark:shadow-none',
     },
     medium: {
-      bg: 'bg-gradient-to-br from-amber-50/80 via-white to-orange-50/60',
-      border: 'border-amber-200/60',
-      indicator: 'bg-amber-400',
-      progress: 'bg-gradient-to-r from-amber-400 to-orange-500',
-      text: 'text-amber-700',
-      label: 'text-amber-600/70',
-      shadow: 'shadow-amber-100/50',
+      bg: 'bg-linear-to-br from-amber-50/80 via-white to-orange-50/60 dark:from-amber-950/20 dark:via-zinc-900 dark:to-orange-950/10',
+      border: 'border-amber-200/60 dark:border-amber-900/40',
+      indicator: 'bg-amber-500',
+      progress: 'bg-linear-to-r from-amber-400 to-orange-500',
+      text: 'text-amber-700 dark:text-amber-400',
+      label: 'text-amber-600/80 dark:text-amber-400/80',
+      shadow: 'shadow-amber-100/50 dark:shadow-none',
     },
     high: {
-      bg: 'bg-gradient-to-br from-orange-50/80 via-white to-red-50/60',
-      border: 'border-orange-200/60',
-      indicator: 'bg-orange-400',
-      progress: 'bg-gradient-to-r from-orange-400 to-red-500',
-      text: 'text-orange-700',
-      label: 'text-orange-600/70',
-      shadow: 'shadow-orange-100/50',
+      bg: 'bg-linear-to-br from-orange-50/80 via-white to-red-50/60 dark:from-orange-950/20 dark:via-zinc-900 dark:to-red-950/10',
+      border: 'border-orange-200/60 dark:border-orange-900/40',
+      indicator: 'bg-orange-500',
+      progress: 'bg-linear-to-r from-orange-400 to-red-500',
+      text: 'text-orange-700 dark:text-orange-400',
+      label: 'text-orange-600/80 dark:text-orange-400/80',
+      shadow: 'shadow-orange-100/50 dark:shadow-none',
     },
     critical: {
-      bg: 'bg-gradient-to-br from-rose-50/80 via-white to-pink-50/60',
-      border: 'border-rose-200/60',
+      bg: 'bg-linear-to-br from-rose-50/80 via-white to-pink-50/60 dark:from-rose-950/30 dark:via-zinc-900 dark:to-pink-950/20',
+      border: 'border-rose-200/60 dark:border-rose-900/50',
       indicator: 'bg-rose-500',
-      progress: 'bg-gradient-to-r from-rose-500 to-pink-600',
-      text: 'text-rose-700',
-      label: 'text-rose-600/70',
-      shadow: 'shadow-rose-100/50',
+      progress: 'bg-linear-to-r from-rose-500 to-pink-600',
+      text: 'text-rose-700 dark:text-rose-400',
+      label: 'text-rose-600/80 dark:text-rose-400/80',
+      shadow: 'shadow-rose-100/50 dark:shadow-none',
     },
     full: {
-      bg: 'bg-gradient-to-br from-red-50/90 via-white to-rose-50/80',
-      border: 'border-red-300/70',
+      bg: 'bg-linear-to-br from-red-50/90 via-white to-rose-50/80 dark:from-red-950/40 dark:via-zinc-900 dark:to-rose-950/30',
+      border: 'border-red-300/70 dark:border-red-800/60',
       indicator: 'bg-red-600 animate-pulse',
-      progress: 'bg-gradient-to-r from-red-500 via-rose-600 to-red-600',
-      text: 'text-red-700 font-semibold',
-      label: 'text-red-600',
-      shadow: 'shadow-red-200/60',
+      progress: 'bg-linear-to-r from-red-500 via-rose-600 to-red-600',
+      text: 'text-red-700 dark:text-red-400 font-bold',
+      label: 'text-red-600 dark:text-red-400',
+      shadow: 'shadow-red-200/60 dark:shadow-none',
     },
     unknown: {
-      bg: 'bg-gradient-to-br from-slate-50/80 via-white to-gray-50/60',
-      border: 'border-slate-200/60',
-      indicator: 'bg-slate-400',
-      progress: 'bg-gradient-to-r from-slate-400 to-gray-500',
-      text: 'text-slate-600',
-      label: 'text-slate-500/70',
-      shadow: 'shadow-slate-100/50',
+      bg: 'bg-linear-to-br from-slate-50/80 via-white to-zinc-50/60 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950',
+      border: 'border-zinc-200/60 dark:border-zinc-800',
+      indicator: 'bg-zinc-400',
+      progress: 'bg-linear-to-r from-zinc-400 to-zinc-500',
+      text: 'text-zinc-600 dark:text-zinc-400',
+      label: 'text-zinc-500/70 dark:text-zinc-400/70',
+      shadow: 'shadow-zinc-100/50 dark:shadow-none',
     },
   };
 
@@ -95,25 +95,25 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
   if (isLoading) {
     return (
       <div 
-        className="relative overflow-hidden rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-sm p-5 shadow-lg shadow-zinc-100/50"
+        className="relative overflow-hidden rounded-2xl border border-zinc-200/60 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm p-5 shadow-xs"
         aria-label="Loading storage information"
       >
         <div className="animate-pulse space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-zinc-200" />
-              <div className="h-3 w-28 rounded bg-zinc-200" />
+              <div className="h-2.5 w-2.5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+              <div className="h-3 w-28 rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
-            <div className="h-3 w-16 rounded bg-zinc-200" />
+            <div className="h-3 w-16 rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
           
-          <div className="h-2 w-full rounded-full bg-zinc-200 overflow-hidden">
-            <div className="h-full w-2/3 rounded-full bg-zinc-300 animate-shimmer" />
+          <div className="h-2.5 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+            <div className="h-full w-2/3 rounded-full bg-zinc-300 dark:bg-zinc-700 animate-pulse" />
           </div>
           
           <div className="flex justify-between">
-            <div className="h-2.5 w-16 rounded bg-zinc-200" />
-            <div className="h-2.5 w-16 rounded bg-zinc-200" />
+            <div className="h-2.5 w-16 rounded bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-2.5 w-16 rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
         </div>
       </div>
@@ -124,15 +124,15 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
     <div 
       className={`
         group relative overflow-hidden rounded-2xl border backdrop-blur-md 
-        transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-xl
+        transition-all duration-500 ease-out hover:scale-[1.01] hover:shadow-xl
         ${currentStyle.bg} ${currentStyle.border} ${currentStyle.shadow}
       `}
       role="region"
       aria-label="Storage capacity indicator"
     >
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)]" />
+      {/* Background overlay accent */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.15),transparent_70%)]" />
       </div>
 
       {/* Content */}
@@ -141,11 +141,11 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             {/* Status indicator with glow effect */}
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
               <div className={`w-2.5 h-2.5 rounded-full ${currentStyle.indicator}`} />
-              {state === 'critical' || state === 'full' ? (
-                <div className={`absolute inset-0 rounded-full ${currentStyle.indicator} blur-md opacity-60`} />
-              ) : null}
+              {(state === 'critical' || state === 'full') && (
+                <div className={`absolute inset-0 rounded-full ${currentStyle.indicator} blur-sm opacity-70`} />
+              )}
             </div>
             
             <h3 className={`text-[11px] font-bold uppercase tracking-[0.2em] ${currentStyle.label}`}>
@@ -153,14 +153,14 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
             </h3>
           </div>
           
-          <span className={`text-xs font-mono font-medium ${currentStyle.text}`}>
+          <span className={`text-xs font-mono font-bold ${currentStyle.text}`}>
             {storage ? `${storage.percentageUsed}% USED` : 'CALCULATING...'}
           </span>
         </div>
         
         {/* Progress bar container */}
         <div 
-          className="relative h-2.5 w-full rounded-full overflow-hidden bg-white/60 shadow-inner"
+          className="relative h-2.5 w-full rounded-full overflow-hidden bg-black/5 dark:bg-white/10 shadow-inner"
           role="progressbar"
           aria-valuenow={storagePercent}
           aria-valuemin={0}
@@ -183,31 +183,27 @@ const StorageIndicator = memo(({ storage, isLoading = false }: StorageIndicatorP
           </div>
           
           {/* Grid lines for visual reference */}
-          <div className="absolute inset-0 flex">
-            {[25, 50, 75].map((mark) => (
-              <div 
-                key={mark}
-                className="h-full w-px bg-black/5"
-                style={{ left: `${mark}%` }}
-              />
-            ))}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute left-[25%] top-0 bottom-0 w-px bg-black/5 dark:bg-white/10" />
+            <div className="absolute left-[50%] top-0 bottom-0 w-px bg-black/5 dark:bg-white/10" />
+            <div className="absolute left-[75%] top-0 bottom-0 w-px bg-black/5 dark:bg-white/10" />
           </div>
         </div>
         
         {/* Storage details */}
         <div className="flex justify-between mt-3 text-[11px] font-mono">
-          <span className={`${currentStyle.label} font-medium`}>
+          <span className={`${currentStyle.label} font-semibold`}>
             {storage ? storage.used : '---'}
           </span>
-          <span className={`${currentStyle.label} font-medium`}>
+          <span className={`${currentStyle.label} font-semibold`}>
             {storage ? storage.limit : '---'}
           </span>
         </div>
 
         {/* Warning message for critical/full states */}
         {(state === 'critical' || state === 'full') && (
-          <div className="mt-3 flex items-center gap-2 text-[10px] font-medium text-rose-600 animate-fade-in">
-            <HiExclamationTriangle className="w-3.5 h-3.5 shrink-0" />
+          <div className="mt-3.5 pt-3 border-t border-rose-200/50 dark:border-rose-900/30 flex items-center gap-2 text-[11px] font-medium text-rose-600 dark:text-rose-400">
+            <HiExclamationTriangle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>
               {state === 'full' ? 'Storage is full! Free up space now.' : 'Storage is almost full. Consider upgrading.'}
             </span>

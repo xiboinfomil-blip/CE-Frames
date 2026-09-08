@@ -1,70 +1,170 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok, FaEnvelope } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaTiktok, FaEnvelope, FaLinkedin } from 'react-icons/fa';
+import { HiPaperAirplane } from 'react-icons/hi2';
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const navSections = [
+    {
+      title: 'Services',
+      links: [
+        { label: 'Corporate Galas', href: '#galas' },
+        { label: 'Team Retreats', href: '#retreats' },
+        { label: 'Executive Headshots', href: '#headshots' },
+        { label: 'CSE / CE Events', href: '#cse' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'Portfolio', href: '#portfolio' },
+        { label: 'About Us', href: '#about' },
+        { label: 'Client Reviews', href: '#reviews' },
+        { label: 'Contact & Inquiry', href: '#contact' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms of Service', href: '/terms' },
+        { label: 'Cookie Settings', href: '#cookies' },
+      ],
+    },
+  ];
+
+  const socialLinks = [
+    { 
+      name: 'LinkedIn', 
+      href: 'https://www.linkedin.com/',
+      icon: <FaLinkedin className="w-4 h-4" />
+    },
+    { 
+      name: 'Instagram', 
+      href: 'https://www.instagram.com/',
+      icon: <FaInstagram className="w-4 h-4" />
+    },
+    { 
+      name: 'Facebook', 
+      href: 'https://www.facebook.com/',
+      icon: <FaFacebook className="w-4 h-4" />
+    },
+    { 
+      name: 'TikTok', 
+      href: 'https://www.tiktok.com/',
+      icon: <FaTiktok className="w-4 h-4" />
+    },
+    { 
+      name: 'Email', 
+      href: 'mailto:contact@ceframes.com',
+      icon: <FaEnvelope className="w-4 h-4" />
+    },
+  ];
+
   return (
-    <footer className="bg-white border-t border-zinc-200/60">
-      <div className="container mx-auto px-6 md:px-12 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
+      {/* Top Main Section */}
+      <div className="container mx-auto px-6 md:px-12 pt-16 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           
-          {/* Brand */}
-          <Link 
-            href="/" 
-            className="hover:opacity-80 transition-opacity duration-300 select-none"
-            aria-label="Orama Creativ Home"
-          >
-            <Image
-              src="/Logo name.png"
-              alt="Orama Creativ Logo"
-              width={120}
-              height={40}
-              className="h-auto"
-              priority
-            />
-          </Link>
+          {/* Brand & Newsletter Column (Spans 2 columns on desktop) */}
+          <div className="lg:col-span-2 space-y-6">
+            <Link 
+              href="/" 
+              className="inline-block hover:opacity-80 transition-opacity duration-300"
+               aria-label="CE Frames Home"
+            >
+              <Image
+                src="/Logo name.png"
+                alt="CE Frames Logo"
+                width={130}
+                height={42}
+                className="h-auto brightness-0 invert" // Inverts logo for dark theme
+                priority
+              />
+            </Link>
+            
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              High-end event photography for corporate galas, team retreats, and Comité d&apos;Entreprise gatherings across Europe.
+            </p>
+
+            {/* Micro Newsletter Form */}
+            <div className="space-y-2 pt-2">
+              <span className="block text-xs font-mono font-semibold text-slate-200 uppercase tracking-wider">
+                Subscribe to Event Spotlights
+              </span>
+              <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 max-w-sm">
+                <input 
+                  type="email" 
+                  placeholder="enter your email..."
+                  className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl px-4 py-2.5 transition-colors flex items-center justify-center shrink-0 shadow-lg shadow-rose-600/20"
+                  aria-label="Subscribe"
+                >
+                  <HiPaperAirplane className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Navigation Links Columns */}
+          {navSections.map((section) => (
+            <div key={section.title} className="space-y-4">
+                <h4 className="text-xs font-mono font-bold text-rose-400 uppercase tracking-widest">
+                {section.title}
+              </h4>
+              <ul className="space-y-2.5 text-xs font-medium">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <Link 
+                      href={link.href}
+                      className="text-slate-400 hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+        </div>
+      </div>
+
+      {/* Bottom Sub-Footer Bar */}
+      <div className="border-t border-slate-800/80 bg-slate-950/60">
+        <div className="container mx-auto px-6 md:px-12 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          
+          {/* Copyright */}
+          <div className="text-xs text-slate-500 font-medium">
+             © {currentYear} CE Frames. All rights reserved.
+          </div>
 
           {/* Social Links */}
-          <div className="flex gap-4" role="list" aria-label="Social media links">
-            {[
-              { 
-                name: 'Instagram', 
-                href: 'https://www.instagram.com/oramacreativ/',
-                icon: <FaInstagram className="w-4 h-4" />
-              },
-              { 
-                name: 'Facebook', 
-                href: 'https://www.facebook.com/oramacreativ/',
-                icon: <FaFacebook className="w-4 h-4" />
-              },
-              { 
-                name: 'TikTok', 
-                href: 'https://www.tiktok.com/@oramacreativ',
-                icon: <FaTiktok className="w-4 h-4" />
-              },
-              { 
-                name: 'Email', 
-                href: 'mailto:hello@orama.com',
-                icon: <FaEnvelope className="w-4 h-4" />
-              },
-            ].map((social) => (
-              <Link
+          <div className="flex gap-3" role="list" aria-label="Social media links">
+            {socialLinks.map((social) => (
+              <a
                 key={social.name}
                 href={social.href}
-                className="text-zinc-400 hover:text-rose-600 transition-colors duration-300 p-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-rose-600 text-slate-400 hover:text-white transition-all duration-300 flex items-center justify-center border border-slate-700/50"
                 aria-label={`Visit our ${social.name}`}
                 role="listitem"
               >
                 {social.icon}
-              </Link>
+              </a>
             ))}
           </div>
 
-          {/* Copyright */}
-          <div className="text-xs text-zinc-400 font-medium">
-            © {new Date().getFullYear()} Orama Creativ
-          </div>
-          
         </div>
       </div>
     </footer>

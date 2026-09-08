@@ -21,57 +21,78 @@ const Pagination = memo(function Pagination({
   className = "mt-12 mb-8"
 }: PaginationProps) {
   
-  if (totalPages <= 1) return null;
-
-  // Memoize page number calculation
+  // Robust page number calculation
   const pageNumbers = useMemo(() => {
     const pages: (number | '...')[] = [];
-    const maxVisible = 3; 
     
-    if (totalPages <= maxVisible + 2) {
+    // Always show all pages if total pages are 5 or fewer
+    if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
-    } else {
-      pages.push(1);
-      if (currentPage > 2) pages.push('...');
-      
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      
-      for (let i = start; i <= end; i++) {
-        if (i !== 1 && i !== totalPages) pages.push(i);
-      }
-      
-      if (currentPage < totalPages - 1) pages.push('...');
-      if (totalPages > 1) pages.push(totalPages);
+      return pages;
     }
+
+    // Always include the first page
+    pages.push(1);
+
+    // Left ellipsis
+    if (currentPage > 3) {
+      pages.push('...');
+    }
+
+    // Middle pages around active page
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      if (i > 1 && i < totalPages) {
+        pages.push(i);
+      }
+    }
+
+    // Right ellipsis
+    if (currentPage < totalPages - 2) {
+      pages.push('...');
+    }
+
+    // Always include the last page
+    pages.push(totalPages);
     
     return pages;
   }, [currentPage, totalPages]);
 
+  if (totalPages <= 1) return null;
+
   return (
     <div className={`flex items-center justify-center w-full ${className}`}>
-      <nav className="inline-flex items-center gap-2 p-2 rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm animate-slideUpFade" aria-label="Pagination">
+      <nav 
+        className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 shadow-xl" 
+        aria-label="Pagination Navigation"
+      >
         
         {/* Previous Button */}
         <button
           onClick={() => hasPrevious && onPageChange(currentPage - 1)}
           disabled={!hasPrevious}
-          className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
-          aria-label="Previous Page"
+          className="group relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+          aria-label="Go to previous page"
         >
-          <HiChevronLeft className="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform duration-300" />
+          <HiChevronLeft className="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform duration-200" />
         </button>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
+        {/* Vertical Divider */}
+        <div className="w-px h-5 bg-slate-800 mx-0.5" />
 
-        {/* Page Numbers Container */}
-        <div className="flex items-center gap-1 px-1">
+        {/* Page Numbers */}
+        <div className="flex items-center gap-1">
           {pageNumbers.map((page, index) => (
             page === '...' ? (
-              <span key={`ellipsis-${index}`} className="w-8 h-8 flex items-center justify-center text-xs font-medium text-zinc-400 dark:text-zinc-500 select-none" aria-hidden="true">
+              <span 
+                key={`ellipsis-${index}`} 
+                className="w-7 h-9 sm:w-9 sm:h-10 flex items-center justify-center text-xs font-mono font-bold text-slate-600 select-none" 
+                aria-hidden="true"
+              >
                 ...
               </span>
             ) : (
@@ -79,11 +100,12 @@ const Pagination = memo(function Pagination({
                 key={page}
                 onClick={() => onPageChange(page as number)}
                 aria-current={page === currentPage ? 'page' : undefined}
+                aria-label={`Page ${page}`}
                 className={`
-                  relative w-9 h-9 flex items-center justify-center text-sm font-medium rounded-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-1
+                  relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xs font-semibold rounded-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500
                   ${page === currentPage
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md scale-105 z-10' 
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                    ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30 scale-100 font-bold z-10' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                   }
                 `}
               >
@@ -93,28 +115,19 @@ const Pagination = memo(function Pagination({
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
+        {/* Vertical Divider */}
+        <div className="w-px h-5 bg-slate-800 mx-0.5" />
 
         {/* Next Button */}
         <button
           onClick={() => hasNext && onPageChange(currentPage + 1)}
           disabled={!hasNext}
-          className="group relative flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
-          aria-label="Next Page"
+          className="group relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+          aria-label="Go to next page"
         >
-          <HiChevronRight className="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform duration-300" />
+          <HiChevronRight className="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform duration-200" />
         </button>
       </nav>
-
-      {/* Inline Styles for Custom Animations */}
-      <style jsx>{`
-        @keyframes slideUpFade {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slideUpFade { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-      `}</style>
     </div>
   );
 });

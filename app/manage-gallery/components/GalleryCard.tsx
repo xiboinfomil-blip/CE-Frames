@@ -26,7 +26,7 @@ export const GalleryCard = memo(function GalleryCard({
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle outside clicks AND Escape key for robust accessibility
+  // Handle outside clicks AND Escape key for accessibility
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -36,7 +36,7 @@ export const GalleryCard = memo(function GalleryCard({
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape' && isMenuOpen) {
         setIsMenuOpen(false);
-        menuButtonRef.current?.focus(); // Return focus to the trigger
+        menuButtonRef.current?.focus();
       }
     }
 
@@ -53,14 +53,14 @@ export const GalleryCard = memo(function GalleryCard({
     setIsMenuOpen(false);
     
     const result = await Swal.fire({
-      title: '<span class="text-xl font-semibold text-zinc-900">Delete Collection?</span>',
-      html: `<div class="text-left mt-2"><p class="text-zinc-600 text-base leading-relaxed">You are about to permanently delete <strong class="text-zinc-900 font-medium">${gallery.title}</strong>. This action cannot be undone.</p></div>`,
+      title: '<span class="text-xl font-semibold text-zinc-900">Supprimer cet album CSE ?</span>',
+      html: `<div class="text-left mt-2"><p class="text-zinc-600 text-base leading-relaxed">Vous êtes sur le point de supprimer définitivement l'album <strong class="text-zinc-900 font-medium">${gallery.title}</strong>. Cette action est irréversible.</p></div>`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#e11d48', // Rose-600 for elegant, clear danger action
+      confirmButtonColor: '#e11d48',
       cancelButtonColor: '#f4f4f5',
-      confirmButtonText: 'Delete Permanently',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Supprimer définitivement',
+      cancelButtonText: 'Annuler',
       background: '#ffffff',
       customClass: {
         popup: 'rounded-2xl shadow-2xl border border-zinc-100 p-6 max-w-md',
@@ -91,12 +91,12 @@ export const GalleryCard = memo(function GalleryCard({
   const mediaCount = gallery.mediaCount || 0;
   
   const createdDate = new Date(gallery.createdAt);
-  const formattedDate = createdDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const formattedDate = createdDate.toLocaleDateString('fr-FR', { month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
     <article className="group relative flex flex-col bg-white rounded-3xl border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 ease-out h-full">
       
-      {/* --- Kebab Menu (Placed outside overflow-hidden to prevent clipping) --- */}
+      {/* --- Kebab Menu --- */}
       <div className="absolute top-4 right-4 z-30" ref={menuRef}>
         <button
           ref={menuButtonRef}
@@ -112,7 +112,7 @@ export const GalleryCard = memo(function GalleryCard({
             }
           }}
           className="p-2.5 bg-white/90 backdrop-blur-md border border-white/50 rounded-full shadow-sm hover:bg-white hover:shadow-md text-zinc-600 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
-          aria-label="More options"
+          aria-label="Plus d'options"
           aria-haspopup="menu"
           aria-expanded={isMenuOpen}
           aria-controls="gallery-menu"
@@ -136,7 +136,7 @@ export const GalleryCard = memo(function GalleryCard({
               className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 flex items-center gap-3 transition-colors focus:outline-none focus-visible:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose-500"
             >
               <Pencil className="w-4 h-4 text-zinc-400" />
-              Edit Details
+              Éditer les détails
             </button>
             
             <div className="h-px bg-zinc-100 my-1.5 mx-3" />
@@ -147,19 +147,18 @@ export const GalleryCard = memo(function GalleryCard({
               className="w-full text-left px-4 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-3 transition-colors focus:outline-none focus-visible:bg-rose-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose-500"
             >
               <Trash2 className="w-4 h-4" />
-              Delete Gallery
+              Supprimer l'album
             </button>
           </div>
         )}
       </div>
 
-      {/* --- Media Area (Strict 3:4 Aspect Ratio as preferred) --- */}
+      {/* --- Media Area --- */}
       <div className="relative aspect-[3/4] w-full rounded-t-3xl overflow-hidden bg-zinc-50">
-        
         <Link 
           href={`/manage-gallery/${gallery.id}`} 
           className="absolute inset-0 z-0 block focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-inset rounded-t-3xl"
-          aria-label={`View and manage details for ${gallery.title}`}
+          aria-label={`Voir et gérer les détails de l'album ${gallery.title}`}
         >
           {hasMedia && mediaType ? (
             <>
@@ -175,7 +174,6 @@ export const GalleryCard = memo(function GalleryCard({
                 />
               </div>
               
-              {/* Subtle gradient overlay on hover for depth, keeping it minimal for photography style */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               {mediaType === 'video' && (
@@ -191,7 +189,7 @@ export const GalleryCard = memo(function GalleryCard({
               <div className="p-5 rounded-2xl bg-white shadow-sm mb-4">
                 <ImageIcon className="w-8 h-8 text-zinc-400" />
               </div>
-              <span className="text-sm font-semibold uppercase tracking-widest text-zinc-400">No Media</span>
+              <span className="text-sm font-semibold uppercase tracking-widest text-zinc-400">Aucun média</span>
             </div>
           )}
         </Link>
@@ -203,18 +201,18 @@ export const GalleryCard = memo(function GalleryCard({
           {mediaCount > 0 && (
             <div className="bg-white/90 backdrop-blur-md border border-white/50 text-zinc-800 text-xs font-bold uppercase tracking-wider px-3 py-2 rounded-full shadow-sm flex items-center gap-2 pointer-events-auto transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
               <ImageIcon className="w-3.5 h-3.5" />
-              {mediaCount} {mediaCount === 1 ? 'Item' : 'Items'}
+              {mediaCount} {mediaCount === 1 ? 'élément' : 'éléments'}
             </div>
           )}
         </div>
 
-        {/* Elegant "Manage" Hint - Appears on Hover (Clipped beautifully at the bottom edge) */}
+        {/* Action Overlay Button */}
         <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out pointer-events-none p-4 md:p-6">
           <Link
             href={`/manage-gallery/${gallery.id}`}
             className="pointer-events-auto w-full bg-white/90 backdrop-blur-xl border border-white/50 text-zinc-900 text-sm md:text-base font-semibold px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 hover:bg-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           >
-            Manage Gallery
+            Gérer l'album
             <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </div>

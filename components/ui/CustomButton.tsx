@@ -8,33 +8,32 @@ export interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButton
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  shortcut?: string; // e.g., "↵", "⌘K"
+  shortcut?: string;
 }
 
 const variantStyles = {
   primary: 
-    "bg-zinc-900 text-white border border-transparent shadow-md shadow-zinc-900/10 hover:bg-zinc-800 hover:shadow-lg hover:shadow-zinc-900/20 hover:-translate-y-0.5",
+    "bg-rose-600 text-white border border-rose-500/30 shadow-lg shadow-rose-600/20 hover:bg-rose-500 hover:shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0",
   continue: 
-    "bg-zinc-900 text-white border border-transparent shadow-md shadow-zinc-900/10 hover:bg-zinc-800 hover:shadow-lg hover:shadow-zinc-900/20 hover:-translate-y-0.5",
+    "bg-rose-600 text-white border border-rose-500/30 shadow-lg shadow-rose-600/20 hover:bg-rose-500 hover:shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0",
   secondary: 
-    "bg-white text-zinc-900 border border-zinc-200 shadow-sm hover:bg-zinc-50 hover:border-zinc-300 hover:shadow-md hover:-translate-y-0.5",
+    "bg-slate-800 text-slate-100 border border-slate-700/80 shadow-sm hover:bg-slate-700 hover:border-slate-600 hover:-translate-y-0.5 active:translate-y-0",
   outline: 
-    "bg-transparent text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600",
+    "bg-transparent text-slate-200 border border-slate-700 hover:bg-slate-800/80 hover:border-slate-600 hover:text-white",
   danger: 
-    "bg-white text-rose-600 border border-rose-200 shadow-sm hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 hover:shadow-md hover:-translate-y-0.5",
+    "bg-rose-950/40 text-rose-300 border border-rose-800/50 shadow-sm hover:bg-rose-900/50 hover:border-rose-700 hover:text-rose-200 hover:-translate-y-0.5 active:translate-y-0",
   ghost: 
-    "bg-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 border border-transparent",
+    "bg-transparent text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent",
 };
 
 const sizeStyles = {
-  sm: "h-9 px-4 rounded-lg text-xs gap-2",
-  md: "h-11 px-6 rounded-xl text-sm font-semibold gap-2.5",
-  lg: "h-14 px-8 rounded-2xl text-base font-semibold gap-3",
+  sm: "h-9 px-3.5 rounded-lg text-xs gap-2",
+  md: "h-11 px-5 rounded-xl text-sm font-semibold gap-2.5",
+  lg: "h-13 px-7 rounded-2xl text-base font-semibold gap-3",
 };
 
 /**
- * CustomButton - Editorial-style, tactile button.
- * Inspired by camera shutter controls and minimalist gallery UI.
+ * CustomButton - Refactored button component with dark slate / rose theme integration.
  */
 const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
   ({ 
@@ -52,25 +51,25 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
     return (
       <button
         className={cn(
-          // Base: Typography & Layout
-          "group relative inline-flex items-center justify-center overflow-hidden whitespace-nowrap",
+          // Base & Layout
+          "group relative inline-flex items-center justify-center overflow-hidden whitespace-nowrap select-none",
           
-          // Interactions: Tactile press & Focus
-          "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2",
-          "active:scale-[0.98] active:shadow-sm active:translate-y-0",
+          // Tactical Motion & Focus
+          "transition-all duration-200 ease-out",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950",
+          "active:scale-[0.98]",
           
-          // States
-          "disabled:pointer-events-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none",
+          // Disabled States
+          "disabled:pointer-events-none disabled:opacity-40 disabled:translate-y-0 disabled:shadow-none",
           
           // Variants & Sizes
           variantStyles[variant],
           sizeStyles[size],
           
-          // The "Subtle Lens Flare" Effect (Very refined)
+          // Light Sheen Animation
           "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent",
-          "before:translate-x-[-150%] before:transition-transform before:duration-700 before:ease-out",
-          "group-hover:before:translate-x-[150%]",
+          "before:-translate-x-full before:transition-transform before:duration-700 before:ease-out",
+          "hover:before:translate-x-full",
           
           className
         )}
@@ -78,27 +77,26 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
-        {/* Content Wrapper (z-10 to sit above the gloss effect) */}
+        {/* Content Wrapper */}
         <div className="relative z-10 flex items-center gap-2">
-          {/* Loading Spinner (Minimalist Ring) */}
           {isLoading ? (
-            <HiArrowPath className="animate-spin h-4 w-4 opacity-70" />
+            <HiArrowPath className="animate-spin h-4 w-4 text-current" />
           ) : (
             <>
-              {leftIcon && <span className="shrink-0 transition-transform duration-300 group-hover:scale-110">{leftIcon}</span>}
-              {children}
-              {rightIcon && <span className="shrink-0 transition-transform duration-300 group-hover:translate-x-1">{rightIcon}</span>}
+              {leftIcon && <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">{leftIcon}</span>}
+              <span>{children}</span>
+              {rightIcon && <span className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5">{rightIcon}</span>}
             </>
           )}
         </div>
 
-        {/* Keyboard Shortcut Hint (Camera Setting Style) */}
+        {/* Keyboard Hint Badge */}
         {shortcut && !isLoading && (
           <kbd className={cn(
-            "relative z-10 ml-2 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md border uppercase tracking-wider",
+            "relative z-10 ml-2 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider",
             variant === 'primary' || variant === 'continue'
-              ? "bg-white/10 border-white/20 text-white/70" 
-              : "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400"
+              ? "bg-white/15 border-white/20 text-white/80" 
+              : "bg-slate-900 border-slate-700 text-slate-400"
           )}>
             {shortcut}
           </kbd>

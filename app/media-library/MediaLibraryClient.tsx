@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import MediaCard, { MediaSchema } from '@/app/media-library/components/MediaCard';
@@ -56,16 +56,20 @@ export default function MediaLibraryClient({
   const searchParams = useSearchParams();
   
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState(filters.search);
+  const [searchInput, setSearchInput] = useState(filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
-  // ✅ Explicitly type the useMemo return and cast the object to satisfy the Slide union type
+  // Synchronize local search state when filter prop changes via router navigation
+  useEffect(() => {
+    setSearchInput(filters.search || '');
+  }, [filters.search]);
+
+  // Transform media array to lightbox slide format
   const slides = useMemo((): MediaItem[] => initialMedia.map(item => {
     const isVideo = item.type === 'video';
     
     return {
-      // ✅ Lightbox only supports 'image', 'video', or 'iframe'. GIFs are rendered as 'image'.
       type: isVideo ? 'video' : 'image',
       src: !isVideo ? item.fullResUrl : undefined,
       sources: isVideo ? [{ src: item.fullResUrl, type: 'video/mp4' as const }] : undefined,
@@ -80,6 +84,7 @@ export default function MediaLibraryClient({
 
   const updateSearchParams = useCallback((params: Record<string, string | undefined>) => {
     const newParams = new URLSearchParams(searchParams.toString());
+    
     Object.entries(params).forEach(([key, value]) => {
       if (value === undefined || value === '') {
         newParams.delete(key);
@@ -87,18 +92,20 @@ export default function MediaLibraryClient({
         newParams.set(key, value);
       }
     });
+
     if (params.search !== undefined || params.type !== undefined || params.sortBy !== undefined) {
       newParams.set('page', '1');
     }
+
     router.push(`${pathname}?${newParams.toString()}`);
   }, [router, pathname, searchParams]);
 
   const handleSearch = useCallback(() => {
-    updateSearchParams({ search: searchInput || undefined });
+    updateSearchParams({ search: searchInput.trim() || undefined });
   }, [searchInput, updateSearchParams]);
 
   const handleTypeFilter = useCallback((type: string) => {
-    updateSearchParams({ type: type === 'all' ? undefined : type as typeof MEDIA_TYPES[number] });
+    updateSearchParams({ type: type === 'all' ? undefined : (type as typeof MEDIA_TYPES[number]) });
   }, [updateSearchParams]);
 
   const handleSort = useCallback((sortBy: string) => {
@@ -113,7 +120,7 @@ export default function MediaLibraryClient({
   const handleDelete = useCallback(async (id: string) => {
     const result = await Swal.fire({
       title: 'Delete Asset?',
-      text: "This will permanently remove this item from your library.",
+      text: 'This will permanently remove this item from your library.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
@@ -125,8 +132,8 @@ export default function MediaLibraryClient({
         popup: 'rounded-2xl shadow-xl border border-zinc-100',
         title: 'font-semibold text-zinc-900 text-lg',
         htmlContainer: 'text-zinc-600 font-medium',
-        confirmButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-red-700',
-        cancelButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-zinc-100 text-zinc-700'
+        confirmButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500',
+        cancelButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-zinc-100 text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-300'
       }
     });
 
@@ -135,7 +142,7 @@ export default function MediaLibraryClient({
     setIsDeleting(id);
     try {
       const res = await fetch(`/api/media?id=${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
+      if (!res.ok) throw new Error('Failed to delete asset');
       
       await Swal.fire({
         icon: 'success',
@@ -152,7 +159,7 @@ export default function MediaLibraryClient({
       await Swal.fire({
         icon: 'error',
         title: 'Deletion Failed',
-        text: 'An error occurred. Please try again.',
+        text: 'An error occurred while deleting the asset. Please try again.',
         background: '#ffffff',
         customClass: { popup: 'rounded-2xl shadow-xl border border-zinc-100', title: 'font-semibold text-zinc-900' }
       });
@@ -168,10 +175,14 @@ export default function MediaLibraryClient({
 
   const handleCloseUpload = useCallback(() => {
     setIsUploadOpen(false);
-    router.refresh();
-  }, [router]);
+  }, []);
 
-  const handleOpenLightbox = useCallback((index: number) => setLightboxIndex(index), []);
+  const handleOpenLightbox = useCallback((index: number) => {
+    if (index >= 0 && index < initialMedia.length) {
+      setLightboxIndex(index);
+    }
+  }, [initialMedia.length]);
+
   const handleCloseLightbox = useCallback(() => setLightboxIndex(-1), []);
 
   const currentFilter = filters.type || 'all';
@@ -183,8 +194,11 @@ export default function MediaLibraryClient({
         <HiPhoto className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
       </div>
       <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No assets found</h3>
-      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">No items match your current filters. Try adjusting your search or upload new media.</p>
+      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">
+        No items match your current filters. Try adjusting your search or upload new media.
+      </p>
       <button 
+        type="button"
         onClick={handleResetFilters}
         className="mt-8 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
       >
@@ -226,6 +240,7 @@ export default function MediaLibraryClient({
             emptyState={mediaEmptyState}
             renderItem={(item, index) => (
               <MediaCard 
+                key={item.id}
                 media={item} 
                 onDelete={handleDelete}
                 onOpenLightbox={() => handleOpenLightbox(index)}
@@ -236,7 +251,7 @@ export default function MediaLibraryClient({
             )}
           />
 
-          {initialMedia.length > 0 && (
+          {initialMedia.length > 0 && pagination.totalPages > 1 && (
             <div className="mt-12 flex justify-center">
               <Pagination 
                 currentPage={pagination.currentPage}

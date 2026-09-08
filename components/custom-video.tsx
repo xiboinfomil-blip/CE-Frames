@@ -1,91 +1,150 @@
 'use client';
 
-import { forwardRef, useCallback, useState } from 'react';
+import React, { forwardRef, useCallback, useRef, useState } from 'react';
 
 interface CustomVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
-  poster?: string; // This is your thumbnail MP4 URL
+  poster?: string; // Standard image URL or low-res MP4 thumbnail
   hoverPlay?: boolean;
+  showPlayBadge?: boolean;
+  aspectRatio?: string;
 }
 
 const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
   ({ 
     poster, 
     hoverPlay = true, 
+    showPlayBadge = true,
+    aspectRatio,
     className = '', 
     onLoadedData,
     onError,
     ...props 
   }, ref) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [hasError, setHasError] = useState(false);
     
+    // Internal reference if external ref is not provided
+    const internalRef = useRef<HTMLVideoElement | null>(null);
+
+    const setRefs = useCallback(
+      (node: HTMLVideoElement | null) => {
+        internalRef.current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLVideoElement | null>).current = node;
+        }
+      },
+      [ref]
+    );
 
     const handleReady = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
       setIsLoaded(true);
       onLoadedData?.(e);
     }, [onLoadedData]);
 
-    const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
-      if (!hoverPlay) return;
-      // Force mute right before playing to guarantee browser autoplay policies allow it
-      e.currentTarget.muted = true;
-      e.currentTarget.play().catch(() => {
-        // Ignore autoplay prevention errors silently
-      });
-    }, [hoverPlay]);
+    const handleMouseEnter = useCallback(async () => {
+      if (!hoverPlay || !internalRef.current || hasError) return;
 
-    const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
-      if (!hoverPlay) return;
-      e.currentTarget.pause();
-      e.currentTarget.currentTime = 0; // Reset to show first frame again
+      const video = internalRef.current;
+      video.muted = true; // Guarantee browser autoplay policies pass
+      
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        // Suppress browser autoplay lock errors gracefully
+        setIsPlaying(false);
+      }
+    }, [hoverPlay, hasError]);
+
+    const handleMouseLeave = useCallback(() => {
+      if (!hoverPlay || !internalRef.current) return;
+
+      const video = internalRef.current;
+      video.pause();
+      video.currentTime = 0; // Reset to start
+      setIsPlaying(false);
     }, [hoverPlay]);
 
     const handleError = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
       console.error('Video failed to load:', props.src);
-      setIsLoaded(true); // Prevent getting stuck at opacity-0 if video fails
+      setHasError(true);
+      setIsLoaded(true); // Fade in gracefully to fallback container
       onError?.(e);
     }, [onError, props.src]);
 
+    // Check if poster string is an MP4 video or static image
+    const isVideoPoster = poster?.match(/\.(mp4|webm|ogg)($|\?)/i);
+
     return (
-      <div className="relative h-full w-full overflow-hidden bg-zinc-100">
-        {/* 
-          1. INSTANT THUMBNAIL LAYER (MP4)
-          Rendered as a <video> with preload="metadata". 
-          This instantly shows the first frame of the MP4 without downloading the whole file.
-          NO hover events here — this layer is purely visual.
-        */}
-        {poster && (
+      <div 
+        className={`group relative h-full w-full overflow-hidden bg-slate-900 ${className}`}
+        style={aspectRatio ? { aspectRatio } : undefined}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Skeleton Loader */}
+        {!isLoaded && !hasError && (
+          <div className="absolute inset-0 z-0 animate-pulse bg-slate-800" />
+        )}
+
+        {/* 1. POSTER THUMBNAIL LAYER */}
+        {poster && !hasError && (
+          isVideoPoster ? (
+            <video
+              src={poster}
+              muted
+              playsInline
+              preload="metadata" 
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          ) : (
+            <img
+              src={poster}
+              alt=""
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          )
+        )}
+
+        {/* 2. MAIN ACTIVE VIDEO LAYER */}
+        {!hasError && (
           <video
-            src={poster}
-            muted
+            ref={setRefs}
+            {...props} 
+            loop
             playsInline
-            preload="metadata" 
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+            preload="metadata"
+            disablePictureInPicture 
+            onLoadedMetadata={handleReady}
+            onLoadedData={handleReady}
+            onError={handleError}
+            muted
+            controls={false}
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 will-change-transform ${
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
           />
         )}
-        
-        {/* 
-          2. MAIN VIDEO LAYER
-          Fades in seamlessly when ready. Handles the hover playback.
-        */}
-        <video
-          ref={ref}
-          {...props} 
-          loop
-          playsInline
-          preload="metadata"
-          disablePictureInPicture 
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onLoadedMetadata={handleReady}
-          onLoadedData={handleReady}
-          onError={handleError}
-          // CRITICAL: Placed AFTER {...props} to strictly enforce "no sound, no controls"
-          muted
-          controls={false}
-          className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03] will-change-transform ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
-        />
+
+        {/* 3. OPTIONAL PLAY BADGE / INDICATOR */}
+        {showPlayBadge && !hasError && hoverPlay && (
+          <div className={`pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-slate-950/70 px-2.5 py-1 text-[10px] font-mono tracking-wider text-slate-200 backdrop-blur-md transition-all duration-300 ${
+            isPlaying ? 'bg-rose-600/90 text-white' : 'opacity-80 group-hover:opacity-100'
+          }`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${isPlaying ? 'animate-ping bg-white' : 'bg-slate-400'}`} />
+            {isPlaying ? 'PLAYING' : 'HOVER TO PLAY'}
+          </div>
+        )}
+
+        {/* 4. ERROR FALLBACK CONTAINER */}
+        {hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-500 text-xs font-mono">
+            <span>Video Unavailable</span>
+          </div>
+        )}
       </div>
     );
   }

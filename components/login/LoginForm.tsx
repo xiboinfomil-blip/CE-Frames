@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 import { 
-  HiOutlineUser, 
+  HiOutlineEnvelope, 
   HiOutlineLockClosed, 
   HiEye, 
   HiEyeSlash, 
@@ -19,7 +20,7 @@ import { CustomButton } from "@/components/ui/CustomButton";
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,14 +34,12 @@ export default function LoginForm() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    const errorParam = searchParams.get("error");
-    if (errorParam === "CredentialsSignin") {
-      setError("Invalid email or password.");
-    } else if (errorParam) {
-      setError("An unexpected error occurred. Please try again.");
-    }
-  }, [searchParams]);
+  const errorParam = searchParams.get("error");
+  const authError = errorParam === "CredentialsSignin"
+    ? "Invalid email or password."
+    : errorParam
+      ? "An unexpected error occurred. Please try again."
+      : null;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,13 +51,15 @@ export default function LoginForm() {
         email,
         password,
         callbackUrl: "/",
-        redirect: true, 
+        redirect: false, 
       });
 
       if (result?.error) {
         setError("Invalid email or password.");
+      } else if (result?.url) {
+        router.push(result.url);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -67,10 +68,10 @@ export default function LoginForm() {
 
   if (status === "loading") {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-white dark:bg-zinc-950">
+      <div className="h-full w-full min-h-[400px] flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
-          <HiArrowPath className="w-8 h-8 text-zinc-900 dark:text-zinc-100 animate-spin" />
-          <span className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">
+          <HiArrowPath className="w-8 h-8 text-rose-400 animate-spin" />
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
             Authenticating...
           </span>
         </div>
@@ -83,30 +84,43 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="max-w-md w-full mx-auto px-6 sm:px-0">
-      <header className="mb-10">
-        <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-2">Welcome Back</h2>
-        <p className="text-zinc-500 dark:text-zinc-400 font-medium">Please enter your details to access the studio.</p>
+    <motion.div 
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="max-w-md w-full mx-auto px-6 sm:px-0"
+    >
+      <header className="mb-8">
+        <h2 className="text-3xl font-bold text-slate-100 tracking-tight mb-2">
+          Welcome Back
+        </h2>
+        <p className="text-slate-400 text-sm font-medium">
+          Please enter your credentials to manage your CSE galleries.
+        </p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-            <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4" />
-            <span className="font-medium">{error}</span>
-          </div>
+        {/* Error Alert */}
+        {(error || authError) && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-4 rounded-xl bg-rose-950/30 border border-rose-900/50 text-rose-400 text-sm flex items-start gap-3 shadow-lg shadow-rose-950/20"
+          >
+            <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4 text-rose-400" />
+            <span className="font-medium">{error || authError}</span>
+          </motion.div>
         )}
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           <CustomTextfield
             label="Email Address"
             name="email"
             type="email"
-            placeholder="admin@oramacreativ.com"
+             placeholder="admin@ceframes.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            leftIcon={<HiOutlineUser size={18} />}
+            leftIcon={<HiOutlineEnvelope size={18} className="text-slate-500" />}
             autoComplete="email"
             required
           />
@@ -118,13 +132,13 @@ export default function LoginForm() {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            leftIcon={<HiOutlineLockClosed size={18} />}
+            leftIcon={<HiOutlineLockClosed size={18} className="text-slate-500" />}
             rightIcon={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                className="p-1 rounded-md transition-colors focus:outline-none text-slate-500 hover:text-slate-300 focus-visible:ring-2 focus-visible:ring-rose-500"
               >
                 {showPassword ? <HiEyeSlash size={18} /> : <HiEye size={18} />}
               </button>
@@ -141,7 +155,7 @@ export default function LoginForm() {
             size="lg"
             disabled={isLoading}
             isLoading={isLoading}
-            className="w-full"
+            className="w-full bg-rose-600 hover:bg-rose-500 text-white font-medium transition-all shadow-lg shadow-rose-600/20 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             rightIcon={!isLoading && <HiArrowRight size={18} />}
           >
             Sign In
@@ -150,10 +164,10 @@ export default function LoginForm() {
       </form>
 
       <footer className="mt-12 text-center">
-        <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium uppercase tracking-widest">
-          © 2026 OramaCreativ. All rights reserved.
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
+           © 2026 CE Frames. All rights reserved.
         </p>
       </footer>
-    </div>
+    </motion.div>
   );
 }

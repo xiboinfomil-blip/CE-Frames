@@ -87,17 +87,17 @@ interface ManageGalleryClientProps {
 }
 
 const TYPE_FILTERS: FilterOption[] = [
-  { value: 'all', label: 'All Assets' },
+  { value: 'all', label: 'Tous les médias' },
   { value: 'image', label: 'Images' },
-  { value: 'video', label: 'Videos' },
+  { value: 'video', label: 'Vidéos' },
   { value: 'gif', label: 'GIFs' }
 ];
 
 const SORT_OPTIONS: SortOption[] = [
-  { value: 'position', label: 'Custom Order' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' }
+  { value: 'position', label: 'Ordre personnalisé' },
+  { value: 'newest', label: 'Plus récents' },
+  { value: 'oldest', label: 'Plus anciens' },
+  { value: 'name', label: 'Nom (A-Z)' }
 ];
 
 // --- Sortable Wrapper Component ---
@@ -139,7 +139,7 @@ function SortableMediaCard({
         {...attributes} 
         {...listeners}
         className="absolute top-3 left-3 z-20 p-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-black/80 cursor-grab active:cursor-grabbing touch-none"
-        aria-label="Drag to reorder"
+        aria-label="Glisser pour réordonner"
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -192,11 +192,11 @@ export default function ManageGalleryClient({
         body: JSON.stringify({ galleryId: gallery.id, orderedMediaIds }),
       });
       
-      if (!res.ok) throw new Error('Failed to reorder');
+      if (!res.ok) throw new Error('Échec du réordonnancement');
       
     } catch (error) {
-      console.error('Failed to reorder media', error);
-      Swal.fire('Error', 'Failed to update order. Please try again.', 'error');
+      console.error('Échec de la modification de l\'ordre des médias', error);
+      Swal.fire('Erreur', 'Impossible de mettre à jour l\'ordre. Veuillez réessayer.', 'error');
       setLocalMediaItems(previousItems);
     }
   }, [gallery.id]);
@@ -229,8 +229,8 @@ export default function ManageGalleryClient({
     if (currentIndex === -1) return;
 
     const swalOptions: SweetAlertOptions = {
-      title: 'Set Position',
-      text: `Enter a position between 1 and ${localMediaItems.length}`,
+      title: 'Définir la position',
+      text: `Saisissez une position entre 1 et ${localMediaItems.length}`,
       icon: 'question',
       input: 'number',
       inputAttributes: {
@@ -240,8 +240,8 @@ export default function ManageGalleryClient({
       },
       inputValue: String(currentIndex + 1),
       showCancelButton: true,
-      confirmButtonText: 'Update Position',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Mettre à jour',
+      cancelButtonText: 'Annuler',
       confirmButtonColor: '#18181b',
       cancelButtonColor: '#e4e4e7',
       customClass: {
@@ -257,7 +257,7 @@ export default function ManageGalleryClient({
 
     const targetPosition = parseInt(result.value as string, 10);
     if (isNaN(targetPosition) || targetPosition < 1 || targetPosition > localMediaItems.length) {
-      Swal.fire('Invalid Position', `Please enter a number between 1 and ${localMediaItems.length}.`, 'error');
+      Swal.fire('Position invalide', `Veuillez saisir un nombre entre 1 et ${localMediaItems.length}.`, 'error');
       return;
     }
 
@@ -273,8 +273,8 @@ export default function ManageGalleryClient({
     if (result.isConfirmed) {
       Swal.fire({
         icon: 'success',
-        title: 'Position Updated',
-        text: `Moved to position ${targetPosition}`,
+        title: 'Position mise à jour',
+        text: `Déplacé à la position ${targetPosition}`,
         timer: 1500,
         showConfirmButton: false,
         background: '#ffffff',
@@ -372,13 +372,14 @@ export default function ManageGalleryClient({
 
   const handleRemoveMedia = useCallback(async (mediaId: string) => {
     const result = await Swal.fire({
-      title: 'Confirm Removal',
-      text: "Remove this asset from the gallery? This does not delete the original file.",
+      title: 'Confirmer la suppression',
+      text: "Retirer ce média de l'album CSE ? Cela ne supprimera pas le fichier d'origine de la médiathèque.",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
       cancelButtonColor: '#94a3b8',
-      confirmButtonText: 'Yes, remove it',
+      confirmButtonText: 'Oui, retirer',
+      cancelButtonText: 'Annuler',
       customClass: {
         popup: 'rounded-2xl shadow-xl border border-zinc-100',
         confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-red-700',
@@ -390,11 +391,11 @@ export default function ManageGalleryClient({
 
     try {
       const res = await fetch(`/api/gallery-media?galleryId=${gallery.id}&mediaId=${mediaId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to remove');
+      if (!res.ok) throw new Error('Échec du retrait');
       router.refresh();
     } catch (error) {
-      console.error('Failed to remove media', error);
-      Swal.fire('Error', 'Failed to remove asset.', 'error');
+      console.error('Échec du retrait du média', error);
+      Swal.fire('Erreur', 'Impossible de retirer le média.', 'error');
     }
   }, [gallery.id, router]);
 
@@ -405,11 +406,11 @@ export default function ManageGalleryClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ galleryId: gallery.id, mediaId }),
       });
-      if (!res.ok) throw new Error('Failed to add media');
+      if (!res.ok) throw new Error('Échec de l\'ajout du média');
       router.refresh();
       return true;
     } catch (error) {
-      console.error('Failed to add media', error);
+      console.error('Échec de l\'ajout du média', error);
       return false;
     }
   }, [gallery.id, router]);
@@ -470,10 +471,10 @@ export default function ManageGalleryClient({
                       <FolderOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
                     </div>
                     <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-                      {mainPagination.total === 0 ? 'Gallery is Empty' : 'No Matches Found'}
+                      {mainPagination.total === 0 ? 'L\'album CSE est vide' : 'Aucun résultat trouvé'}
                     </h3>
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">
-                      {mainPagination.total === 0 ? 'Start curating by adding your first asset.' : 'Try adjusting your search parameters.'}
+                      {mainPagination.total === 0 ? 'Commencez la gestion en ajoutant votre premier média.' : 'Essayez d\'ajuster vos critères de recherche.'}
                     </p>
                     {mainPagination.total === 0 && (
                       <CustomButton 
@@ -483,13 +484,13 @@ export default function ManageGalleryClient({
                         className="mt-8"
                         leftIcon={<FolderOpen className="w-4 h-4" />}
                       >
-                        Add Asset
+                        Ajouter un média
                       </CustomButton>
                     )}
                   </div>
                 }
                 className="w-full min-h-100 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"
-                ariaLabel="Gallery media items"
+                ariaLabel="Médias de l'album"
               />
             </SortableContext>
           </DndContext>
@@ -506,7 +507,7 @@ export default function ManageGalleryClient({
           )}
         </main>
 
-        <FloatingActionButton onClick={() => setIsAddModalOpen(true)} label="Add Asset" />
+        <FloatingActionButton onClick={() => setIsAddModalOpen(true)} label="Ajouter un média" />
 
         <AddMediaModal 
           isOpen={isAddModalOpen}
