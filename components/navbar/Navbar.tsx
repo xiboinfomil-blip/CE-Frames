@@ -63,18 +63,18 @@ const DesktopLink = ({ item, isActive, href }: DesktopLinkProps) => {
   return (
     <Link 
       href={href} 
-      className={`group relative px-1.5 py-2 text-sm font-medium tracking-wide transition-colors duration-200 
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md
+      className={`group relative px-2 py-1.5 text-sm font-semibold tracking-wide transition-colors duration-200 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950 rounded-md
         ${isActive 
-          ? 'text-slate-100' 
-          : 'text-slate-400 hover:text-slate-100'
+          ? 'text-slate-950 dark:text-white font-bold' 
+          : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
         }`}
       aria-current={isActive ? 'page' : undefined}
     >
       {item.label}
-      {/* Animated Underline */}
+      {/* Animated High-Contrast Underline */}
       <span 
-        className={`absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-full transition-all duration-300 ease-out
+        className={`absolute bottom-0 left-0 h-0.5 bg-rose-600 dark:bg-rose-500 rounded-full transition-all duration-300 ease-out
           ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
       />
     </Link>
@@ -143,7 +143,7 @@ export default function Navbar() {
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-3
         ${isScrolled 
-          ? 'bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 shadow-md shadow-slate-950/20' 
+          ? 'bg-white/85 dark:bg-slate-950/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-slate-950/40' 
           : 'bg-transparent border-b border-transparent'
         }`}
       role="navigation"
@@ -152,18 +152,18 @@ export default function Navbar() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-11">
           
-          {/* Logo */}
+          {/* Brand Logo */}
           <div className="shrink-0">
             <Link 
               href="/" 
-              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-lg p-1 -ml-1"
-                aria-label="CE Frames Home"
+              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950 rounded-lg p-1 -ml-1"
+              aria-label="CE Frames Home"
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-rose-600/20 border border-rose-500/30 flex items-center justify-center shadow-sm overflow-hidden"
+                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 flex items-center justify-center shadow-sm overflow-hidden"
               > 
                 <Image 
                   src="/Logo name.png" 
@@ -175,14 +175,14 @@ export default function Navbar() {
                 />
               </motion.div>
               <div className="flex flex-col justify-center">
-                <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-100 leading-none">
-                  CE <span className="text-rose-400 font-light">Frames</span>
+                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-slate-50 leading-none">
+                  CE <span className="text-rose-600 dark:text-rose-400 font-semibold">Frames</span>
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Desktop Menu */}
+          {/* Desktop Navigation Links & Actions */}
           <div className="hidden lg:flex items-center gap-8">
             <ul className="flex items-center gap-6" role="menubar">
               {desktopItems.map((item) => {
@@ -225,13 +225,14 @@ export default function Navbar() {
               })}
             </ul>
 
-            <div className="w-px h-5 bg-slate-800" aria-hidden="true" />
+            <div className="w-px h-5 bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
 
+            {/* Auth Buttons */}
             <div className="flex items-center gap-3">
               {!isAuthenticated ? (
                 <Link 
                   href={AUTH_ITEMS.login.href || '#'} 
-                  className="group relative inline-flex items-center justify-center px-4.5 py-2 text-sm font-semibold text-white bg-rose-600 rounded-xl shadow-lg shadow-rose-600/20 hover:bg-rose-500 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                  className="group relative inline-flex items-center justify-center px-4.5 py-2 text-sm font-semibold text-white bg-rose-600 dark:bg-rose-500 rounded-xl shadow-md shadow-rose-600/20 hover:bg-rose-700 dark:hover:bg-rose-600 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
                 >
                   <span>{AUTH_ITEMS.login.label}</span>
                 </Link>
@@ -239,7 +240,7 @@ export default function Navbar() {
                 <motion.button 
                   whileTap={{ scale: 0.96 }} 
                   onClick={handleLogout} 
-                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-300 hover:text-slate-100 hover:bg-slate-800/60 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-white dark:hover:bg-slate-800/80 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
                   aria-label="Log out of your account"
                 >
                   {AUTH_ITEMS.logout.label}
@@ -248,15 +249,15 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <div className="lg:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`relative p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
+              className={`relative p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950
                 ${isMenuOpen 
-                  ? 'bg-slate-800 text-slate-100' 
-                  : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700' 
+                  : 'bg-slate-50/80 text-slate-700 hover:bg-slate-100 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
                 }`}
               aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMenuOpen}
@@ -290,7 +291,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Dropdown Container */}
       <AnimatePresence>
         {isMenuOpen && (
           <MobileMenu 
