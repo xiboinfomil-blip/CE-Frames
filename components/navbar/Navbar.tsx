@@ -223,7 +223,9 @@ export default function Navbar() {
   /* ================= CLOSE ON ROUTE CHANGE ================= */
 
   useEffect(() => {
-    setIsMenuOpen(false);
+    const timer = setTimeout(() => setIsMenuOpen(false), 0);
+
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   /* ================= BODY LOCK ================= */

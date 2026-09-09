@@ -73,7 +73,11 @@ export default function MediaLibraryClient({
 
   // Synchronize local search state when filter prop changes via router navigation
   useEffect(() => {
-    setSearchInput(filters.search || '');
+    const timer = setTimeout(() => {
+      setSearchInput(filters.search || '');
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [filters.search]);
 
   // Transform media array to lightbox slide format

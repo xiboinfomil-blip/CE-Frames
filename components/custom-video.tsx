@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import Image from 'next/image';
 
 interface CustomVideoProps
   extends React.VideoHTMLAttributes<HTMLVideoElement> {
@@ -172,9 +173,11 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
               "
             />
           ) : (
-            <img
+            <Image
               src={poster}
               alt=""
+              fill
+              sizes="100vw"
               className="
                 pointer-events-none
                 absolute

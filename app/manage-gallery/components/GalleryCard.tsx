@@ -323,7 +323,7 @@ export const GalleryCard = memo(function GalleryCard({
               "
             >
               <Trash2 className="w-4 h-4" />
-              Supprimer l'album
+              Supprimer l&apos;album
             </button>
           </div>
         )}
@@ -580,7 +580,7 @@ export const GalleryCard = memo(function GalleryCard({
               focus-visible:ring-offset-2
             "
           >
-            Gérer l'album
+            Gérer l&apos;album
 
             <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
           </Link>

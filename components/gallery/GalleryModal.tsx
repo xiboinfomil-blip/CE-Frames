@@ -95,7 +95,9 @@ export default function GalleryModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+
+    const timer = setTimeout(() => {
       if (initialData) {
         setFormData({
           title: initialData.title || '',
@@ -119,15 +121,21 @@ export default function GalleryModal({
       }
 
       setErrors({});
-    }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [isOpen, initialData]);
 
   useEffect(() => {
     if (!slugEdited && formData.title) {
-      setFormData((prev) => ({
-        ...prev,
-        slug: slugify(prev.title),
-      }));
+      const timer = setTimeout(() => {
+        setFormData((prev) => ({
+          ...prev,
+          slug: slugify(prev.title),
+        }));
+      }, 0);
+
+      return () => clearTimeout(timer);
     }
   }, [formData.title, slugEdited]);
 

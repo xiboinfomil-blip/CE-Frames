@@ -8,7 +8,7 @@ import { CustomButton } from '@/components/ui/CustomButton';
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  searchParams.get('callbackUrl');
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +24,7 @@ export default function LoginForm() {
       // Intégration NextAuth ou API CE
       // await signIn('credentials', { email, password, callbackUrl });
       await new Promise(resolve => setTimeout(resolve, 1500)); 
-    } catch (err) {
+    } catch {
       setError('Identifiants invalides. Veuillez réessayer.');
     } finally {
       setIsLoading(false);

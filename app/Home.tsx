@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -104,9 +105,11 @@ export default function Home({
         >
           {/* Background image */}
           <div className="absolute inset-0 z-0">
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2800&auto=format&fit=crop"
               alt="Corporate Event Photography"
+              fill
+              sizes="100vw"
               className="
                 h-full
                 w-full
@@ -517,9 +520,11 @@ export default function Home({
                     md:aspect-4/5
                   "
                 >
-                  <img
+                  <Image
                     src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1000&auto=format&fit=crop"
                     alt="Corporate Team Event"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="
                       h-full
                       w-full

@@ -134,7 +134,9 @@ export default function CreateGalleryModal({
     useState(DEFAULT_FILTERS);
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+
+    const timer = setTimeout(() => {
       setError(null);
 
       if (initialData) {
@@ -151,18 +153,22 @@ export default function CreateGalleryModal({
       } else {
         setFormData(DEFAULT_FORM_DATA);
       }
-    }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [isOpen, initialData]);
+
+  const initialGalleryId = initialData?.id;
 
   const executeFetch = useCallback(
     async (filters: typeof mediaFilters) => {
-      if (!initialData?.id) return;
+      if (!initialGalleryId) return;
 
       setIsFetchingMedia(true);
 
       try {
         const params = new URLSearchParams({
-          galleryId: initialData.id,
+          galleryId: initialGalleryId,
           search: filters.search,
           type: filters.type,
           sortBy: filters.sortBy,
@@ -188,7 +194,7 @@ export default function CreateGalleryModal({
         setIsFetchingMedia(false);
       }
     },
-    [initialData?.id]
+    [initialGalleryId]
   );
 
   const openMediaPicker = useCallback(() => {
@@ -647,7 +653,7 @@ export default function CreateGalleryModal({
                   block
                 "
               >
-                Style d'affichage des photos
+                Style d&apos;affichage des photos
               </span>
 
               <div className="grid grid-cols-3 gap-4">
@@ -869,7 +875,7 @@ export default function CreateGalleryModal({
 
                     <span className="text-xs font-bold uppercase tracking-widest text-center px-4">
                       {isEditMode
-                        ? "Choisir depuis l'album"
+                        ? "Choisir depuis l&apos;album"
                         : "Ajoutez des photos avant de choisir une couverture"}
                     </span>
                   </div>
@@ -879,7 +885,7 @@ export default function CreateGalleryModal({
               {!isEditMode && (
                 <p className="text-xs text-[#64748B] text-right flex items-center justify-end gap-1.5">
                   <HiInformationCircle className="w-3.5 h-3.5 text-[#004A87]" />
-                  Créez d'abord l'album puis ajoutez des médias pour définir une couverture
+                  Créez d&apos;abord l&apos;album puis ajoutez des médias pour définir une couverture
                 </p>
               )}
             </div>
@@ -952,7 +958,7 @@ export default function CreateGalleryModal({
                 </p>
 
                 <p className="text-xs mt-2 font-medium text-[#64748B]">
-                  Ajoutez des fichiers à cet album d'abord.
+                  Ajoutez des fichiers à cet album d&apos;abord.
                 </p>
               </div>
             ) : (

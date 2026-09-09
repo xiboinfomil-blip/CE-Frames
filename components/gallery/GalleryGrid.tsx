@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { HiPhoto, HiLockClosed } from 'react-icons/hi2';
 
@@ -73,9 +74,11 @@ return ( <GalleryCard
         {/* Media Aspect Container */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F5F7FA] flex items-center justify-center">
           {displayMedia?.thumbnailUrl ? (
-            <img
+            <Image
               src={displayMedia.thumbnailUrl}
               alt={gallery.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               loading="lazy"
             />
