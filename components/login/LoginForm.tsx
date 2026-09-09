@@ -38,9 +38,9 @@ export default function LoginForm() {
 
   const authError =
     errorParam === 'CredentialsSignin'
-      ? 'Invalid email or password.'
+      ? 'E-mail ou mot de passe invalide.'
       : errorParam
-        ? 'An unexpected error occurred. Please try again.'
+        ? 'Une erreur inattendue est survenue. Veuillez réessayer.'
         : null;
 
   const handleSubmit = async (
@@ -59,12 +59,12 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password.');
+        setError('E-mail ou mot de passe invalide.');
       } else if (result?.url) {
         router.push(result.url);
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.');
+      setError('Une erreur inattendue est survenue. Veuillez réessayer.');
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +78,7 @@ export default function LoginForm() {
           <HiArrowPath className="w-8 h-8 text-[#FF8201] animate-spin" />
 
           <span className="text-xs font-bold text-[#64748B] uppercase tracking-[0.2em]">
-            Authenticating...
+            Authentification...
           </span>
         </div>
       </div>
@@ -102,11 +102,11 @@ export default function LoginForm() {
       {/* Header */}
       <header className="mb-8">
         <h2 className="text-3xl font-bold text-[#172033] tracking-tight mb-2">
-          Welcome Back
+          Bon retour
         </h2>
 
         <p className="text-[#64748B] text-sm font-medium">
-          Please enter your credentials to manage your CE galleries.
+          Saisissez vos identifiants pour gérer vos galeries CE.
         </p>
       </header>
 
@@ -138,7 +138,7 @@ export default function LoginForm() {
 
           {/* Email */}
           <CustomTextfield
-            label="Email Address"
+            label="Adresse e-mail"
             name="email"
             type="email"
             placeholder="admin@ceframes.com"
@@ -156,7 +156,7 @@ export default function LoginForm() {
 
           {/* Password */}
           <CustomTextfield
-            label="Password"
+            label="Mot de passe"
             name="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
@@ -176,8 +176,8 @@ export default function LoginForm() {
                 }
                 aria-label={
                   showPassword
-                    ? 'Hide password'
-                    : 'Show password'
+                    ? 'Masquer le mot de passe'
+                    : 'Afficher le mot de passe'
                 }
                 className="p-1 rounded-md transition-colors focus:outline-none text-[#64748B] hover:text-[#004A87] focus-visible:ring-2 focus-visible:ring-[#FF8201]"
               >
@@ -206,7 +206,7 @@ export default function LoginForm() {
               !isLoading && <HiArrowRight size={18} />
             }
           >
-            Sign In
+            Se connecter
           </CustomButton>
         </div>
       </form>
@@ -214,7 +214,7 @@ export default function LoginForm() {
       {/* Footer */}
       <footer className="mt-12 text-center">
         <p className="text-[10px] text-[#94A3B8] font-bold uppercase tracking-[0.2em]">
-          © 2026 CE Frames. All rights reserved.
+          © 2026 CE Frames. Tous droits réservés.
         </p>
       </footer>
     </motion.div>

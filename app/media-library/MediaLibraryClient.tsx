@@ -36,22 +36,22 @@ interface MediaLibraryClientProps {
 }
 
 const FILTER_OPTIONS: FilterOption[] = [
-  { value: 'all', label: 'All Assets' },
+  { value: 'all', label: 'Tous les éléments' },
   ...MEDIA_TYPES.map((type) => ({
     value: type,
     label:
       type === 'image'
         ? 'Images'
         : type === 'video'
-          ? 'Videos'
+          ? 'Vidéos'
           : 'GIFs',
   })),
 ];
 
 const SORT_OPTIONS: SortOption[] = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' },
+  { value: 'newest', label: 'Plus récents' },
+  { value: 'oldest', label: 'Plus anciens' },
+  { value: 'name', label: 'Nom A-Z' },
 ];
 
 const MEDIA_CARD_SIZES =
@@ -171,16 +171,16 @@ export default function MediaLibraryClient({
   const handleDelete = useCallback(
     async (id: string) => {
       const result = await Swal.fire({
-        title: 'Delete Asset?',
-        text: 'This will permanently remove this item from your library.',
+        title: 'Supprimer cet élément ?',
+        text: 'Cette action supprimera définitivement cet élément de votre bibliothèque.',
         icon: 'warning',
         showCancelButton: true,
 
         confirmButtonColor: '#dc2626',
         cancelButtonColor: '#64748B',
 
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Supprimer',
+        cancelButtonText: 'Annuler',
 
         background: '#FFFFFF',
         color: '#172033',
@@ -211,13 +211,13 @@ export default function MediaLibraryClient({
         });
 
         if (!res.ok) {
-          throw new Error('Failed to delete asset');
+          throw new Error('Échec de la suppression de l’élément');
         }
 
         await Swal.fire({
           icon: 'success',
-          title: 'Deleted',
-          text: 'The asset has been removed.',
+          title: 'Supprimé',
+          text: 'L’élément a été supprimé.',
           timer: 1500,
           showConfirmButton: false,
 
@@ -238,8 +238,8 @@ export default function MediaLibraryClient({
 
         await Swal.fire({
           icon: 'error',
-          title: 'Deletion Failed',
-          text: 'An error occurred while deleting the asset. Please try again.',
+          title: 'Échec de la suppression',
+          text: 'Une erreur est survenue lors de la suppression de l’élément. Veuillez réessayer.',
 
           background: '#FFFFFF',
           color: '#172033',
@@ -296,12 +296,11 @@ export default function MediaLibraryClient({
       </div>
 
       <h3 className="text-xl font-bold text-[#172033] tracking-tight">
-        No assets found
+        Aucun élément trouvé
       </h3>
 
       <p className="text-[#64748B] text-sm mt-2 max-w-xs font-medium">
-        No items match your current filters. Try adjusting your search or
-        upload new media.
+        Aucun élément ne correspond à vos filtres actuels. Essayez d’ajuster votre recherche ou d’ajouter de nouveaux médias.
       </p>
 
       <button
@@ -328,7 +327,7 @@ export default function MediaLibraryClient({
           focus-visible:ring-offset-2
         "
       >
-        Clear Filters
+        Effacer les filtres
       </button>
     </div>
   );
@@ -370,12 +369,12 @@ export default function MediaLibraryClient({
             aria-live="polite"
             aria-atomic="true"
           >
-            Showing {initialMedia.length} of {pagination.totalItems} assets.
+            Affichage de {initialMedia.length} sur {pagination.totalItems} éléments.
           </div>
 
           <CardGrid
             items={initialMedia}
-            ariaLabel="Media library assets"
+            ariaLabel="Éléments de la médiathèque"
             emptyState={mediaEmptyState}
             renderItem={(item, index) => (
               <MediaCard
@@ -408,7 +407,7 @@ export default function MediaLibraryClient({
 
         <FloatingActionButton
           onClick={() => setIsUploadOpen(true)}
-          label="Upload Media"
+          label="Téléverser un média"
         />
 
         <UploadModal

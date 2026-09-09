@@ -38,8 +38,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Book Your Event Photography"
-      subtitle="Capturing memorable moments for your Comité d'Entreprise and corporate galas."
+      title="Réserver une couverture photo événementielle"
+      subtitle="Capturer les moments mémorables de votre Comité d’Entreprise et de vos galas d’entreprise."
       maxWidth="4xl"
     >
       <div className="flex flex-col md:flex-row h-full md:h-[600px]">
@@ -61,30 +61,30 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <div className="relative z-10 flex flex-col justify-between p-10 h-full text-white">
             <div className="flex items-center gap-2 text-xs font-mono text-rose-400 tracking-widest uppercase">
               <HiSparkles className="w-4 h-4" />
-              <span>CE & Event Coverage</span>
+              <span>CE & couverture événementielle</span>
             </div>
             
             <div className="space-y-3">
               <h2 className="text-3xl font-black tracking-tight leading-tight">
-                CELEBRATE <br/>
+                CÉLÉBREZ <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-white to-rose-100">
-                  YOUR TEAM.
+                  VOTRE ÉQUIPE.
                 </span>
               </h2>
               <p className="text-slate-300 text-sm font-medium max-w-[220px] leading-relaxed">
-                From annual galas to team retreats, we preserve your company culture in high definition.
+                Des galas annuels aux retraites d’équipe, nous préservons votre culture d’entreprise en haute définition.
               </p>
             </div>
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-2 gap-4 text-[11px] font-mono text-slate-400 border-t border-white/10 pt-4">
               <div>
-                <span className="block text-rose-300 font-bold">DELIVERY</span>
-                Private Web Gallery
+                <span className="block text-rose-300 font-bold">LIVRAISON</span>
+                Galerie web privée
               </div>
               <div>
-                <span className="block text-rose-300 font-bold">COVERAGE</span>
-                Full & Half Day
+                <span className="block text-rose-300 font-bold">COUVERTURE</span>
+                Journée complète & demi-journée
               </div>
             </div>
           </div>
@@ -98,9 +98,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               <div className="w-20 h-20 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-6 border border-rose-200 dark:border-rose-900/50">
                 <HiCheckCircle className="w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 tracking-tight">Request Received!</h3>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 tracking-tight">Demande reçue !</h3>
               <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mb-8 text-sm leading-relaxed">
-                Thank you for reaching out. We&apos;ll review your event details and contact you within 24 hours with a custom proposal.
+                Merci pour votre message. Nous examinerons les détails de votre événement et vous recontacterons sous 24 heures avec une proposition personnalisée.
               </p>
               <CustomButton 
                 variant="outline" 
@@ -108,7 +108,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 onClick={onClose}
                 className="rounded-xl px-8 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900"
               >
-                Close Window
+                Fermer
               </CustomButton>
             </div>
           ) : (
@@ -116,14 +116,14 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomTextfield
-                  label="Contact Name"
+                  label="Nom du contact"
                   placeholder="Jean Dupont"
                   leftIcon={<HiUser className="w-4 h-4 text-slate-400" />}
                   required
                 />
                 
                 <CustomTextfield
-                  label="Work Email"
+                  label="E-mail professionnel"
                   type="email"
                   placeholder="j.dupont@company.com"
                   leftIcon={<HiEnvelope className="w-4 h-4 text-slate-400" />}
@@ -133,27 +133,27 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomTextfield
-                  label="Company / CE Name"
-                  placeholder="Comité d'Entreprise Acme"
+                  label="Entreprise / nom du CE"
+                  placeholder="Comité d’Entreprise Acme"
                   leftIcon={<HiBuildingOffice className="w-4 h-4 text-slate-400" />}
                   required
                 />
 
                 <CustomTextfield
-                  label="Event Date & Location"
-                  placeholder="e.g. Nov 15, Paris"
+                  label="Date & lieu de l’événement"
+                  placeholder="ex. 15 nov, Paris"
                   leftIcon={<HiCalendarDays className="w-4 h-4 text-slate-400" />}
                 />
               </div>
               
               <div className="group relative w-full flex flex-col gap-2 flex-1">
                 <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400 pl-1">
-                  Event Details & Requirements
+                  Détails de l’événement & besoins
                 </label>
                 <div className="relative flex-1 min-h-[110px]">
                   <textarea
                     rows={4}
-                    placeholder="Tell us about your event (Annual Gala, Team Building, Family Day), estimated number of attendees, and specific requests..."
+                    placeholder="Racontez-nous votre événement (gala annuel, team building, journée famille), le nombre estimé de participants et vos demandes spécifiques..."
                     className="w-full h-full rounded-2xl px-4 py-3 text-sm font-medium bg-slate-50 dark:bg-slate-900/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-rose-500 dark:focus:border-rose-500 focus:ring-4 focus:ring-rose-100 dark:focus:ring-rose-950/50 transition-all duration-200 resize-none"
                     required
                   />
@@ -168,7 +168,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   className="rounded-xl px-8 bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/25 transition-all duration-200"
                   rightIcon={!isSubmitting && <HiPaperAirplane className="w-4 h-4" />}
                 >
-                  Send Inquiry
+                  Envoyer la demande
                 </CustomButton>
               </div>
             </form>

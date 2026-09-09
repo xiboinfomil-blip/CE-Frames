@@ -30,7 +30,7 @@ export default function NotFound() {
         </h1>
         
         <p className="text-xl md:text-2xl text-zinc-500 font-light mb-12 max-w-md leading-relaxed animate-slide-up" style={{ animationDelay: '200ms' }}>
-          The frame or event gallery you&apos;re looking for couldn&apos;t be captured or has been moved.
+          La galerie ou le cadre que vous cherchez est introuvable ou a été déplacé.
         </p>
 
         {/* Action Buttons */}
@@ -41,7 +41,7 @@ export default function NotFound() {
             className="group flex items-center justify-center gap-2 px-8 py-4 bg-white border border-zinc-200 text-zinc-700 rounded-xl hover:border-zinc-300 hover:bg-zinc-50 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            <span className="font-medium text-xs uppercase tracking-widest">Go Back</span>
+            <span className="font-medium text-xs uppercase tracking-widest">Retour</span>
           </button>
 
           <Link 
@@ -49,7 +49,7 @@ export default function NotFound() {
             className="group flex items-center justify-center gap-2 px-8 py-4 bg-zinc-900 text-white rounded-xl hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-600/20 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           >
             <Home className="w-4 h-4 transition-transform group-hover:scale-110" />
-            <span className="font-medium text-xs uppercase tracking-widest">Return Home</span>
+            <span className="font-medium text-xs uppercase tracking-widest">Accueil</span>
           </Link>
           
         </div>
@@ -57,7 +57,7 @@ export default function NotFound() {
 
       {/* Footer Branding */}
       <footer className="absolute bottom-8 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] animate-fade-in" style={{ animationDelay: '500ms' }}>
-        CE Frames &copy; {new Date().getFullYear()} • Corporate Event Photography
+        CE Frames &copy; {new Date().getFullYear()} • Photographie d’événements
       </footer>
     </div>
   );

@@ -36,8 +36,8 @@ useCardComponent = true,
 }: GalleryGridProps) {
 if (galleries.length === 0) {
 return ( <EmptyState
-     title="No galleries found"
-     description="Try adjusting your search criteria or filter options to discover galleries."
+     title="Aucune galerie trouvée"
+     description="Essayez d’ajuster vos critères de recherche ou vos filtres pour découvrir des galeries."
    />
 );
 }
@@ -83,7 +83,7 @@ return ( <GalleryCard
             <div className="text-center p-4">
               <HiPhoto className="h-10 w-10 mx-auto text-[#94A3B8] mb-2" />
               <p className="text-[#64748B] text-xs font-semibold uppercase tracking-wider">
-                No media
+                Aucun média
               </p>
             </div>
           )}
@@ -96,7 +96,7 @@ return ( <GalleryCard
             <div className="absolute top-3 right-3 z-10">
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#00345F]/90 backdrop-blur-md border border-white/20 text-white rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
                 <HiLockClosed className="w-3 h-3 text-[#FF8201]" />
-                Locked
+                Verrouillé
               </span>
             </div>
           )}

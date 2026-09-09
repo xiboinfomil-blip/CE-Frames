@@ -99,7 +99,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
 
                 <input
                   type="text"
-                  placeholder="Search assets..."
+                  placeholder="Rechercher des éléments..."
                   value={searchValue || ''}
                   onChange={(e) =>
                     onSearchChange?.(e.target.value)
@@ -113,7 +113,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     <button
                       onClick={handleClear}
                       className="p-1 rounded-lg text-[#64748B] hover:text-[#00345F] hover:bg-[#EAF4FB] transition-all"
-                      aria-label="Clear search"
+                      aria-label="Effacer la recherche"
                     >
                       <HiXMark className="w-4 h-4" />
                     </button>
@@ -121,7 +121,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     <button
                       onClick={onSearchSubmit}
                       className="p-1 rounded-lg text-[#94A3B8] hover:text-[#004A87] opacity-0 group-hover:opacity-100 transition-all"
-                      aria-label="Submit search"
+                      aria-label="Valider la recherche"
                     >
                       <HiMagnifyingGlass className="w-4 h-4" />
                     </button>
@@ -173,7 +173,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     onSortChange?.(e.target.value)
                   }
                   className="appearance-none absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  aria-label="Sort media"
+                  aria-label="Trier les médias"
                 >
                   {sorts.map((s) => (
                     <option
@@ -202,7 +202,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                   />
 
                   <span>
-                    {selectedSortLabel || 'Sort'}
+                    {selectedSortLabel || 'Tri'}
                   </span>
 
                   <HiChevronDown className="w-3.5 h-3.5 text-[#64748B] opacity-70" />
@@ -219,7 +219,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                 </span>
 
                 <span className="text-[10px] uppercase tracking-wider font-bold text-[#64748B]">
-                  Assets
+                  Éléments
                 </span>
 
                 {totalPages > 1 && (

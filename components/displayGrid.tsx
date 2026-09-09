@@ -77,8 +77,8 @@ const CardGrid = <T,>({
       <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-6 border border-slate-100 dark:border-slate-800">
         <FolderOpen className="w-8 h-8 text-slate-400 dark:text-slate-500" strokeWidth={1.5} />
       </div>
-      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">No items found</h3>
-      <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 max-w-xs font-medium">Try adjusting your filters or adding new items to your gallery.</p>
+      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Aucun élément trouvé</h3>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 max-w-xs font-medium">Essayez d’ajuster vos filtres ou d’ajouter de nouveaux éléments à votre galerie.</p>
     </div>
   );
 

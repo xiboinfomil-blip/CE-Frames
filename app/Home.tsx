@@ -237,7 +237,7 @@ export default function Home({
 
                 <br />
 
-                COMMUNITY
+                COMMUNAUTÉ
               </h1>
             </FadeIn>
 
@@ -255,9 +255,10 @@ export default function Home({
                   md:text-xl
                 "
               >
-                Professional event coverage for modern Comité
-                d’Entreprise initiatives. We capture your corporate
-                milestones, team spirit, and celebrations.
+                Une couverture professionnelle des événements pour
+                les initiatives modernes du Comité d’Entreprise. Nous
+                capturons vos moments clés, l’esprit d’équipe et les
+                célébrations.
               </p>
             </FadeIn>
 
@@ -300,7 +301,7 @@ export default function Home({
                     hover:shadow-[#FF8201]/20
                   "
                 >
-                  Explore Works
+                  Découvrir les œuvres
 
                   <ArrowRight
                     className="
@@ -339,7 +340,7 @@ export default function Home({
                     hover:bg-[#FF8201]/10
                   "
                 >
-                  Book Your Event
+                  Réserver un événement
                 </button>
               </div>
             </FadeIn>
@@ -368,7 +369,7 @@ export default function Home({
                 tracking-[0.2em]
               "
             >
-              Scroll
+              Défiler
             </span>
 
             <div
@@ -428,7 +429,7 @@ export default function Home({
                       md:text-6xl
                     "
                   >
-                    WORK HARD.
+                    TRAVAILLER DUR.
                     <br />
 
                     <span
@@ -438,7 +439,7 @@ export default function Home({
                         dark:text-white/25
                       "
                     >
-                      CELEBRATE TOGETHER.
+                      CÉLÉBRER ENSEMBLE.
                     </span>
                   </h2>
 
@@ -451,9 +452,8 @@ export default function Home({
                       dark:text-white/60
                     "
                   >
-                    From grand annual galas and keynote speeches
-                    to dynamic outdoor team-building retreats,
-                    <strong
+                    Des grands galas annuels et discours d’ouverture
+                    aux retraites d’équipe en plein air, <strong
                       className="
                         font-semibold
                         text-[#004A87]
@@ -464,11 +464,10 @@ export default function Home({
                       {' '}
                       CE Frames
                     </strong>{' '}
-                    specializes in documenting the human element
-                    of your company. We deliver crisp,
-                    editorial-quality visuals that strengthen
-                    internal culture and shine on corporate
-                    channels.
+                    documente l’élément humain de votre entreprise.
+                    Nous produisons des visuels nets et éditoriaux qui
+                    renforcent la culture interne et brillent sur les
+                    canaux corporatifs.
                   </p>
 
                   <Link
@@ -493,7 +492,7 @@ export default function Home({
                       dark:hover:text-[#FF8201]
                     "
                   >
-                    Learn About CE Frames
+                    Découvrir CE Frames
 
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -575,7 +574,7 @@ export default function Home({
                         dark:text-white/40
                       "
                     >
-                      Specialization
+                      Spécialisation
                     </p>
 
                     <p
@@ -587,7 +586,7 @@ export default function Home({
                         dark:text-white
                       "
                     >
-                      Corporate & CE Events
+                      Événements entreprise & CE
                     </p>
                   </div>
 
@@ -656,7 +655,7 @@ export default function Home({
                       text-[#FF8201]
                     "
                   >
-                    Event Archives
+                    Archives d’événements
                   </span>
 
                   <h2
@@ -671,7 +670,7 @@ export default function Home({
                       md:text-5xl
                     "
                   >
-                    LATEST EVENTS
+                    DERNIERS ÉVÉNEMENTS
                   </h2>
                 </div>
 
@@ -697,7 +696,7 @@ export default function Home({
                     md:flex
                   "
                 >
-                  View All Events
+                  Voir tous les événements
 
                   <ArrowRight
                     className="
@@ -976,7 +975,7 @@ export default function Home({
                               group-hover:gap-4
                             "
                           >
-                            View Gallery
+                            Voir la galerie
 
                             <ArrowRight className="h-4 w-4" />
                           </div>
@@ -1031,7 +1030,7 @@ export default function Home({
                       dark:text-white
                     "
                   >
-                    No events yet
+                    Aucun événement pour le moment
                   </h3>
 
                   <p
@@ -1043,8 +1042,8 @@ export default function Home({
                       dark:text-white/50
                     "
                   >
-                    Our latest event galleries will appear here
-                    once they are published.
+                    Nos dernières galeries d’événements apparaîtront
+                    ici dès leur publication.
                   </p>
                 </div>
               </FadeIn>
@@ -1072,7 +1071,7 @@ export default function Home({
                   dark:hover:text-[#FF8201]
                 "
               >
-                View All Events
+                Voir tous les événements
 
                 <ArrowRight
                   className="
@@ -1168,7 +1167,7 @@ export default function Home({
                       dark:text-white
                     "
                   >
-                    Corporate Gatherings
+                    Réunions d’entreprise
                   </h3>
 
                   <p
@@ -1180,10 +1179,10 @@ export default function Home({
                       dark:text-white/55
                     "
                   >
-                    High-end coverage for official Comité
-                    d’Entreprise assemblies, company anniversaries,
-                    and formal celebrations designed for immediate
-                    corporate sharing.
+                    Une couverture haut de gamme pour les assemblées
+                    officielles du Comité d’Entreprise, les anniversaires
+                    d’entreprise et les célébrations formelles conçues pour
+                    un partage rapide en interne.
                   </p>
 
                   <ul
@@ -1207,7 +1206,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      On-Site Photobooth & Live Printing
+                      Photobooth sur place & impression live
                     </li>
 
                     <li className="flex items-center gap-3">
@@ -1219,7 +1218,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      Keynote & Stage Coverage
+                      Couverture du keynote & de la scène
                     </li>
 
                     <li className="flex items-center gap-3">
@@ -1231,7 +1230,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      Executive & Team Portraits
+                      Portraits exécutifs & d’équipe
                     </li>
                   </ul>
                 </div>
@@ -1288,7 +1287,7 @@ export default function Home({
                       dark:text-white
                     "
                   >
-                    Team Building & Retreats
+                    Team building & retraites
                   </h3>
 
                   <p
@@ -1300,9 +1299,9 @@ export default function Home({
                       dark:text-white/55
                     "
                   >
-                    Spontaneous and genuine documentation of team
-                    challenges, sports days, and off-site excursions
-                    that build lasting company culture.
+                    Une documentation spontanée et authentique des
+                    défis d’équipe, journées sportives et sorties hors
+                    site qui renforcent la culture d’entreprise.
                   </p>
 
                   <ul
@@ -1326,7 +1325,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      Multi-Day Event Coverage
+                      Couverture multi-jours
                     </li>
 
                     <li className="flex items-center gap-3">
@@ -1338,7 +1337,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      High-Resolution Digital Galleries
+                      Galeries numériques haute résolution
                     </li>
 
                     <li className="flex items-center gap-3">
@@ -1350,7 +1349,7 @@ export default function Home({
                           bg-[#FF8201]
                         "
                       />
-                      Highlight Reels & Social Assets
+                      Reels de mise en avant & visuels sociaux
                     </li>
                   </ul>
                 </div>

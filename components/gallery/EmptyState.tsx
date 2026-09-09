@@ -17,8 +17,8 @@ strokeWidth?: number;
 }
 
 export default function EmptyState({
-title = 'No galleries found',
-description = "Try adjusting your filters or search terms to find what you're looking for.",
+title = 'Aucune galerie trouvée',
+description = 'Essayez d’ajuster vos filtres ou vos termes de recherche pour trouver ce que vous cherchez.',
 actionLabel,
 onAction,
 icon: Icon = FolderOpen,

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CE Frames",
-  description: "Professional event photography and digital galleries for Comité d’Entreprise events.",
+  description: "Photographie d'événements et galeries numériques pour les évènements du Comité d’Entreprise.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="fr"
       className={`h-full antialiased ${inter.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >

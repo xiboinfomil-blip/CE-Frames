@@ -21,8 +21,8 @@ export default function PasswordGate({
   onUnlock,
   isLoading,
   error,
-  title = 'Private Event Gallery',
-  subtitle = 'Please enter your password to access the media collection.',
+  title = 'Galerie privée d’événement',
+  subtitle = 'Saisissez votre mot de passe pour accéder à la collection média.',
 }: PasswordGateProps) {
   const [password, setPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
@@ -68,7 +68,7 @@ export default function PasswordGate({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative group">
             <label htmlFor="gallery-password" className="sr-only">
-              Password
+              Mot de passe
             </label>
 
             <input
@@ -77,7 +77,7 @@ export default function PasswordGate({
               type={isVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter gallery password"
+              placeholder="Saisissez le mot de passe de la galerie"
               disabled={isLoading}
               autoComplete="current-password"
               className={`
@@ -103,7 +103,7 @@ export default function PasswordGate({
               onClick={() => setIsVisible(!isVisible)}
               tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[#64748B] hover:text-[#004A87] transition-colors rounded-lg"
-              aria-label={isVisible ? 'Hide password' : 'Show password'}
+              aria-label={isVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
             >
               {isVisible ? (
                 <HiEyeSlash className="w-5 h-5" />
@@ -141,10 +141,10 @@ export default function PasswordGate({
             {isLoading ? (
               <>
                 <HiArrowPath className="animate-spin h-4 w-4 text-[#64748B]" />
-                <span>Unlocking...</span>
+                <span>Vérification...</span>
               </>
             ) : (
-              <span>Unlock Access</span>
+              <span>Déverrouiller l’accès</span>
             )}
           </button>
         </form>
@@ -152,7 +152,7 @@ export default function PasswordGate({
         {/* Security Footer */}
         <div className="mt-8 text-center border-t border-[#E2E8F0] pt-6">
           <p className="text-[11px] font-mono text-[#94A3B8]">
-            Protected by secure event authentication
+            Protégé par une authentification sécurisée
           </p>
         </div>
       </div>
