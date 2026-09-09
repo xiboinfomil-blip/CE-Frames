@@ -23,7 +23,7 @@ export const EmptyState = memo(({ onCreateClick }: EmptyStateProps) => (
       </h3>
       
       <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed tracking-wide mb-10">
-        Partagez les événements, sorties et activités du CSE en créant votre premier album.
+        Partagez les événements, sorties et activités du CE en créant votre premier album.
       </p>
       
       <CustomButton 
@@ -33,7 +33,7 @@ export const EmptyState = memo(({ onCreateClick }: EmptyStateProps) => (
         leftIcon={<Plus className="w-4 h-4" />}
         className="shadow-lg shadow-zinc-200/50 dark:shadow-black/50"
       >
-        Créer un album CSE
+        Créer un album CE
       </CustomButton>
     </div>
   </div>

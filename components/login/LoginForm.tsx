@@ -1,77 +1,83 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
-import { motion } from "framer-motion";
-import { 
-  HiOutlineEnvelope, 
-  HiOutlineLockClosed, 
-  HiEye, 
-  HiEyeSlash, 
-  HiArrowRight, 
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
+import { motion } from 'framer-motion';
+import {
+  HiOutlineEnvelope,
+  HiOutlineLockClosed,
+  HiEye,
+  HiEyeSlash,
+  HiArrowRight,
   HiExclamationCircle,
-  HiArrowPath
-} from "react-icons/hi2";
+  HiArrowPath,
+} from 'react-icons/hi2';
 
-import { CustomTextfield } from "@/components/ui/CustomTextfield";
-import { CustomButton } from "@/components/ui/CustomButton";
+import { CustomTextfield } from '@/components/ui/CustomTextfield';
+import { CustomButton } from '@/components/ui/CustomButton';
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status } = useSession();
-  
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
+    if (status === 'authenticated') {
+      router.push('/');
     }
   }, [status, router]);
 
-  const errorParam = searchParams.get("error");
-  const authError = errorParam === "CredentialsSignin"
-    ? "Invalid email or password."
-    : errorParam
-      ? "An unexpected error occurred. Please try again."
-      : null;
+  const errorParam = searchParams.get('error');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const authError =
+    errorParam === 'CredentialsSignin'
+      ? 'Invalid email or password.'
+      : errorParam
+        ? 'An unexpected error occurred. Please try again.'
+        : null;
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: "/",
-        redirect: false, 
+        callbackUrl: '/',
+        redirect: false,
       });
 
       if (result?.error) {
-        setError("Invalid email or password.");
+        setError('Invalid email or password.');
       } else if (result?.url) {
         router.push(result.url);
       }
     } catch {
-      setError("An unexpected error occurred. Please try again.");
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (status === "loading") {
+  {/* Loading State */}
+  if (status === 'loading') {
     return (
-      <div className="h-full w-full min-h-[400px] flex items-center justify-center bg-slate-950">
+      <div className="h-full w-full min-h-[400px] flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
-          <HiArrowPath className="w-8 h-8 text-rose-400 animate-spin" />
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
+          <HiArrowPath className="w-8 h-8 text-[#FF8201] animate-spin" />
+
+          <span className="text-xs font-bold text-[#64748B] uppercase tracking-[0.2em]">
             Authenticating...
           </span>
         </div>
@@ -79,68 +85,107 @@ export default function LoginForm() {
     );
   }
 
-  if (status === "authenticated") {
+  if (status === 'authenticated') {
     return null;
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      transition={{
+        duration: 0.4,
+        ease: [0.16, 1, 0.3, 1],
+      }}
       className="max-w-md w-full mx-auto px-6 sm:px-0"
     >
+      {/* Header */}
       <header className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-100 tracking-tight mb-2">
+        <h2 className="text-3xl font-bold text-[#172033] tracking-tight mb-2">
           Welcome Back
         </h2>
-        <p className="text-slate-400 text-sm font-medium">
-          Please enter your credentials to manage your CSE galleries.
+
+        <p className="text-[#64748B] text-sm font-medium">
+          Please enter your credentials to manage your CE galleries.
         </p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+
         {/* Error Alert */}
         {(error || authError) && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-4 rounded-xl bg-rose-950/30 border border-rose-900/50 text-rose-400 text-sm flex items-start gap-3 shadow-lg shadow-rose-950/20"
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.96,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-3 shadow-lg shadow-red-900/5"
           >
-            <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4 text-rose-400" />
-            <span className="font-medium">{error || authError}</span>
+            <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4 text-red-500" />
+
+            <span className="font-medium">
+              {error || authError}
+            </span>
           </motion.div>
         )}
 
+        {/* Fields */}
         <div className="space-y-4">
+
+          {/* Email */}
           <CustomTextfield
             label="Email Address"
             name="email"
             type="email"
-             placeholder="admin@ceframes.com"
+            placeholder="admin@ceframes.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            leftIcon={<HiOutlineEnvelope size={18} className="text-slate-500" />}
+            leftIcon={
+              <HiOutlineEnvelope
+                size={18}
+                className="text-[#94A3B8]"
+              />
+            }
             autoComplete="email"
             required
           />
 
+          {/* Password */}
           <CustomTextfield
             label="Password"
             name="password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            leftIcon={<HiOutlineLockClosed size={18} className="text-slate-500" />}
+            leftIcon={
+              <HiOutlineLockClosed
+                size={18}
+                className="text-[#94A3B8]"
+              />
+            }
             rightIcon={
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                className="p-1 rounded-md transition-colors focus:outline-none text-slate-500 hover:text-slate-300 focus-visible:ring-2 focus-visible:ring-rose-500"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+                aria-label={
+                  showPassword
+                    ? 'Hide password'
+                    : 'Show password'
+                }
+                className="p-1 rounded-md transition-colors focus:outline-none text-[#64748B] hover:text-[#004A87] focus-visible:ring-2 focus-visible:ring-[#FF8201]"
               >
-                {showPassword ? <HiEyeSlash size={18} /> : <HiEye size={18} />}
+                {showPassword ? (
+                  <HiEyeSlash size={18} />
+                ) : (
+                  <HiEye size={18} />
+                )}
               </button>
             }
             autoComplete="current-password"
@@ -148,6 +193,7 @@ export default function LoginForm() {
           />
         </div>
 
+        {/* Submit */}
         <div className="pt-2">
           <CustomButton
             type="submit"
@@ -155,17 +201,20 @@ export default function LoginForm() {
             size="lg"
             disabled={isLoading}
             isLoading={isLoading}
-            className="w-full bg-rose-600 hover:bg-rose-500 text-white font-medium transition-all shadow-lg shadow-rose-600/20 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            rightIcon={!isLoading && <HiArrowRight size={18} />}
+            className="w-full"
+            rightIcon={
+              !isLoading && <HiArrowRight size={18} />
+            }
           >
             Sign In
           </CustomButton>
         </div>
       </form>
 
+      {/* Footer */}
       <footer className="mt-12 text-center">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
-           © 2026 CE Frames. All rights reserved.
+        <p className="text-[10px] text-[#94A3B8] font-bold uppercase tracking-[0.2em]">
+          © 2026 CE Frames. All rights reserved.
         </p>
       </footer>
     </motion.div>

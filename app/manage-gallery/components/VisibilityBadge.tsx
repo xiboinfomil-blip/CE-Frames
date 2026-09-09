@@ -8,69 +8,122 @@ interface VisibilityBadgeProps {
   type: typeof VISIBILITY_STATUSES[number];
 }
 
-export const VisibilityBadge = memo(({ type }: VisibilityBadgeProps) => {
-  const config: Record<typeof VISIBILITY_STATUSES[number], { 
-    label: string; 
-    dotColor: string; 
-    bgColor: string;
-    textColor: string;
-    borderColor: string;
-    icon?: React.ReactNode;
-  }> = {
-    public: {
-      label: 'Public',
-      dotColor: 'bg-emerald-500',
-      bgColor: 'bg-emerald-50/80 dark:bg-emerald-950/80',
-      textColor: 'text-emerald-700 dark:text-emerald-400',
-      borderColor: 'border-emerald-200/50 dark:border-emerald-800/50',
-    },
-    private: {
-      label: 'Privé',
-      dotColor: 'bg-zinc-500',
-      bgColor: 'bg-zinc-100/80 dark:bg-zinc-900/80',
-      textColor: 'text-zinc-700 dark:text-zinc-300',
-      borderColor: 'border-zinc-200/50 dark:border-zinc-700/50',
-    },
-    password_protected: {
-      label: 'Protégé',
-      dotColor: 'bg-amber-500',
-      bgColor: 'bg-amber-50/80 dark:bg-amber-950/80',
-      textColor: 'text-amber-700 dark:text-amber-400',
-      borderColor: 'border-amber-200/50 dark:border-amber-800/50',
-      icon: (
-        <HiLockClosed className="w-3 h-3 ml-1 opacity-70" />
-      )
-    },
-    unlisted: {
-      label: 'Non listé',
-      dotColor: 'bg-blue-500',
-      bgColor: 'bg-blue-50/80 dark:bg-blue-950/80',
-      textColor: 'text-blue-700 dark:text-blue-400',
-      borderColor: 'border-blue-200/50 dark:border-blue-800/50',
-    }
-  };
+export const VisibilityBadge = memo(
+  ({ type }: VisibilityBadgeProps) => {
+    const config: Record<
+      typeof VISIBILITY_STATUSES[number],
+      {
+        label: string;
+        dotColor: string;
+        bgColor: string;
+        textColor: string;
+        borderColor: string;
+        icon?: React.ReactNode;
+      }
+    > = {
+      public: {
+        label: 'Public',
+        dotColor: 'bg-emerald-500',
+        bgColor: 'bg-white/90',
+        textColor: 'text-emerald-700',
+        borderColor: 'border-emerald-200',
+      },
 
-  const current = config[type] || config.private;
+      private: {
+        label: 'Privé',
+        dotColor: 'bg-[#64748B]',
+        bgColor: 'bg-[#F5F7FA]/95',
+        textColor: 'text-[#00345F]',
+        borderColor: 'border-[#E2E8F0]',
+      },
 
-  return (
-    <div className={`
-      inline-flex items-center gap-2 px-2.5 py-1.5 rounded-md 
-      backdrop-blur-md border shadow-sm transition-all duration-300
-      ${current.bgColor} ${current.textColor} ${current.borderColor}
-    `}>
-      {/* Status Indicator */}
-      <span className="relative flex h-1.5 w-1.5">
-        <span className={`absolute inline-flex h-full w-full rounded-full opacity-30 animate-ping ${current.dotColor}`}></span>
-        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${current.dotColor}`}></span>
-      </span>
-      
-      <span className="text-[10px] font-bold uppercase tracking-[0.15em] leading-none">
-        {current.label}
-      </span>
+      password_protected: {
+        label: 'Protégé',
+        dotColor: 'bg-[#FF8201]',
+        bgColor: 'bg-[#FFF1E5]/95',
+        textColor: 'text-[#00345F]',
+        borderColor: 'border-[#FF8201]/30',
+        icon: (
+          <HiLockClosed className="w-3 h-3 ml-1 text-[#FF8201]" />
+        ),
+      },
 
-      {current.icon && <span>{current.icon}</span>}
-    </div>
-  );
-});
+      unlisted: {
+        label: 'Non listé',
+        dotColor: 'bg-[#004A87]',
+        bgColor: 'bg-[#EAF4FB]/95',
+        textColor: 'text-[#004A87]',
+        borderColor: 'border-[#004A87]/20',
+      },
+    };
+
+    const current = config[type] || config.private;
+
+    return (
+      <div
+        className={`
+          inline-flex
+          items-center
+          gap-2
+          px-2.5
+          py-1.5
+          rounded-md
+          backdrop-blur-md
+          border
+          shadow-sm
+          transition-all
+          duration-300
+          ${current.bgColor}
+          ${current.textColor}
+          ${current.borderColor}
+        `}
+      >
+        {/* Status Indicator */}
+        <span className="relative flex h-1.5 w-1.5">
+          <span
+            className={`
+              absolute
+              inline-flex
+              h-full
+              w-full
+              rounded-full
+              opacity-30
+              animate-ping
+              ${current.dotColor}
+            `}
+          />
+
+          <span
+            className={`
+              relative
+              inline-flex
+              rounded-full
+              h-1.5
+              w-1.5
+              ${current.dotColor}
+            `}
+          />
+        </span>
+
+        <span
+          className="
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-[0.15em]
+            leading-none
+          "
+        >
+          {current.label}
+        </span>
+
+        {current.icon && (
+          <span>{current.icon}</span>
+        )}
+      </div>
+    );
+  }
+);
 
 VisibilityBadge.displayName = 'VisibilityBadge';
+

@@ -21,7 +21,7 @@ export default function LoginForm() {
     setError(null);
     
     try {
-      // Intégration NextAuth ou API CSE
+      // Intégration NextAuth ou API CE
       // await signIn('credentials', { email, password, callbackUrl });
       await new Promise(resolve => setTimeout(resolve, 1500)); 
     } catch (err) {
@@ -39,7 +39,7 @@ export default function LoginForm() {
           Bon retour
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm tracking-wide">
-          Saisissez vos identifiants CSE pour vous connecter à l&apos;espace d&apos;administration.
+          Saisissez vos identifiants CE pour vous connecter à l&apos;espace d&apos;administration.
         </p>
       </div>
 
@@ -96,7 +96,7 @@ export default function LoginForm() {
       {/* Subtle Footer Metadata */}
       <div className="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800/50">
         <p className="text-[10px] text-zinc-400 dark:text-zinc-600 font-bold uppercase tracking-[0.15em] text-center">
-          Espace Sécurisé CSE • Portail Comité d&apos;Entreprise
+          Espace Sécurisé CE • Portail Comité d&apos;Entreprise
         </p>
       </div>
     </div>

@@ -56,6 +56,6 @@ export const NAV_ITEMS = [
 ];
 
 export const AUTH_ITEMS = {
-  login: { label: 'CSE Admin Login', href: '/login', mobileLabel: 'Admin Login' },
+  login: { label: 'CE Admin Login', href: '/login', mobileLabel: 'Admin Login' },
   logout: { label: 'Log Out', mobileLabel: 'Log Out' }
 };

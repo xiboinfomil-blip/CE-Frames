@@ -3,14 +3,19 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
+
 import MediaCard, { MediaSchema } from '@/app/media-library/components/MediaCard';
-import UploadModal from '@/app/media-library/components/UploadModal'; 
-import MediaLibraryHeader, { FilterOption, SortOption } from '@/components/SearchSortFilter'; 
-import Pagination from '@/components/Pagination'; 
-import FloatingActionButton from '@/components/FloatingActionButton'; 
+import UploadModal from '@/app/media-library/components/UploadModal';
+import MediaLibraryHeader, {
+  FilterOption,
+  SortOption,
+} from '@/components/SearchSortFilter';
+import Pagination from '@/components/Pagination';
+import FloatingActionButton from '@/components/FloatingActionButton';
 import GalleryLightbox, { MediaItem } from '@/components/GalleryLightbox';
 import CardGrid from '@/components/displayGrid';
 import { MEDIA_TYPES } from '@/db/schema';
+
 import { HiPhoto } from 'react-icons/hi2';
 
 interface MediaLibraryClientProps {
@@ -32,29 +37,35 @@ interface MediaLibraryClientProps {
 
 const FILTER_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All Assets' },
-  ...MEDIA_TYPES.map(type => ({
+  ...MEDIA_TYPES.map((type) => ({
     value: type,
-    label: type === 'image' ? 'Images' : type === 'video' ? 'Videos' : 'GIFs'
-  }))
+    label:
+      type === 'image'
+        ? 'Images'
+        : type === 'video'
+          ? 'Videos'
+          : 'GIFs',
+  })),
 ];
 
 const SORT_OPTIONS: SortOption[] = [
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name A-Z' }
+  { value: 'name', label: 'Name A-Z' },
 ];
 
-const MEDIA_CARD_SIZES = '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw';
+const MEDIA_CARD_SIZES =
+  '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw';
 
-export default function MediaLibraryClient({ 
-  initialMedia, 
+export default function MediaLibraryClient({
+  initialMedia,
   pagination,
-  filters 
+  filters,
 }: MediaLibraryClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -66,141 +77,256 @@ export default function MediaLibraryClient({
   }, [filters.search]);
 
   // Transform media array to lightbox slide format
-  const slides = useMemo((): MediaItem[] => initialMedia.map(item => {
-    const isVideo = item.type === 'video';
-    
-    return {
-      type: isVideo ? 'video' : 'image',
-      src: !isVideo ? item.fullResUrl : undefined,
-      sources: isVideo ? [{ src: item.fullResUrl, type: 'video/mp4' as const }] : undefined,
-      poster: isVideo ? item.thumbnailUrl : undefined,
-      width: item.width || 800,
-      height: item.height || 600,
-      alt: item.originalFilename || 'Media asset',
-      title: item.originalFilename || undefined,
-      description: item.caption || undefined,
-    } as MediaItem;
-  }), [initialMedia]);
+  const slides = useMemo(
+    (): MediaItem[] =>
+      initialMedia.map((item) => {
+        const isVideo = item.type === 'video';
 
-  const updateSearchParams = useCallback((params: Record<string, string | undefined>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === undefined || value === '') {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, value);
+        return {
+          type: isVideo ? 'video' : 'image',
+          src: !isVideo ? item.fullResUrl : undefined,
+          sources: isVideo
+            ? [
+                {
+                  src: item.fullResUrl,
+                  type: 'video/mp4' as const,
+                },
+              ]
+            : undefined,
+          poster: isVideo ? item.thumbnailUrl : undefined,
+          width: item.width || 800,
+          height: item.height || 600,
+          alt: item.originalFilename || 'Media asset',
+          title: item.originalFilename || undefined,
+          description: item.caption || undefined,
+        } as MediaItem;
+      }),
+    [initialMedia]
+  );
+
+  const updateSearchParams = useCallback(
+    (params: Record<string, string | undefined>) => {
+      const newParams = new URLSearchParams(searchParams.toString());
+
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === '') {
+          newParams.delete(key);
+        } else {
+          newParams.set(key, value);
+        }
+      });
+
+      if (
+        params.search !== undefined ||
+        params.type !== undefined ||
+        params.sortBy !== undefined
+      ) {
+        newParams.set('page', '1');
       }
-    });
 
-    if (params.search !== undefined || params.type !== undefined || params.sortBy !== undefined) {
-      newParams.set('page', '1');
-    }
-
-    router.push(`${pathname}?${newParams.toString()}`);
-  }, [router, pathname, searchParams]);
+      router.push(`${pathname}?${newParams.toString()}`);
+    },
+    [router, pathname, searchParams]
+  );
 
   const handleSearch = useCallback(() => {
-    updateSearchParams({ search: searchInput.trim() || undefined });
+    updateSearchParams({
+      search: searchInput.trim() || undefined,
+    });
   }, [searchInput, updateSearchParams]);
 
-  const handleTypeFilter = useCallback((type: string) => {
-    updateSearchParams({ type: type === 'all' ? undefined : (type as typeof MEDIA_TYPES[number]) });
-  }, [updateSearchParams]);
+  const handleTypeFilter = useCallback(
+    (type: string) => {
+      updateSearchParams({
+        type:
+          type === 'all'
+            ? undefined
+            : (type as typeof MEDIA_TYPES[number]),
+      });
+    },
+    [updateSearchParams]
+  );
 
-  const handleSort = useCallback((sortBy: string) => {
-    updateSearchParams({ sortBy });
-  }, [updateSearchParams]);
+  const handleSort = useCallback(
+    (sortBy: string) => {
+      updateSearchParams({ sortBy });
+    },
+    [updateSearchParams]
+  );
 
-  const handlePageChange = useCallback((newPage: number) => {
-    updateSearchParams({ page: newPage.toString() });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [updateSearchParams]);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      updateSearchParams({
+        page: newPage.toString(),
+      });
 
-  const handleDelete = useCallback(async (id: string) => {
-    const result = await Swal.fire({
-      title: 'Delete Asset?',
-      text: 'This will permanently remove this item from your library.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#71717a',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      background: '#ffffff',
-      customClass: {
-        popup: 'rounded-2xl shadow-xl border border-zinc-100',
-        title: 'font-semibold text-zinc-900 text-lg',
-        htmlContainer: 'text-zinc-600 font-medium',
-        confirmButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500',
-        cancelButton: 'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-zinc-100 text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-300'
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    },
+    [updateSearchParams]
+  );
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const result = await Swal.fire({
+        title: 'Delete Asset?',
+        text: 'This will permanently remove this item from your library.',
+        icon: 'warning',
+        showCancelButton: true,
+
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748B',
+
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+
+        background: '#FFFFFF',
+        color: '#172033',
+
+        customClass: {
+          popup:
+            'rounded-2xl shadow-xl border border-[#E2E8F0]',
+          title:
+            'font-semibold text-[#172033] text-lg',
+          htmlContainer:
+            'text-[#64748B] font-medium',
+
+          confirmButton:
+            'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500',
+
+          cancelButton:
+            'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-[#EAF4FB] text-[#00345F] focus:outline-none focus:ring-2 focus:ring-[#FF8201]',
+        },
+      });
+
+      if (!result.isConfirmed) return;
+
+      setIsDeleting(id);
+
+      try {
+        const res = await fetch(`/api/media?id=${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to delete asset');
+        }
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Deleted',
+          text: 'The asset has been removed.',
+          timer: 1500,
+          showConfirmButton: false,
+
+          background: '#FFFFFF',
+          color: '#172033',
+
+          customClass: {
+            popup:
+              'rounded-2xl shadow-xl border border-[#E2E8F0]',
+            title:
+              'font-semibold text-[#172033]',
+          },
+        });
+
+        router.refresh();
+      } catch (error) {
+        console.error('Failed to delete media:', error);
+
+        await Swal.fire({
+          icon: 'error',
+          title: 'Deletion Failed',
+          text: 'An error occurred while deleting the asset. Please try again.',
+
+          background: '#FFFFFF',
+          color: '#172033',
+
+          customClass: {
+            popup:
+              'rounded-2xl shadow-xl border border-[#E2E8F0]',
+            title:
+              'font-semibold text-[#172033]',
+          },
+        });
+      } finally {
+        setIsDeleting(null);
       }
-    });
-
-    if (!result.isConfirmed) return;
-
-    setIsDeleting(id);
-    try {
-      const res = await fetch(`/api/media?id=${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete asset');
-      
-      await Swal.fire({
-        icon: 'success',
-        title: 'Deleted',
-        text: 'The asset has been removed.',
-        timer: 1500,
-        showConfirmButton: false,
-        background: '#ffffff',
-        customClass: { popup: 'rounded-2xl shadow-xl border border-zinc-100', title: 'font-semibold text-zinc-900' }
-      });
-      router.refresh();
-    } catch (error) {
-      console.error('Failed to delete media:', error);
-      await Swal.fire({
-        icon: 'error',
-        title: 'Deletion Failed',
-        text: 'An error occurred while deleting the asset. Please try again.',
-        background: '#ffffff',
-        customClass: { popup: 'rounded-2xl shadow-xl border border-zinc-100', title: 'font-semibold text-zinc-900' }
-      });
-    } finally {
-      setIsDeleting(null);
-    }
-  }, [router]);
+    },
+    [router]
+  );
 
   const handleResetFilters = useCallback(() => {
     setSearchInput('');
-    updateSearchParams({ search: undefined, type: undefined, sortBy: undefined });
+
+    updateSearchParams({
+      search: undefined,
+      type: undefined,
+      sortBy: undefined,
+    });
   }, [updateSearchParams]);
 
   const handleCloseUpload = useCallback(() => {
     setIsUploadOpen(false);
   }, []);
 
-  const handleOpenLightbox = useCallback((index: number) => {
-    if (index >= 0 && index < initialMedia.length) {
-      setLightboxIndex(index);
-    }
-  }, [initialMedia.length]);
+  const handleOpenLightbox = useCallback(
+    (index: number) => {
+      if (index >= 0 && index < initialMedia.length) {
+        setLightboxIndex(index);
+      }
+    },
+    [initialMedia.length]
+  );
 
-  const handleCloseLightbox = useCallback(() => setLightboxIndex(-1), []);
+  const handleCloseLightbox = useCallback(
+    () => setLightboxIndex(-1),
+    []
+  );
 
   const currentFilter = filters.type || 'all';
   const currentSort = filters.sortBy || 'newest';
 
   const mediaEmptyState = (
-    <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm">
-      <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-6 border border-zinc-100 dark:border-zinc-800">
-        <HiPhoto className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+    <div className="flex flex-col items-center justify-center py-24 px-6 text-center bg-white rounded-3xl border border-[#E2E8F0] shadow-sm">
+      <div className="w-20 h-20 bg-[#EAF4FB] rounded-2xl flex items-center justify-center mb-6 border border-[#D8EAF6]">
+        <HiPhoto className="w-8 h-8 text-[#004A87]" />
       </div>
-      <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">No assets found</h3>
-      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 max-w-xs font-medium">
-        No items match your current filters. Try adjusting your search or upload new media.
+
+      <h3 className="text-xl font-bold text-[#172033] tracking-tight">
+        No assets found
+      </h3>
+
+      <p className="text-[#64748B] text-sm mt-2 max-w-xs font-medium">
+        No items match your current filters. Try adjusting your search or
+        upload new media.
       </p>
-      <button 
+
+      <button
         type="button"
         onClick={handleResetFilters}
-        className="mt-8 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:ring-offset-2"
+        className="
+          mt-8
+          px-6
+          py-3
+          bg-[#004A87]
+          text-white
+          text-sm
+          font-bold
+          uppercase
+          tracking-widest
+          rounded-xl
+          hover:bg-[#00345F]
+          transition-all
+          duration-300
+          active:scale-95
+          focus:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-[#FF8201]
+          focus-visible:ring-offset-2
+        "
       >
         Clear Filters
       </button>
@@ -208,10 +334,19 @@ export default function MediaLibraryClient({
   );
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-rose-500/30 selection:text-rose-900 dark:selection:text-rose-100 relative">
+    <div
+      className="
+        min-h-screen
+        bg-[#F5F7FA]
+        text-[#172033]
+        font-sans
+        selection:bg-[#FF8201]/30
+        selection:text-[#00345F]
+        relative
+      "
+    >
       <div className="relative z-10 flex flex-col min-h-screen">
-        
-        {/* Sticky Header with Glassmorphism */}
+        {/* Sticky Header */}
         <header className="sticky top-0 z-40">
           <MediaLibraryHeader
             searchValue={searchInput}
@@ -230,7 +365,11 @@ export default function MediaLibraryClient({
         </header>
 
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-[1600px]">
-          <div className="sr-only" aria-live="polite" aria-atomic="true">
+          <div
+            className="sr-only"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             Showing {initialMedia.length} of {pagination.totalItems} assets.
           </div>
 
@@ -239,11 +378,13 @@ export default function MediaLibraryClient({
             ariaLabel="Media library assets"
             emptyState={mediaEmptyState}
             renderItem={(item, index) => (
-              <MediaCard 
+              <MediaCard
                 key={item.id}
-                media={item} 
+                media={item}
                 onDelete={handleDelete}
-                onOpenLightbox={() => handleOpenLightbox(index)}
+                onOpenLightbox={() =>
+                  handleOpenLightbox(index)
+                }
                 isDeleting={isDeleting === item.id}
                 priority={index < 4}
                 sizes={MEDIA_CARD_SIZES}
@@ -251,25 +392,37 @@ export default function MediaLibraryClient({
             )}
           />
 
-          {initialMedia.length > 0 && pagination.totalPages > 1 && (
-            <div className="mt-12 flex justify-center">
-              <Pagination 
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                hasNext={pagination.hasNext}
-                hasPrevious={pagination.hasPrevious}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
+          {initialMedia.length > 0 &&
+            pagination.totalPages > 1 && (
+              <div className="mt-12 flex justify-center">
+                <Pagination
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  hasNext={pagination.hasNext}
+                  hasPrevious={pagination.hasPrevious}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
         </main>
 
-        <FloatingActionButton onClick={() => setIsUploadOpen(true)} label="Upload Media" />
+        <FloatingActionButton
+          onClick={() => setIsUploadOpen(true)}
+          label="Upload Media"
+        />
 
-        <UploadModal isOpen={isUploadOpen} onClose={handleCloseUpload} />
+        <UploadModal
+          isOpen={isUploadOpen}
+          onClose={handleCloseUpload}
+        />
       </div>
-      
-      <GalleryLightbox index={lightboxIndex} slides={slides} onClose={handleCloseLightbox} />
+
+      <GalleryLightbox
+        index={lightboxIndex}
+        slides={slides}
+        onClose={handleCloseLightbox}
+      />
     </div>
   );
 }
+

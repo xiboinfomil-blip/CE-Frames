@@ -87,7 +87,7 @@ export default function GalleryClient({
   };
 
   const handleGalleryClick = (gallery: GallerySummary) => {
-    router.push(`/galeries/${gallery.id}`);
+    router.push(`/gallery/${gallery.id}`);
   };
 
   const displayedGalleries = initialGalleries;
@@ -140,7 +140,7 @@ export default function GalleryClient({
           emptyState={
             <EmptyState />
           }
-          ariaLabel="Galeries photos CSE"
+          ariaLabel="Galeries photos CE"
           renderItem={(gallery, index) => {
             const displayMedia = gallery.randomMedia; 
             
@@ -169,6 +169,9 @@ export default function GalleryClient({
                 {/* Image Container */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900 shadow-sm group-hover:shadow-md transition-shadow duration-500">
                   <MediaViewport
+                  showMagnifyingGlass={false}
+                  showFilename={false}
+                  showTitle={false}
                     mediaType={displayMedia.type}
                     fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
                     thumbnailUrl={displayMedia.thumbnailUrl}

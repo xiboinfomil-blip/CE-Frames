@@ -2,11 +2,23 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, Building2, Users, PartyPopper, Camera } from 'lucide-react';
-import ContactModal from '@/components/ContactModal'; // Adjust path as needed
+import {
+  Camera,
+  Heart,
+  Images,
+  Sparkles,
+  ArrowRight,
+} from 'lucide-react';
 
-// --- Utility Component for Scroll Animations ---
-const FadeIn = ({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) => {
+const FadeIn = ({
+  children,
+  delay = 0,
+  className = '',
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -20,7 +32,9 @@ const FadeIn = ({ children, delay = 0, className = '' }: { children: React.React
       },
       { threshold: 0.1 }
     );
+
     if (ref.current) observer.observe(ref.current);
+
     return () => observer.disconnect();
   }, [delay]);
 
@@ -28,7 +42,9 @@ const FadeIn = ({ children, delay = 0, className = '' }: { children: React.React
     <div
       ref={ref}
       className={`transition-all duration-1000 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        isVisible
+          ? 'translate-y-0 opacity-100'
+          : 'translate-y-8 opacity-0'
       } ${className}`}
     >
       {children}
@@ -37,207 +53,715 @@ const FadeIn = ({ children, delay = 0, className = '' }: { children: React.React
 };
 
 export default function AboutPage() {
-  const [isContactOpen, setIsContactOpen] = useState(false);
-
   return (
-    <>
-      <main className="min-h-screen bg-white text-slate-900 font-sans selection:bg-rose-500/30 selection:text-rose-900 dark:selection:bg-rose-500/30 dark:selection:text-rose-100 dark:bg-slate-950 dark:text-slate-100">
-        
-        {/* 1. EDITORIAL HERO - Split Layout */}
-        <section className="pt-24 md:pt-32 pb-16 md:pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-end">
-            
-            <div className="lg:col-span-7 space-y-8">
-              <FadeIn>
-                <span className="inline-flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold uppercase tracking-[0.15em] text-xs mb-4 border border-rose-200 dark:border-rose-900/50 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/30">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Comité d&apos;Entreprise & Corporate Events
-                </span>
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] text-slate-900 dark:text-slate-100">
-                  WE DON&apos;T JUST <br />
-                  <span className="text-slate-400 dark:text-slate-600">DOCUMENT EVENTS.</span> <br />
-                  WE CELEBRATE <br />
-                  YOUR CULTURE.
-                </h1>
-              </FadeIn>
-              
-              <FadeIn delay={200}>
-                <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-xl border-l-2 border-rose-500 pl-6">
-                  Transforming corporate gatherings, team retreats, and CSE galas into vibrant visual archives that build company pride.
-                </p>
-              </FadeIn>
-            </div>
+    <main
+      className="
+        min-h-screen
+        bg-white
+        text-[#172033]
+        font-sans
+        transition-colors duration-300
+        dark:bg-[#0B1624]
+        dark:text-white
+      "
+    >
 
-            <div className="lg:col-span-5 relative">
-              <FadeIn delay={400}>
-                <div className="relative aspect-4/5 overflow-hidden bg-slate-100 dark:bg-slate-900 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 group rounded-xl">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop" 
-                    alt="Corporate event celebration" 
-                    fill
-                    className="object-cover transition-all duration-700 ease-in-out scale-100 group-hover:scale-105"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-md px-6 py-4 border-t border-slate-800 text-white">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-rose-400">CSE Event Photography</p>
-                    <p className="text-xs text-slate-300 mt-0.5">Capturing corporate memories • Est. 2026</p>
-                  </div>
+      {/* =========================================================
+          HERO
+      ========================================================= */}
+      <section
+        className="
+          relative overflow-hidden
+          px-6 pb-20 pt-28
+          md:px-12 md:pb-32 md:pt-40
+        "
+      >
+        {/* Decorative background */}
+        <div
+          className="
+            pointer-events-none
+            absolute -right-32 -top-32
+            h-96 w-96 rounded-full
+            bg-[#EAF4FB]
+            blur-3xl
+            dark:bg-[#00345F]/30
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none
+            absolute -bottom-32 -left-32
+            h-80 w-80 rounded-full
+            bg-[#FFF1E5]
+            blur-3xl
+            dark:bg-[#FF8201]/10
+          "
+        />
+
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-24">
+
+            {/* Text */}
+            <FadeIn>
+              <div className="max-w-2xl">
+
+                {/* Brand badge */}
+                <div
+                  className="
+                    mb-7 inline-flex items-center gap-2
+                    rounded-full
+                    border border-[#E2E8F0]
+                    bg-[#EAF4FB]
+                    px-4 py-2
+                    text-xs font-bold uppercase
+                    tracking-[0.15em]
+                    text-[#004A87]
+                    shadow-sm
+                    dark:border-[#004A87]/40
+                    dark:bg-[#00345F]/40
+                    dark:text-[#FF8201]
+                  "
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  CE Frames
                 </div>
-              </FadeIn>
-            </div>
 
-          </div>
-        </section>
+                {/* Heading */}
+                <h1
+                  className="
+                    text-5xl font-black
+                    leading-[0.95]
+                    tracking-[-0.045em]
+                    md:text-7xl
+                  "
+                >
+                  LES MOMENTS
+                  <br />
 
-        {/* 2. THE MISSION NARRATIVE */}
-        <section className="py-24 bg-slate-50 dark:bg-slate-900/50 border-y border-slate-100 dark:border-slate-800/50">
-          <div className="container mx-auto px-6 md:px-12 max-w-4xl">
-            <FadeIn>
-              <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-8 tracking-tight">
-                  More Than Just Company Snapshots
-                </h2>
-                <p className="text-slate-600 dark:text-slate-400 leading-loose mb-6">
-                  Works Council (CSE) events are the heartbeat of workplace culture. From end-of-year galas and family fun days to team-building workshops and milestone anniversaries, these moments strengthen bonds and define your company spirit.
+                  <span className="text-[#004A87]/25 dark:text-white/20">
+                    QUI MÉRITENT
+                  </span>
+
+                  <br />
+
+                  <span className="text-[#004A87] dark:text-white">
+                    D&apos;ÊTRE GARDÉS.
+                  </span>
+                </h1>
+
+                {/* Accent line */}
+                <div className="mt-8 flex items-center gap-3">
+                  <div className="h-1 w-12 rounded-full bg-[#FF8201]" />
+                  <div className="h-1 w-20 rounded-full bg-[#004A87]" />
+                </div>
+
+                {/* Intro */}
+                <p
+                  className="
+                    mt-8 max-w-xl
+                    border-l-4 border-[#FF8201]
+                    pl-6
+                    text-lg leading-relaxed
+                    text-[#172033]/80
+                    dark:text-white/75
+                    md:text-xl
+                  "
+                >
+                  CE Frames est la galerie photo dédiée aux événements
+                  du Comité d&apos;Entreprise d&apos;Infomil Mauritius.
                 </p>
-                <p className="text-slate-600 dark:text-slate-400 leading-loose mb-6">
-                  We blend high-end event photojournalism with modern digital gallery management. Employees get instant access to polished, shareable memories, while your internal communications team gains a rich library of authentic assets.
+
+                <p
+                  className="
+                    mt-6 max-w-xl
+                    text-base leading-relaxed
+                    text-[#64748B]
+                    dark:text-white/50
+                  "
+                >
+                  Fêtes de fin d&apos;année, happy hours, petits-déjeuners,
+                  journées d&apos;équipe ou événements spéciaux — nous
+                  rassemblons les souvenirs qui font vivre ces moments
+                  ensemble.
                 </p>
-                <p className="text-slate-900 dark:text-slate-200 leading-loose font-medium">
-                  Discreet, professional, and endlessly engaging — we ensure every employee feels valued and every highlight is preserved.
-                </p>
+
+                {/* Small brand detail */}
+                <div className="mt-8 flex items-center gap-3 text-sm font-semibold text-[#004A87] dark:text-[#FF8201]">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFF1E5] dark:bg-[#FF8201]/10">
+                    <Camera className="h-4 w-4" />
+                  </div>
+
+                  <span>Des souvenirs, une équipe, une histoire.</span>
+                </div>
+
               </div>
             </FadeIn>
-          </div>
-        </section>
 
-        {/* 3. EVENT CATEGORIES - Asymmetric Cards */}
-        <section className="py-24 md:py-32 bg-white dark:bg-slate-950 overflow-hidden">
-          <div className="container mx-auto px-6 md:px-12 max-w-[1600px]">
-            
-            {/* Galas & Celebrations Section */}
-            <div className="flex flex-col md:flex-row gap-12 md:gap-24 items-center mb-32">
-              <div className="w-full md:w-1/2 order-2 md:order-1">
-                <FadeIn>
-                  <div className="relative aspect-video bg-slate-100 dark:bg-slate-900 overflow-hidden group shadow-lg rounded-xl">
-                     <Image 
-                      src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop" 
-                      alt="Company Annual Gala" 
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                    <div className="absolute top-4 left-4 bg-slate-950/70 backdrop-blur-md text-white px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border border-white/10">
-                      Galas • Award Nights • Year-End Parties
-                    </div>
+            {/* Image */}
+            <FadeIn delay={200}>
+              <div
+                className="
+                  group relative
+                  aspect-[4/5]
+                  overflow-hidden
+                  rounded-[2rem]
+                  bg-[#EAF4FB]
+                  shadow-2xl
+                  shadow-[#004A87]/15
+                  dark:bg-[#00345F]
+                  dark:shadow-black/40
+                "
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop"
+                  alt="Événement d'entreprise"
+                  fill
+                  priority
+                  className="
+                    object-cover
+                    transition-transform
+                    duration-700
+                    group-hover:scale-105
+                  "
+                />
+
+                {/* Blue/orange image overlay */}
+                <div
+                  className="
+                    absolute inset-0
+                    bg-gradient-to-t
+                    from-[#00345F]/90
+                    via-[#00345F]/20
+                    to-transparent
+                  "
+                />
+
+                {/* Orange accent */}
+                <div
+                  className="
+                    absolute right-6 top-6
+                    h-14 w-14
+                    rounded-2xl
+                    border border-white/20
+                    bg-[#FF8201]
+                    shadow-xl
+                    shadow-black/20
+                  "
+                />
+
+                {/* Image caption */}
+                <div
+                  className="
+                    absolute inset-x-0 bottom-0
+                    px-7 pb-7 pt-20
+                  "
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="h-1 w-8 rounded-full bg-[#FF8201]" />
+
+                    <p
+                      className="
+                        text-[10px] font-bold uppercase
+                        tracking-[0.2em]
+                        text-[#FFB15C]
+                      "
+                    >
+                      CE Frames
+                    </p>
                   </div>
-                </FadeIn>
-              </div>
-              <div className="w-full md:w-1/2 order-1 md:order-2 space-y-6">
-                <FadeIn delay={100}>
-                  <PartyPopper className="w-8 h-8 text-rose-600 dark:text-rose-400 mb-4" />
-                  <h3 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-slate-100">GALAS & CELEBRATIONS</h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                    From red-carpet entrances to award ceremonies and dance floors, we capture the glamour and joy of your major corporate celebrations with premium, editorial lighting.
+
+                  <p className="text-sm text-white/80">
+                    Les souvenirs du Comité d&apos;Entreprise
                   </p>
-                  <ul className="space-y-3 mt-6 text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> Red Carpet & Step-and-Repeats</li>
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> Keynote & Award Moments</li>
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> High-Energy Party Coverage</li>
-                  </ul>
-                </FadeIn>
+                </div>
               </div>
-            </div>
-
-            {/* Team Building & Family Days Section */}
-            <div className="flex flex-col md:flex-row gap-12 md:gap-24 items-center">
-              <div className="w-full md:w-1/2 space-y-6">
-                <FadeIn>
-                  <Users className="w-8 h-8 text-rose-600 dark:text-rose-400 mb-4" />
-                  <h3 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-slate-100">TEAM DAYS & FAMILY EVENTS</h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Outdoor retreats, summer barbecues, and family days organized by the CSE require candid, dynamic coverage. We capture authentic smiles, competitive spirits, and relaxed interactions.
-                  </p>
-                  <ul className="space-y-3 mt-6 text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> Candid Team Interactions</li>
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> Interactive Activity Highlights</li>
-                    <li className="flex items-center gap-3"><div className="w-2 h-2 bg-rose-500 rounded-full"></div> On-Site Photo Booth Add-ons</li>
-                  </ul>
-                </FadeIn>
-              </div>
-              <div className="w-full md:w-1/2">
-                <FadeIn delay={100}>
-                  <div className="relative aspect-3/4 bg-slate-100 dark:bg-slate-900 overflow-hidden group shadow-lg rounded-xl">
-                     <Image 
-                      src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1200&auto=format&fit=crop" 
-                      alt="Team building retreat" 
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  </div>
-                </FadeIn>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* 4. THE PROCESS / WORKFLOW */}
-        <section className="py-24 bg-slate-900 dark:bg-black text-white">
-          <div className="container mx-auto px-6 md:px-12 max-w-7xl">
-            <FadeIn>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-16 text-center">Seamless Workflow</h2>
             </FadeIn>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-              {/* Connecting Line (Desktop) */}
-              <div className="hidden md:block absolute top-8 left-0 right-0 h-px bg-slate-800 z-0" />
+          </div>
+        </div>
+      </section>
 
+
+      {/* =========================================================
+          WHAT IS CE FRAMES
+      ========================================================= */}
+      <section
+        className="
+          border-y
+          border-[#E2E8F0]
+          bg-[#F5F7FA]
+          py-24
+          dark:border-white/10
+          dark:bg-[#0E1C2D]
+        "
+      >
+        <div className="mx-auto max-w-4xl px-6 md:px-12">
+
+          <FadeIn>
+            <div className="text-center">
+
+              {/* Icon */}
+              <div
+                className="
+                  mx-auto mb-7
+                  flex h-14 w-14
+                  items-center justify-center
+                  rounded-2xl
+                  bg-[#EAF4FB]
+                  text-[#004A87]
+                  shadow-sm
+                  dark:bg-[#00345F]
+                  dark:text-[#FF8201]
+                "
+              >
+                <Camera className="h-7 w-7" />
+              </div>
+
+              <p
+                className="
+                  mb-4 text-xs font-bold uppercase
+                  tracking-[0.2em]
+                  text-[#FF8201]
+                "
+              >
+                Notre galerie
+              </p>
+
+              <h2
+                className="
+                  text-3xl font-bold
+                  tracking-tight
+                  md:text-5xl
+                "
+              >
+                Une galerie pour
+                <br />
+
+                <span className="text-[#004A87]/35 dark:text-white/25">
+                  nos moments partagés.
+                </span>
+              </h2>
+
+              <p
+                className="
+                  mx-auto mt-8 max-w-2xl
+                  text-base leading-loose
+                  text-[#64748B]
+                  dark:text-white/55
+                  md:text-lg
+                "
+              >
+                CE Frames a été pensé comme un espace simple pour
+                retrouver, découvrir et partager les photos prises
+                lors des événements organisés par le Comité
+                d&apos;Entreprise d&apos;Infomil Mauritius.
+              </p>
+
+              <p
+                className="
+                  mx-auto mt-5 max-w-2xl
+                  text-base leading-loose
+                  text-[#64748B]
+                  dark:text-white/55
+                  md:text-lg
+                "
+              >
+                Plutôt qu&apos;une simple collection de photos, c&apos;est
+                une mémoire visuelle de la vie collective chez Infomil
+                Mauritius.
+              </p>
+
+              {/* Decorative line */}
+              <div className="mx-auto mt-10 flex justify-center gap-2">
+                <div className="h-1 w-10 rounded-full bg-[#004A87]" />
+                <div className="h-1 w-4 rounded-full bg-[#FF8201]" />
+              </div>
+
+            </div>
+          </FadeIn>
+
+        </div>
+      </section>
+
+
+      {/* =========================================================
+          VALUES
+      ========================================================= */}
+      <section
+        className="
+          bg-white
+          py-24
+          dark:bg-[#0B1624]
+          md:py-32
+        "
+      >
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+
+          <FadeIn>
+            <div className="mb-16 max-w-2xl">
+
+              <p
+                className="
+                  mb-4 text-xs font-bold uppercase
+                  tracking-[0.2em]
+                  text-[#FF8201]
+                "
+              >
+                CE Frames
+              </p>
+
+              <h2
+                className="
+                  text-4xl font-black
+                  tracking-[-0.04em]
+                  md:text-6xl
+                "
+              >
+                DES PHOTOS.
+                <br />
+
+                <span className="text-[#004A87] dark:text-white">
+                  DES SOUVENIRS.
+                </span>
+
+                <br />
+
+                <span className="text-[#004A87]/25 dark:text-white/20">
+                  DES MOMENTS ENSEMBLE.
+                </span>
+              </h2>
+
+            </div>
+          </FadeIn>
+
+
+          <div className="grid gap-6 md:grid-cols-3">
+
+            {/* Gallery */}
+            <FadeIn delay={100}>
+              <div
+                className="
+                  group h-full
+                  rounded-3xl
+                  border border-[#E2E8F0]
+                  bg-white
+                  p-8
+                  shadow-sm
+                  transition-all duration-300
+                  hover:-translate-y-1
+                  hover:border-[#004A87]/30
+                  hover:shadow-xl
+                  hover:shadow-[#004A87]/10
+                  dark:border-white/10
+                  dark:bg-[#102238]
+                  dark:hover:border-[#004A87]
+                "
+              >
+                <div
+                  className="
+                    mb-8 flex h-12 w-12
+                    items-center justify-center
+                    rounded-2xl
+                    bg-[#EAF4FB]
+                    text-[#004A87]
+                    transition-colors
+                    group-hover:bg-[#004A87]
+                    group-hover:text-white
+                    dark:bg-[#00345F]
+                    dark:text-white
+                    dark:group-hover:bg-[#FF8201]
+                  "
+                >
+                  <Images className="h-6 w-6" />
+                </div>
+
+                <h3 className="text-xl font-bold text-[#172033] dark:text-white">
+                  Tous les souvenirs
+                </h3>
+
+                <p
+                  className="
+                    mt-4 text-sm leading-relaxed
+                    text-[#64748B]
+                    dark:text-white/50
+                  "
+                >
+                  Retrouvez les photos des différents événements
+                  du Comité d&apos;Entreprise au même endroit.
+                </p>
+
+                <div className="mt-8 flex items-center gap-2 text-sm font-bold text-[#004A87] dark:text-[#FF8201]">
+                  <span>Explorer les moments</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </FadeIn>
+
+
+            {/* Moments */}
+            <FadeIn delay={200}>
+              <div
+                className="
+                  group h-full
+                  rounded-3xl
+                  border border-[#E2E8F0]
+                  bg-white
+                  p-8
+                  shadow-sm
+                  transition-all duration-300
+                  hover:-translate-y-1
+                  hover:border-[#FF8201]/40
+                  hover:shadow-xl
+                  hover:shadow-[#FF8201]/10
+                  dark:border-white/10
+                  dark:bg-[#102238]
+                  dark:hover:border-[#FF8201]
+                "
+              >
+                <div
+                  className="
+                    mb-8 flex h-12 w-12
+                    items-center justify-center
+                    rounded-2xl
+                    bg-[#FFF1E5]
+                    text-[#FF8201]
+                    transition-colors
+                    group-hover:bg-[#FF8201]
+                    group-hover:text-white
+                    dark:bg-[#FF8201]/10
+                    dark:group-hover:bg-[#FF8201]
+                  "
+                >
+                  <Camera className="h-6 w-6" />
+                </div>
+
+                <h3 className="text-xl font-bold text-[#172033] dark:text-white">
+                  Des moments authentiques
+                </h3>
+
+                <p
+                  className="
+                    mt-4 text-sm leading-relaxed
+                    text-[#64748B]
+                    dark:text-white/50
+                  "
+                >
+                  Des sourires, des rencontres et des moments
+                  spontanés qui racontent la vie chez Infomil.
+                </p>
+
+                <div className="mt-8 flex items-center gap-2 text-sm font-bold text-[#004A87] dark:text-[#FF8201]">
+                  <span>Revivre les instants</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </FadeIn>
+
+
+            {/* Sharing */}
+            <FadeIn delay={300}>
+              <div
+                className="
+                  group h-full
+                  rounded-3xl
+                  border border-[#E2E8F0]
+                  bg-white
+                  p-8
+                  shadow-sm
+                  transition-all duration-300
+                  hover:-translate-y-1
+                  hover:border-[#004A87]/30
+                  hover:shadow-xl
+                  hover:shadow-[#004A87]/10
+                  dark:border-white/10
+                  dark:bg-[#102238]
+                  dark:hover:border-[#004A87]
+                "
+              >
+                <div
+                  className="
+                    mb-8 flex h-12 w-12
+                    items-center justify-center
+                    rounded-2xl
+                    bg-[#EAF4FB]
+                    text-[#004A87]
+                    transition-colors
+                    group-hover:bg-[#004A87]
+                    group-hover:text-white
+                    dark:bg-[#00345F]
+                    dark:text-white
+                    dark:group-hover:bg-[#FF8201]
+                  "
+                >
+                  <Heart className="h-6 w-6" />
+                </div>
+
+                <h3 className="text-xl font-bold text-[#172033] dark:text-white">
+                  À partager
+                </h3>
+
+                <p
+                  className="
+                    mt-4 text-sm leading-relaxed
+                    text-[#64748B]
+                    dark:text-white/50
+                  "
+                >
+                  Parce que les meilleurs souvenirs sont ceux que
+                  l&apos;on peut revivre et partager ensemble.
+                </p>
+
+                <div className="mt-8 flex items-center gap-2 text-sm font-bold text-[#004A87] dark:text-[#FF8201]">
+                  <span>Partager les souvenirs</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </FadeIn>
+
+          </div>
+        </div>
+      </section>
+
+
+      {/* =========================================================
+          EVENTS
+      ========================================================= */}
+      <section
+        className="
+          relative overflow-hidden
+          bg-[#00345F]
+          py-24 text-white
+          md:py-32
+        "
+      >
+        {/* Background decorations */}
+        <div
+          className="
+            pointer-events-none
+            absolute -right-40 -top-40
+            h-96 w-96
+            rounded-full
+            bg-[#004A87]
+            opacity-60
+            blur-3xl
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none
+            absolute -bottom-40 -left-40
+            h-96 w-96
+            rounded-full
+            bg-[#FF8201]
+            opacity-20
+            blur-3xl
+          "
+        />
+
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
+
+          <FadeIn>
+
+            <div
+              className="
+                mx-auto mb-6
+                flex h-12 w-12
+                items-center justify-center
+                rounded-2xl
+                bg-[#FF8201]
+                shadow-lg
+                shadow-black/20
+              "
+            >
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+
+            <p
+              className="
+                mb-5 text-xs font-bold uppercase
+                tracking-[0.2em]
+                text-[#FFB15C]
+              "
+            >
+              Nos événements
+            </p>
+
+            <h2
+              className="
+                text-4xl font-black
+                tracking-[-0.04em]
+                md:text-6xl
+              "
+            >
+              CHAQUE ÉVÉNEMENT
+              <br />
+
+              <span className="text-white/30">
+                A SON HISTOIRE.
+              </span>
+            </h2>
+
+            <p
+              className="
+                mx-auto mt-7 max-w-2xl
+                text-base leading-relaxed
+                text-white/60
+              "
+            >
+              Des petits moments du quotidien aux grandes célébrations,
+              chaque événement mérite d&apos;être immortalisé.
+            </p>
+
+            <div
+              className="
+                mx-auto mt-12
+                flex max-w-3xl
+                flex-wrap
+                justify-center
+                gap-3
+              "
+            >
               {[
-                { title: "01. Event Brief", desc: "We align with your CSE committee to review event schedules, key milestones, branding requirements, and special VIP requests." },
-                { title: "02. Live Capture", desc: "Our experienced photographers blend seamlessly into your event, capturing organic reactions without disturbing guests." },
-                { title: "03. Secure Gallery", desc: "Fast turnaround delivery via a password-protected, branded web gallery with instant downloads for all employees." }
-              ].map((step, i) => (
-                <FadeIn key={i} delay={i * 150}>
-                  <div className="relative z-10 bg-slate-900 dark:bg-black pt-8">
-                    <div className="w-16 h-16 bg-slate-800 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 dark:border-slate-800 shadow-lg">
-                      <Building2 className="w-6 h-6 text-rose-400" />
-                    </div>
-                    <h3 className="text-lg font-bold uppercase tracking-[0.15em] mb-4 text-slate-100">{step.title}</h3>
-                    <p className="text-slate-400 leading-relaxed text-sm">{step.desc}</p>
-                  </div>
-                </FadeIn>
+                'Fêtes de fin d’année',
+                'Happy Hours',
+                'Petits-déjeuners',
+                'Journées d’équipe',
+                'Team Building',
+                'Événements spéciaux',
+              ].map((event, index) => (
+                <span
+                  key={event}
+                  className={`
+                    rounded-full
+                    border
+                    px-5 py-2.5
+                    text-sm
+                    transition-all duration-300
+                    ${
+                      index === 0
+                        ? 'border-[#FF8201] bg-[#FF8201] text-white shadow-lg shadow-[#FF8201]/20'
+                        : 'border-white/10 bg-white/5 text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white'
+                    }
+                  `}
+                >
+                  {event}
+                </span>
               ))}
             </div>
-          </div>
-        </section>
 
-        {/* 5. MINIMAL CTA */}
-        <section className="py-32 bg-white dark:bg-slate-950 text-center">
-          <div className="container mx-auto px-6">
-            <FadeIn>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-slate-100 mb-8">
-                PLANNING YOUR NEXT EVENT?
-              </h2>
-              <p className="text-slate-600 dark:text-slate-400 text-lg mb-10 max-w-xl mx-auto font-medium">
-                Let&apos;s collaborate to make your next Comité d&apos;Entreprise event unforgettable.
-              </p>
-              <button 
-                onClick={() => setIsContactOpen(true)}
-                className="group inline-flex items-center gap-3 px-10 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-full font-bold uppercase tracking-widest transition-all duration-300 shadow-lg hover:shadow-rose-500/25 hover:-translate-y-1 cursor-pointer"
-              >
-                Book Your Event
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            </FadeIn>
-          </div>
-        </section>
+            {/* Bottom accent */}
+            <div className="mx-auto mt-14 flex justify-center gap-2">
+              <div className="h-1 w-16 rounded-full bg-[#FF8201]" />
+              <div className="h-1 w-5 rounded-full bg-white/30" />
+            </div>
 
-      </main>
+          </FadeIn>
 
-      {/* Contact Modal Integration */}
-      <ContactModal 
-        isOpen={isContactOpen} 
-        onClose={() => setIsContactOpen(false)} 
-      />
-    </>
+        </div>
+      </section>
+
+    </main>
   );
 }

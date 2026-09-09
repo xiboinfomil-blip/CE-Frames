@@ -5,227 +5,581 @@ import { formatDistanceToNow } from 'date-fns';
 import Swal from 'sweetalert2';
 import { MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport';
-import { 
-  HiPlay, 
-  HiMapPin, 
-  HiTrash, 
-  HiArrowPath,
-  HiCamera 
+import {
+HiPlay,
+HiMapPin,
+HiTrash,
+HiArrowPath,
+HiCamera,
 } from 'react-icons/hi2';
 
 export interface MediaSchema {
-  id: string;
-  type: typeof MEDIA_TYPES[number];
-  thumbnailUrl: string;
-  fullResUrl: string;
-  originalFilename: string | null;
-  mimeType: string | null;
-  width: number | null;
-  height: number | null;
-  durationSeconds: number | null;
-  exifData: Record<string, unknown> | null;
-  caption: string | null;
-  locationName: string | null;
-  coordinates: [number, number] | null;
-  uploadedAt: string | Date;
+id: string;
+type: typeof MEDIA_TYPES[number];
+thumbnailUrl: string;
+fullResUrl: string;
+originalFilename: string | null;
+mimeType: string | null;
+width: number | null;
+height: number | null;
+durationSeconds: number | null;
+exifData: Record<string, unknown> | null;
+caption: string | null;
+locationName: string | null;
+coordinates: [number, number] | null;
+uploadedAt: string | Date;
 }
 
 interface MediaCardProps {
-  media: MediaSchema;
-  onDelete: (id: string) => void;
-  onOpenLightbox: () => void;
-  isDeleting?: boolean;
-  priority?: boolean;
-  sizes?: string;
+media: MediaSchema;
+onDelete: (id: string) => void;
+onOpenLightbox: () => void;
+isDeleting?: boolean;
+priority?: boolean;
+sizes?: string;
 }
 
 const formatDuration = (seconds: number | null): string | null => {
-  if (!seconds) return null;
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
+if (!seconds) return null;
+
+const mins = Math.floor(seconds / 60);
+const secs = Math.floor(seconds % 60);
+
+return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
 const getExifString = (value: unknown): string => {
-  if (value === null || value === undefined) return '';
-  return String(value);
+if (value === null || value === undefined) return '';
+return String(value);
 };
 
-const MediaCard = memo(function MediaCard({ 
-  media, 
-  onDelete, 
-  onOpenLightbox, 
-  isDeleting = false,
-  priority = false,
-  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+const MediaCard = memo(function MediaCard({
+media,
+onDelete,
+onOpenLightbox,
+isDeleting = false,
+priority = false,
+sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
 }: MediaCardProps) {
-  const exif = media.exifData || {};
-  
-  const isoStr = getExifString(exif.ISO ?? exif.iso);
-  const apertureStr = getExifString(exif.FNumber ?? exif.fNumber);
-  const shutterStr = getExifString(exif.ExposureTime ?? exif.exposureTime);
-  const cameraModelStr = getExifString(exif.model);
-  
-  const hasTechnicalData = !!isoStr || !!apertureStr || !!shutterStr || !!cameraModelStr;
-  const resolution = media.width && media.height ? `${media.width}×${media.height}` : null;
+const exif = media.exifData || {};
 
-  const handleDeleteClick = useCallback(async (e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation();
-    if (isDeleting) return;
+const isoStr = getExifString(exif.ISO ?? exif.iso);
+const apertureStr = getExifString(exif.FNumber ?? exif.fNumber);
+const shutterStr = getExifString(
+exif.ExposureTime ?? exif.exposureTime
+);
+const cameraModelStr = getExifString(exif.model);
 
-    const result = await Swal.fire({
-      title: 'Delete Frame Asset?',
-      html: `<span class="text-zinc-500 text-sm">You are about to permanently remove <strong class="text-zinc-900">${media.originalFilename || 'this asset'}</strong> from CE Frames.</span>`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#e11d48',
-      cancelButtonColor: '#e4e4e7',
-      confirmButtonText: 'Yes, delete asset',
-      cancelButtonText: 'Cancel',
-      background: '#ffffff',
-      customClass: {
-        popup: 'rounded-2xl shadow-xl border border-zinc-100 p-6',
-        title: 'font-bold text-zinc-900 text-lg tracking-tight',
-        htmlContainer: 'mt-2',
-        confirmButton: 'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:bg-rose-700 hover:shadow-md cursor-pointer',
-        cancelButton: 'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-600 hover:bg-zinc-100 cursor-pointer'
-      }
-    });
+const hasTechnicalData =
+!!isoStr ||
+!!apertureStr ||
+!!shutterStr ||
+!!cameraModelStr;
 
-    if (result.isConfirmed) {
-      onDelete(media.id);
-    }
-  }, [isDeleting, onDelete, media.id, media.originalFilename]);
+const resolution =
+media.width && media.height
+? `${media.width}×${media.height}`
+: null;
 
-  return (
-    <figure className="group relative flex flex-col w-full bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-black/50 transition-all duration-500 ease-out h-full border border-zinc-100 dark:border-zinc-800">
-      
-      {/* --- Media Viewport Wrapper --- */}
-      <div 
-        className="relative aspect-4/3 bg-zinc-950 overflow-hidden cursor-zoom-in shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-        onClick={onOpenLightbox}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onOpenLightbox(); }}
-        role="button"
-        tabIndex={0}
-        aria-label={`Open ${media.originalFilename || 'media asset'} in lightbox`}
+const handleDeleteClick = useCallback(
+async (e: React.MouseEvent | React.KeyboardEvent) => {
+e.stopPropagation();
+
+  if (isDeleting) return;
+
+  const result = await Swal.fire({
+    title: 'Delete Frame Asset?',
+    html: `<span class="text-[#64748B] text-sm">You are about to permanently remove <strong class="text-[#172033]">${media.originalFilename || 'this asset'}</strong> from CE Frames.</span>`,
+    icon: 'warning',
+    showCancelButton: true,
+
+    // CE Frames brand colors
+    confirmButtonColor: '#FF8201',
+    cancelButtonColor: '#E2E8F0',
+
+    confirmButtonText: 'Yes, delete asset',
+    cancelButtonText: 'Cancel',
+
+    background: '#FFFFFF',
+
+    customClass: {
+      popup:
+        'rounded-2xl shadow-xl border border-[#E2E8F0] p-6',
+      title:
+        'font-bold text-[#172033] text-lg tracking-tight',
+      htmlContainer:
+        'mt-2',
+      confirmButton:
+        'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:bg-[#E87500] hover:shadow-md cursor-pointer',
+      cancelButton:
+        'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#64748B] hover:bg-[#F5F7FA] cursor-pointer',
+    },
+  });
+
+  if (result.isConfirmed) {
+    onDelete(media.id);
+  }
+},
+[
+  isDeleting,
+  onDelete,
+  media.id,
+  media.originalFilename,
+]
+
+);
+
+return ( <figure
+   className="
+     group relative flex flex-col w-full h-full
+     bg-white
+     rounded-2xl overflow-hidden
+     border border-[#E2E8F0]
+     shadow-sm
+     hover:shadow-xl hover:shadow-[#00345F]/10
+     hover:border-[#CBD5E1]
+     transition-all duration-500 ease-out
+   "
+ >
+{/* --- Media Viewport Wrapper --- */}
+<div
+className="
+relative aspect-4/3
+bg-[#F5F7FA]
+overflow-hidden
+cursor-zoom-in
+shrink-0
+focus:outline-none
+focus-visible:ring-2
+focus-visible:ring-[#FF8201]
+focus-visible:ring-offset-2
+focus-visible:ring-offset-white
+"
+onClick={onOpenLightbox}
+onKeyDown={(e) => {
+if (e.key === 'Enter' || e.key === ' ') {
+e.preventDefault();
+onOpenLightbox();
+}
+}}
+role="button"
+tabIndex={0}
+aria-label={`Open ${
+          media.originalFilename || 'media asset'
+        } in lightbox`}
+> <MediaViewport
+       mediaType={media.type}
+       fullResUrl={media.fullResUrl}
+       thumbnailUrl={media.thumbnailUrl}
+       caption={media.caption}
+       originalFilename={media.originalFilename}
+       className="
+         w-full h-full
+         object-cover
+         transition-transform duration-700 ease-out
+         group-hover:scale-105
+         will-change-transform
+       "
+       priority={priority}
+       sizes={sizes}
+     />
+
+```
+    {/* Gradient Overlay */}
+    <div
+      className="
+        absolute inset-0
+        bg-linear-to-t
+        from-[#00345F]/55
+        via-transparent
+        to-transparent
+        opacity-0
+        group-hover:opacity-100
+        transition-opacity duration-500
+        pointer-events-none
+      "
+    />
+
+    {/* Top Badges */}
+    <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">
+      {/* Media Type */}
+      <span
+        className="
+          flex items-center gap-1.5
+          px-2.5 py-1.5
+          rounded-full
+          bg-white/95
+          backdrop-blur-md
+          border border-white/70
+          text-[10px]
+          font-bold
+          uppercase
+          tracking-wider
+          text-[#00345F]
+          shadow-sm
+        "
       >
-        <MediaViewport
-          mediaType={media.type}
-          fullResUrl={media.fullResUrl}
-          thumbnailUrl={media.thumbnailUrl}
-          caption={media.caption}
-          originalFilename={media.originalFilename}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-transform"
-          priority={priority}
-          sizes={sizes}
-        />
+        {media.type === 'video' && (
+          <HiPlay className="w-3 h-3 text-[#FF8201]" />
+        )}
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        {media.type === 'video' ? 'Video' : 'Photo'}
+      </span>
 
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">
-          <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-xs">
-            {media.type === 'video' && (
-              <HiPlay className="w-3 h-3 text-rose-500" />
-            )}
-            {media.type === 'video' ? 'Video' : 'Photo'}
+      {/* Location */}
+      {media.locationName && (
+        <span
+          className="
+            hidden sm:flex
+            items-center gap-1.5
+            px-2.5 py-1.5
+            rounded-full
+            bg-white/95
+            backdrop-blur-md
+            border border-white/70
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-wider
+            text-[#00345F]
+            shadow-sm
+            max-w-32
+            transform translate-y-2
+            opacity-0
+            group-hover:translate-y-0
+            group-hover:opacity-100
+            transition-all duration-300
+          "
+        >
+          <HiMapPin className="w-3 h-3 text-[#004A87] shrink-0" />
+
+          <span className="truncate">
+            {media.locationName}
           </span>
-          
-          {media.locationName && (
-            <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-white/20 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 shadow-xs max-w-32 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-              <HiMapPin className="w-3 h-3 text-zinc-500 shrink-0" />
-              <span className="truncate">{media.locationName}</span>
-            </span>
+        </span>
+      )}
+    </div>
+
+    {/* Delete Button */}
+    <button
+      type="button"
+      onClick={handleDeleteClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleDeleteClick(e);
+        }
+      }}
+      disabled={isDeleting}
+      className={`
+        absolute top-3 right-3 z-20
+        p-2 rounded-full
+        bg-white/95
+        backdrop-blur-md
+        shadow-sm
+        border border-[#E2E8F0]
+        transition-all duration-200
+        focus:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-[#FF8201]
+        focus-visible:ring-offset-1
+        cursor-pointer
+
+        ${
+          isDeleting
+            ? 'cursor-not-allowed opacity-60'
+            : `
+              text-[#64748B]
+              hover:text-red-600
+              hover:bg-red-50
+              hover:border-red-200
+              opacity-0
+              group-hover:opacity-100
+              group-focus-within:opacity-100
+            `
+        }
+      `}
+      aria-label={`Delete ${
+        media.originalFilename || 'media asset'
+      }`}
+    >
+      {isDeleting ? (
+        <HiArrowPath className="animate-spin h-4 w-4 text-[#FF8201]" />
+      ) : (
+        <HiTrash className="w-4 h-4" />
+      )}
+    </button>
+
+    {/* Duration Badge */}
+    {media.type === 'video' && media.durationSeconds && (
+      <div
+        className="
+          absolute bottom-3 right-3 z-10
+          px-2.5 py-1
+          rounded-md
+          bg-[#00345F]/85
+          backdrop-blur-md
+          text-[10px]
+          font-mono
+          font-bold
+          text-white
+          shadow-sm
+          pointer-events-none
+          border border-white/10
+        "
+      >
+        {formatDuration(media.durationSeconds)}
+      </div>
+    )}
+  </div>
+
+  {/* --- Content Body --- */}
+  <figcaption className="flex flex-col flex-1 p-5 bg-white">
+    <div className="mb-4">
+      <h3
+        className="
+          text-sm
+          font-bold
+          text-[#172033]
+          leading-snug
+          truncate
+          pr-2
+          transition-colors
+          group-hover:text-[#004A87]
+        "
+      >
+        {media.caption ||
+          media.originalFilename ||
+          'Untitled Frame'}
+      </h3>
+
+      <p
+        className="
+          text-[10px]
+          font-medium
+          text-[#94A3B8]
+          mt-1.5
+          uppercase
+          tracking-widest
+        "
+      >
+        {formatDistanceToNow(new Date(media.uploadedAt), {
+          addSuffix: true,
+        })}
+      </p>
+    </div>
+
+    {/* Technical Metadata */}
+    {hasTechnicalData ? (
+      <div
+        className="
+          mt-auto
+          pt-4
+          border-t border-[#E2E8F0]
+        "
+      >
+        <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+          {/* Camera */}
+          {cameraModelStr && (
+            <div
+              className="
+                col-span-2
+                flex items-center justify-between
+                text-[10px]
+                pb-2
+                border-b border-[#F5F7FA]
+                mb-1
+              "
+            >
+              <span
+                className="
+                  font-medium
+                  text-[#64748B]
+                  uppercase
+                  tracking-wider
+                  flex items-center gap-1.5
+                "
+              >
+                <HiCamera className="w-3 h-3 text-[#FF8201]" />
+                Camera
+              </span>
+
+              <span
+                className="
+                  font-semibold
+                  text-[#00345F]
+                  truncate
+                  max-w-[150px]
+                "
+              >
+                {cameraModelStr}
+              </span>
+            </div>
+          )}
+
+          {/* ISO */}
+          {isoStr && (
+            <div className="flex items-center justify-between">
+              <span
+                className="
+                  text-[10px]
+                  font-medium
+                  text-[#64748B]
+                  uppercase
+                  tracking-wider
+                "
+              >
+                ISO
+              </span>
+
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  font-semibold
+                  text-[#00345F]
+                "
+              >
+                {isoStr}
+              </span>
+            </div>
+          )}
+
+          {/* Aperture */}
+          {apertureStr && (
+            <div className="flex items-center justify-between">
+              <span
+                className="
+                  text-[10px]
+                  font-medium
+                  text-[#64748B]
+                  uppercase
+                  tracking-wider
+                "
+              >
+                Aperture
+              </span>
+
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  font-semibold
+                  text-[#00345F]
+                "
+              >
+                f/{apertureStr}
+              </span>
+            </div>
+          )}
+
+          {/* Shutter */}
+          {shutterStr && (
+            <div className="flex items-center justify-between">
+              <span
+                className="
+                  text-[10px]
+                  font-medium
+                  text-[#64748B]
+                  uppercase
+                  tracking-wider
+                "
+              >
+                Shutter
+              </span>
+
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  font-semibold
+                  text-[#00345F]
+                "
+              >
+                {shutterStr}s
+              </span>
+            </div>
+          )}
+
+          {/* Resolution */}
+          {resolution && (
+            <div className="flex items-center justify-between">
+              <span
+                className="
+                  text-[10px]
+                  font-medium
+                  text-[#64748B]
+                  uppercase
+                  tracking-wider
+                "
+              >
+                Res
+              </span>
+
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  font-semibold
+                  text-[#00345F]
+                "
+              >
+                {resolution}
+              </span>
+            </div>
           )}
         </div>
-
-        {/* Delete Button */}
-        <button 
-          onClick={handleDeleteClick}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDeleteClick(e); }}
-          disabled={isDeleting}
-          className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-xs border border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer
-            ${isDeleting 
-              ? 'cursor-not-allowed opacity-60' 
-              : 'text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:border-rose-200 dark:hover:border-rose-900/50 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
-            }
-          `}
-          aria-label={`Delete ${media.originalFilename || 'media asset'}`}
+      </div>
+    ) : (
+      <div
+        className="
+          mt-auto
+          pt-4
+          border-t border-[#E2E8F0]
+          flex items-center justify-between
+          text-[10px]
+        "
+      >
+        <span
+          className="
+            font-medium
+            text-[#94A3B8]
+            uppercase
+            tracking-wider
+          "
         >
-          {isDeleting ? (
-            <HiArrowPath className="animate-spin h-4 w-4 text-rose-600" />
-          ) : (
-            <HiTrash className="w-4 h-4" />
-          )}
-        </button>
+          Standard Frame
+        </span>
 
-        {/* Duration Badge */}
-        {media.type === 'video' && media.durationSeconds && (
-          <div className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold text-white shadow-xs pointer-events-none">
-            {formatDuration(media.durationSeconds)}
-          </div>
+        {resolution && (
+          <span
+            className="
+              font-mono
+              font-semibold
+              text-[#64748B]
+            "
+          >
+            {resolution}
+          </span>
         )}
       </div>
+    )}
+  </figcaption>
 
-      {/* --- Content Body --- */}
-      <figcaption className="flex flex-col flex-1 p-5 bg-white dark:bg-zinc-900">
-        <div className="mb-4">
-          <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug truncate pr-2 transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400">
-            {media.caption || media.originalFilename || 'Untitled Frame'}
-          </h3>
-          <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mt-1.5 uppercase tracking-widest">
-            {formatDistanceToNow(new Date(media.uploadedAt), { addSuffix: true })}
-          </p>
-        </div>
+  {/* Brand Accent */}
+  <div
+    className="
+      absolute bottom-0 left-0 right-0
+      h-0.5
+      bg-[#FF8201]
+      scale-x-0
+      origin-left
+      group-hover:scale-x-100
+      transition-transform duration-500
+    "
+  />
+</figure>
 
-        {hasTechnicalData ? (
-          <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800">
-            <div className="grid grid-cols-2 gap-y-2 gap-x-4">
-              {cameraModelStr && (
-                <div className="col-span-2 flex items-center justify-between text-[10px] pb-2 border-b border-zinc-50 dark:border-zinc-800/50 mb-1">
-                  <span className="font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <HiCamera className="w-3 h-3 text-rose-500" />
-                    Camera
-                  </span>
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]">{cameraModelStr}</span>
-                </div>
-              )}
-              {isoStr && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">ISO</span>
-                  <span className="text-[10px] font-mono font-semibold text-zinc-700 dark:text-zinc-300">{isoStr}</span>
-                </div>
-              )}
-              {apertureStr && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Aperture</span>
-                  <span className="text-[10px] font-mono font-semibold text-zinc-700 dark:text-zinc-300">f/{apertureStr}</span>
-                </div>
-              )}
-              {shutterStr && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Shutter</span>
-                  <span className="text-[10px] font-mono font-semibold text-zinc-700 dark:text-zinc-300">{shutterStr}s</span>
-                </div>
-              )}
-              {resolution && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Res</span>
-                  <span className="text-[10px] font-mono font-semibold text-zinc-700 dark:text-zinc-300">{resolution}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[10px]">
-            <span className="font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Standard Frame</span>
-            {resolution && <span className="font-mono font-semibold text-zinc-500 dark:text-zinc-400">{resolution}</span>}
-          </div>
-        )}
-      </figcaption>
-    </figure>
-  );
+);
 });
 
 export default MediaCard;

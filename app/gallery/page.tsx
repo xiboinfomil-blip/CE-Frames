@@ -67,7 +67,7 @@ async function GalleryContent({ searchParams }: { searchParams: Promise<SearchPa
     
     result = res as FindPublicResult; 
   } catch (err) {
-    console.error('Erreur lors de la récupération des galeries CSE:', err);
+    console.error('Erreur lors de la récupération des galeries CE:', err);
   }
 
   const totalPages = Math.ceil(result.total / limit);

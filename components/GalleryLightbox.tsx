@@ -1,20 +1,30 @@
 'use client';
 
 import { useMemo } from 'react';
+
 import Lightbox, { Slide } from 'yet-another-react-lightbox';
+
 import 'yet-another-react-lightbox/styles.css';
+
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import Captions from 'yet-another-react-lightbox/plugins/captions';
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Video from 'yet-another-react-lightbox/plugins/video';
+
 import 'yet-another-react-lightbox/plugins/captions.css';
 
-// 🛡️ Type Definitions
+// -----------------------------------------------------
+// Types
+// -----------------------------------------------------
+
 export type MediaItem = Slide;
 
 type ExtendedSlide = MediaItem & {
   src?: string;
-  sources?: { src: string; type?: string }[];
+  sources?: {
+    src: string;
+    type?: string;
+  }[];
   poster?: string;
   width?: number;
   height?: number;
@@ -27,9 +37,19 @@ interface GalleryLightboxProps {
   index: number;
   slides: MediaItem[];
   onClose: () => void;
-  /** Optional theme override: 'dark' (recommended for media) | 'light' | 'system' */
+
+  /**
+   * Optional theme override:
+   * 'dark' (recommended for photography)
+   * 'light'
+   * 'system'
+   */
   theme?: 'dark' | 'light' | 'system';
 }
+
+// -----------------------------------------------------
+// Component
+// -----------------------------------------------------
 
 export default function GalleryLightbox({
   index,
@@ -37,16 +57,26 @@ export default function GalleryLightbox({
   onClose,
   theme = 'dark',
 }: GalleryLightboxProps) {
-  // Normalize mixed video and image slide props safely
+
+  // ---------------------------------------------------
+  // Normalize mixed image / video slides
+  // ---------------------------------------------------
+
   const normalizedSlides = useMemo(() => {
     return slides.map((slide) => {
       const extended = slide as ExtendedSlide;
-      const srcString = extended.src || extended.sources?.[0]?.src || '';
+
+      const srcString =
+        extended.src ||
+        extended.sources?.[0]?.src ||
+        '';
 
       const isVideo =
         slide.type === 'video' ||
         (typeof srcString === 'string' &&
-          /\.(mp4|webm|ogg|mov|mkv)$/i.test(srcString));
+          /\.(mp4|webm|ogg|mov|mkv)($|\?)/i.test(
+            srcString
+          ));
 
       if (isVideo) {
         return {
@@ -55,7 +85,9 @@ export default function GalleryLightbox({
           sources: [
             {
               src: srcString,
-              type: extended.sources?.[0]?.type || 'video/mp4',
+              type:
+                extended.sources?.[0]?.type ||
+                'video/mp4',
             },
           ],
           poster: extended.poster,
@@ -63,11 +95,51 @@ export default function GalleryLightbox({
           height: extended.height,
         } as MediaItem;
       }
+
       return slide;
     });
   }, [slides]);
 
-  if (index < 0 || normalizedSlides.length === 0) return null;
+  if (
+    index < 0 ||
+    normalizedSlides.length === 0
+  ) {
+    return null;
+  }
+
+  // ---------------------------------------------------
+  // Theme helpers
+  // ---------------------------------------------------
+
+  const isLight = theme === 'light';
+
+  const colors = {
+    button: isLight
+      ? '#004A87'
+      : '#EAF4FB',
+
+    buttonHover: isLight
+      ? '#00345F'
+      : '#FFFFFF',
+
+    buttonActive: '#FF8201',
+
+    title: isLight
+      ? '#172033'
+      : '#FFFFFF',
+
+    description: isLight
+      ? '#64748B'
+      : '#CBD5E1',
+
+    hoverBackground: isLight
+      ? 'rgba(0, 74, 135, 0.08)'
+      : 'rgba(234, 244, 251, 0.10)',
+
+    activeBackground: isLight
+      ? 'rgba(255, 130, 1, 0.12)'
+      : 'rgba(255, 130, 1, 0.18)',
+  };
 
   return (
     <>
@@ -76,7 +148,12 @@ export default function GalleryLightbox({
         slides={normalizedSlides}
         open={index >= 0}
         close={onClose}
-        plugins={[Zoom, Captions, Fullscreen, Video]}
+        plugins={[
+          Zoom,
+          Captions,
+          Fullscreen,
+          Video,
+        ]}
         carousel={{
           finite: false,
           preload: 2,
@@ -106,81 +183,250 @@ export default function GalleryLightbox({
         }}
         styles={{
           container: {
-            // Dark Backdrop with deep blur
-            backgroundColor:
-              theme === 'light'
-                ? 'rgba(250, 250, 250, 0.96)'
-                : 'rgba(10, 10, 12, 0.95)',
-            backdropFilter: 'blur(24px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            /*
+             * Keep the lightbox backdrop neutral.
+             * This prevents the brand colors from
+             * distracting from the photography.
+             */
+            backgroundColor: isLight
+              ? 'rgba(245, 247, 250, 0.97)'
+              : 'rgba(0, 34, 63, 0.96)',
+
+            backdropFilter:
+              'blur(24px) saturate(140%)',
+
+            WebkitBackdropFilter:
+              'blur(24px) saturate(140%)',
           },
+
           slide: {
-            padding: 'clamp(16px, 4vw, 64px)',
+            padding:
+              'clamp(16px, 4vw, 64px)',
           },
         }}
       />
 
-      {/* Modern High-End YARL CSS Overrides */}
+      {/* ------------------------------------------------
+          CE Frames YARL Theme
+          ------------------------------------------------ */}
+
       <style jsx global>{`
-        /* Root Design System Variables for YARL */
+        /* ---------------------------------------------
+           Root Design System
+           --------------------------------------------- */
+
         .yarl__root {
-          --yarl__color_button: ${theme === 'light' ? '#475569' : '#94a3b8'};
-          --yarl__color_button_hover: ${theme === 'light' ? '#0f172a' : '#f8fafc'};
-          --yarl__color_button_active: ${theme === 'light' ? '#020617' : '#ffffff'};
+          --yarl__color_button: ${colors.button};
+          --yarl__color_button_hover: ${colors.buttonHover};
+          --yarl__color_button_active: ${colors.buttonActive};
+
           --yarl__size_button: 48px;
           --yarl__size_icon: 24px;
 
           /* Captions */
-          --yarl__slide_title_color: ${theme === 'light' ? '#0f172a' : '#f8fafc'};
-          --yarl__slide_description_color: ${theme === 'light' ? '#64748b' : '#94a3b8'};
+          --yarl__slide_title_color: ${colors.title};
+          --yarl__slide_description_color: ${colors.description};
           --yarl__color_captions_background: transparent;
         }
 
-        /* Framing & Shadows on Media Element */
+        /* ---------------------------------------------
+           Media Framing
+           --------------------------------------------- */
+
         .yarl__slide_image,
         .yarl__slide video {
-          border-radius: 6px !important;
-          box-shadow: ${theme === 'light'
-            ? '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)'
-            : '0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1)'} !important;
+          border-radius: 8px !important;
+
+          box-shadow: ${
+            isLight
+              ? `
+                0 25px 50px -12px rgba(0, 52, 95, 0.20),
+                0 0 0 1px rgba(226, 232, 240, 0.9)
+              `
+              : `
+                0 25px 50px -12px rgba(0, 0, 0, 0.80),
+                0 0 0 1px rgba(234, 244, 251, 0.12)
+              `
+          } !important;
         }
 
-        /* Custom Floating Caption Typography */
+        /* ---------------------------------------------
+           Captions
+           --------------------------------------------- */
+
         .yarl__slide_captions_container {
           position: relative !important;
+
           margin-top: 20px !important;
+
           padding: 0 !important;
+
           background: transparent !important;
         }
 
         .yarl__slide_title {
+          color: ${colors.title} !important;
+
           font-size: 1.125rem !important;
+
           font-weight: 600 !important;
+
           letter-spacing: -0.01em !important;
         }
 
         .yarl__slide_description {
+          color: ${colors.description} !important;
+
           font-size: 0.875rem !important;
+
           max-width: 52ch !important;
+
           margin: 4px auto 0 auto !important;
+
           line-height: 1.6 !important;
         }
 
-        /* Interactive Micro-Interactions */
+        /* ---------------------------------------------
+           Buttons
+           --------------------------------------------- */
+
         .yarl__button {
           border-radius: 9999px !important;
-          transition: all 0.2s ease-in-out !important;
+
+          transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease !important;
         }
 
         .yarl__button:hover {
-          background-color: ${theme === 'light'
-            ? 'rgba(0, 0, 0, 0.05)'
-            : 'rgba(255, 255, 255, 0.1)'} !important;
+          background-color:
+            ${colors.hoverBackground} !important;
+
+          color: ${colors.buttonHover} !important;
+
           transform: scale(1.05);
+
+          box-shadow:
+            0 4px 14px rgba(0, 52, 95, 0.10);
         }
 
         .yarl__button:active {
+          background-color:
+            ${colors.activeBackground} !important;
+
+          color: ${colors.buttonActive} !important;
+
           transform: scale(0.95);
+        }
+
+        /* ---------------------------------------------
+           Close Button
+           --------------------------------------------- */
+
+        .yarl__button[aria-label='Close'] {
+          transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease !important;
+        }
+
+        .yarl__button[aria-label='Close']:hover {
+          background-color:
+            rgba(255, 130, 1, 0.15) !important;
+
+          color:
+            #FF8201 !important;
+
+          transform: rotate(90deg) scale(1.05);
+        }
+
+        /* ---------------------------------------------
+           Navigation Buttons
+           --------------------------------------------- */
+
+        .yarl__button[aria-label='Previous'],
+        .yarl__button[aria-label='Next'] {
+          background-color:
+            rgba(0, 52, 95, 0.35) !important;
+
+          backdrop-filter: blur(10px);
+
+          -webkit-backdrop-filter: blur(10px);
+        }
+
+        .yarl__button[aria-label='Previous']:hover,
+        .yarl__button[aria-label='Next']:hover {
+          background-color:
+            rgba(0, 74, 135, 0.75) !important;
+
+          color: #FFFFFF !important;
+        }
+
+        /* ---------------------------------------------
+           Toolbar
+           --------------------------------------------- */
+
+        .yarl__toolbar {
+          gap: 4px !important;
+
+          padding: 12px !important;
+        }
+
+        /* ---------------------------------------------
+           Counter
+           --------------------------------------------- */
+
+        .yarl__counter {
+          color: ${colors.description} !important;
+
+          font-size: 12px !important;
+
+          font-weight: 600 !important;
+
+          letter-spacing: 0.04em !important;
+        }
+
+        /* ---------------------------------------------
+           Video Controls
+           --------------------------------------------- */
+
+        .yarl__slide video::-webkit-media-controls-panel {
+          background:
+            linear-gradient(
+              transparent,
+              rgba(0, 52, 95, 0.85)
+            );
+        }
+
+        /* ---------------------------------------------
+           Focus Accessibility
+           --------------------------------------------- */
+
+        .yarl__button:focus-visible {
+          outline: 2px solid #FF8201 !important;
+
+          outline-offset: 2px !important;
+        }
+
+        /* ---------------------------------------------
+           Mobile
+           --------------------------------------------- */
+
+        @media (max-width: 640px) {
+          .yarl__slide_image,
+          .yarl__slide video {
+            border-radius: 4px !important;
+          }
+
+          .yarl__toolbar {
+            padding: 8px !important;
+          }
+
+          .yarl__slide_captions_container {
+            margin-top: 12px !important;
+          }
         }
       `}</style>
     </>

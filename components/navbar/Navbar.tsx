@@ -1,21 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from "next/image";
+import Image from 'next/image';
 import Link from 'next/link';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import { signOut } from 'next-auth/react';
-import { useAuthCheck } from "@/hooks/useAuthCheck"; 
-import { useNavData } from "@/hooks/useNavData"; 
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useNavData } from '@/hooks/useNavData';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import DropdownMenu from './DropdownMenu';
 import MobileMenu from './MobileMenu';
-import NavbarSkeleton from './NavbarSkeleton'; 
-import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar'; 
+import NavbarSkeleton from './NavbarSkeleton';
+import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar';
 
-// --- Type Definitions ---
 interface Category {
   name: string;
   isVisible?: boolean;
@@ -38,7 +37,10 @@ interface NavItem {
     basePath: string;
   };
   mobileCategoryList?: {
-    header: { show: boolean; title?: string };
+    header: {
+      show: boolean;
+      title?: string;
+    };
     basePath: string;
   };
 }
@@ -57,245 +59,668 @@ interface DesktopLinkProps {
   item: NavItem;
   isActive: boolean;
   href: string;
+  featured?: boolean;
 }
 
-const DesktopLink = ({ item, isActive, href }: DesktopLinkProps) => {
+const DesktopLink = ({
+  item,
+  isActive,
+  href,
+  featured = false,
+}: DesktopLinkProps) => {
   return (
-    <Link 
-      href={href} 
-      className={`group relative px-2 py-1.5 text-sm font-semibold tracking-wide transition-colors duration-200 
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950 rounded-md
-        ${isActive 
-          ? 'text-slate-950 dark:text-white font-bold' 
-          : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
-        }`}
+    <Link
+      href={href}
       aria-current={isActive ? 'page' : undefined}
+      className={`
+        group relative inline-flex items-center gap-2
+        rounded-full px-3.5 py-2
+        text-sm font-medium tracking-wide
+        transition-all duration-300
+
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-[#FF8201]
+        focus-visible:ring-offset-2
+        focus-visible:ring-offset-white
+        dark:focus-visible:ring-offset-[#0B1624]
+
+        ${
+          featured
+            ? `
+              border
+              border-[#FF8201]/30
+              bg-[#FFF1E5]
+              text-[#004A87]
+              shadow-sm
+
+              hover:-translate-y-0.5
+              hover:border-[#FF8201]/60
+              hover:bg-[#FF8201]
+              hover:text-white
+              hover:shadow-lg
+              hover:shadow-[#FF8201]/20
+
+              dark:border-[#FF8201]/30
+              dark:bg-[#FF8201]/10
+              dark:text-[#FFB15C]
+
+              dark:hover:border-[#FF8201]
+              dark:hover:bg-[#FF8201]
+              dark:hover:text-white
+            `
+            : isActive
+              ? `
+                bg-[#EAF4FB]
+                text-[#004A87]
+                dark:bg-[#00345F]/60
+                dark:text-white
+              `
+              : `
+                text-[#64748B]
+                hover:bg-[#F5F7FA]
+                hover:text-[#004A87]
+
+                dark:text-white/65
+                dark:hover:bg-white/[0.06]
+                dark:hover:text-white
+              `
+        }
+      `}
     >
-      {item.label}
-      {/* Animated High-Contrast Underline */}
-      <span 
-        className={`absolute bottom-0 left-0 h-0.5 bg-rose-600 dark:bg-rose-500 rounded-full transition-all duration-300 ease-out
-          ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
-      />
+      {featured && (
+        <span
+          className="
+            flex h-6 w-6
+            items-center justify-center
+            rounded-full
+            bg-[#FF8201]
+            text-white
+            shadow-sm
+            transition-transform duration-300
+            group-hover:rotate-12
+          "
+        >
+          <span className="text-[11px]">✦</span>
+        </span>
+      )}
+
+      <span>{item.label}</span>
+
+      {!featured && (
+        <span
+          className={`
+            absolute
+            bottom-1
+            left-3.5
+            right-3.5
+            h-[2px]
+            origin-center
+            rounded-full
+            bg-[#FF8201]
+            transition-all
+            duration-300
+
+            ${
+              isActive
+                ? 'scale-x-100 opacity-100'
+                : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100'
+            }
+          `}
+        />
+      )}
     </Link>
   );
 };
 
 export default function Navbar() {
   const { isAuthenticated, isLoading } = useAuthCheck();
-  const navData = useNavData() as NavData; 
+  const navData = useNavData() as NavData;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
   const pathname = usePathname();
 
   const getItemData = (item: NavItem | undefined) => {
     if (!item?.dataSource || !navData[item.dataSource]) {
-      return { categories: [] as Category[], loading: false, error: null };
+      return {
+        categories: [] as Category[],
+        loading: false,
+        error: null,
+      };
     }
+
     const sourceData = navData[item.dataSource];
+
     return {
-      categories: (sourceData[item.dataKey as keyof typeof sourceData] as Category[]) || [],
+      categories:
+        (sourceData[
+          item.dataKey as keyof typeof sourceData
+        ] as Category[]) || [],
       loading: sourceData.loading || false,
       error: sourceData.error || null,
     };
   };
 
+  /* ================= SCROLL ================= */
+
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 16);
+    };
+
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+
+    return () =>
+      window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { 
-    setIsMenuOpen(false); 
-  }, [pathname]);
+  /* ================= CLOSE ON ROUTE CHANGE ================= */
 
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  /* ================= BODY LOCK ================= */
+
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen
+      ? 'hidden'
+      : 'unset';
+
+    return () => {
       document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
+    };
   }, [isMenuOpen]);
 
-  if (isLoading) return <NavbarSkeleton />;
+  if (isLoading) {
+    return <NavbarSkeleton />;
+  }
+
+  /* ================= LOGOUT ================= */
 
   const handleLogout = async () => {
     await signOut();
     setIsMenuOpen(false);
   };
 
-  const desktopItems = (NAV_ITEMS as NavItem[]).filter(item => {
-    if (!item.desktop) return false;
-    if (item.auth === 'authenticated' && !isAuthenticated) return false;
-    if (item.auth === 'guest' && isAuthenticated) return false;
-    return true;
-  });
+  /* ================= DESKTOP ITEMS ================= */
 
-  const mobileGalleryItem = (NAV_ITEMS as NavItem[]).find(i => i.id === 'gallery');
-  const mobileData = getItemData(mobileGalleryItem);
+  const desktopItems = (NAV_ITEMS as NavItem[]).filter(
+    (item) => {
+      if (!item.desktop) return false;
+
+      if (
+        item.auth === 'authenticated' &&
+        !isAuthenticated
+      ) {
+        return false;
+      }
+
+      if (
+        item.auth === 'guest' &&
+        isAuthenticated
+      ) {
+        return false;
+      }
+
+      return true;
+    }
+  );
+
+  /* ================= MOBILE GALLERY ================= */
+
+  const mobileGalleryItem = (
+    NAV_ITEMS as NavItem[]
+  ).find((item) => item.id === 'gallery');
+
+  const mobileData = getItemData(
+    mobileGalleryItem
+  );
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-3
-        ${isScrolled 
-          ? 'bg-white/85 dark:bg-slate-950/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-slate-950/40' 
-          : 'bg-transparent border-b border-transparent'
-        }`}
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{
+        type: 'spring',
+        stiffness: 120,
+        damping: 22,
+      }}
+      className={`
+        fixed inset-x-0 top-0 z-50
+        transition-all duration-500
+
+        ${
+          isScrolled
+            ? `
+              border-b
+              border-[#E2E8F0]/80
+              bg-white/85
+              shadow-[0_8px_35px_rgba(0,74,135,0.07)]
+              backdrop-blur-xl
+
+              dark:border-white/[0.08]
+              dark:bg-[#0B1624]/85
+              dark:shadow-[0_8px_35px_rgba(0,0,0,0.3)]
+            `
+            : `
+              bg-transparent
+            `
+        }
+      `}
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-11">
-          
-          {/* Brand Logo */}
-          <div className="shrink-0">
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950 rounded-lg p-1 -ml-1"
-              aria-label="CE Frames Home"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 flex items-center justify-center shadow-sm overflow-hidden"
-              > 
-                <Image 
-                  src="/Logo name.png" 
-                  alt="CE Frames Logo" 
-                  width={32} 
-                  height={32} 
-                  className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
-                  priority 
-                />
-              </motion.div>
-              <div className="flex flex-col justify-center">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-slate-50 leading-none">
-                  CE <span className="text-rose-600 dark:text-rose-400 font-semibold">Frames</span>
-                </span>
-              </div>
-            </Link>
-          </div>
+      <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+        <div className="flex h-[72px] items-center justify-between">
 
-          {/* Desktop Navigation Links & Actions */}
-          <div className="hidden lg:flex items-center gap-8">
-            <ul className="flex items-center gap-6" role="menubar">
+          {/* =====================================================
+              BRAND
+          ===================================================== */}
+
+          <Link
+            href="/"
+            aria-label="CE Frames Home"
+            className="
+              group flex items-center gap-3
+              rounded-xl p-1
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#FF8201]
+            "
+          >
+            <motion.div
+              whileHover={{
+                scale: 1.05,
+                rotate: 1,
+              }}
+              whileTap={{
+                scale: 0.96,
+              }}
+              className="
+                relative
+                flex h-10 w-10
+                items-center justify-center
+                overflow-hidden
+                rounded-xl
+
+                border
+                border-[#E2E8F0]
+                bg-white
+                shadow-sm
+
+                transition-all duration-300
+
+                group-hover:border-[#004A87]/20
+                group-hover:shadow-md
+                group-hover:shadow-[#004A87]/10
+
+                dark:border-white/[0.08]
+                dark:bg-[#102238]
+                dark:group-hover:border-[#FF8201]/30
+              "
+            >
+              <Image
+                src="/Logo name.png"
+                alt="CE Frames"
+                width={32}
+                height={32}
+                className="
+                  h-6 w-6
+                  object-contain
+                "
+                priority
+              />
+
+              {/* Tiny orange accent */}
+              <span
+                className="
+                  absolute
+                  bottom-0.5
+                  right-0.5
+                  h-1.5 w-1.5
+                  rounded-full
+                  bg-[#FF8201]
+                "
+              />
+            </motion.div>
+
+            <div className="flex flex-col">
+              <span
+                className="
+                  text-[17px]
+                  font-extrabold
+                  leading-none
+                  tracking-tight
+                  text-[#172033]
+                  dark:text-white
+                "
+              >
+                CE{' '}
+                <span className="font-semibold text-[#004A87] dark:text-[#FF8201]">
+                  Frames
+                </span>
+              </span>
+
+              <span
+                className="
+                  mt-1
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#64748B]
+                  dark:text-white/40
+                "
+              >
+                Infomil Mauritius
+              </span>
+            </div>
+          </Link>
+
+
+          {/* =====================================================
+              DESKTOP
+          ===================================================== */}
+
+          <div className="hidden items-center gap-6 lg:flex">
+
+            <ul
+              className="flex items-center gap-1"
+              role="menubar"
+            >
               {desktopItems.map((item) => {
-                const isActive = pathname === item.href || 
-                  (item.activePaths && item.activePaths.some((path: string) => 
-                    pathname === path || pathname.startsWith(path + '/')
-                  )) || false;
+                const isActive =
+                  pathname === item.href ||
+                  (item.activePaths &&
+                    item.activePaths.some(
+                      (path: string) =>
+                        pathname === path ||
+                        pathname.startsWith(
+                          path + '/'
+                        )
+                    )) ||
+                  false;
+
+                const isGallery =
+                  item.id === 'gallery';
 
                 if (item.type === 'link') {
                   return (
                     <li key={item.id} role="none">
-                      <DesktopLink item={item} isActive={isActive} href={item.href || '#'} />
+                      <DesktopLink
+                        item={item}
+                        isActive={isActive}
+                        href={item.href || '#'}
+                      />
                     </li>
                   );
                 }
 
-                if ((item.type === 'gallery' || item.type === 'category-list') && isAuthenticated && item.desktopDropdown) {
-                  const { categories, loading, error } = getItemData(item);
+                if (
+                  (item.type === 'gallery' ||
+                    item.type === 'category-list') &&
+                  isAuthenticated &&
+                  item.desktopDropdown
+                ) {
+                  const {
+                    categories,
+                    loading,
+                    error,
+                  } = getItemData(item);
+
                   return (
                     <li key={item.id} role="none">
-                      <DropdownMenu 
-                        title={item.desktopDropdown.title} 
-                        categories={categories} 
-                        loading={loading} 
-                        error={error} 
-                        basePath={item.desktopDropdown.basePath} 
+                      <DropdownMenu
+                        title={
+                          item.desktopDropdown.title
+                        }
+                        categories={categories}
+                        loading={loading}
+                        error={error}
+                        basePath={
+                          item.desktopDropdown.basePath
+                        }
                       />
                     </li>
                   );
-                } 
-                
-                if ((item.type === 'gallery' || item.type === 'category-list') && !isAuthenticated && item.href) {
+                }
+
+                if (
+                  (item.type === 'gallery' ||
+                    item.type === 'category-list') &&
+                  !isAuthenticated &&
+                  item.href
+                ) {
                   return (
                     <li key={item.id} role="none">
-                      <DesktopLink item={item} isActive={isActive} href={item.href} />
+                      <DesktopLink
+                        item={item}
+                        isActive={isActive}
+                        href={item.href}
+                        featured={isGallery}
+                      />
                     </li>
                   );
                 }
+
                 return null;
               })}
             </ul>
 
-            <div className="w-px h-5 bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
 
-            {/* Auth Buttons */}
-            <div className="flex items-center gap-3">
-              {!isAuthenticated ? (
-                <Link 
-                  href={AUTH_ITEMS.login.href || '#'} 
-                  className="group relative inline-flex items-center justify-center px-4.5 py-2 text-sm font-semibold text-white bg-rose-600 dark:bg-rose-500 rounded-xl shadow-md shadow-rose-600/20 hover:bg-rose-700 dark:hover:bg-rose-600 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
-                >
-                  <span>{AUTH_ITEMS.login.label}</span>
-                </Link>
-              ) : (
-                <motion.button 
-                  whileTap={{ scale: 0.96 }} 
-                  onClick={handleLogout} 
-                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-white dark:hover:bg-slate-800/80 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
-                  aria-label="Log out of your account"
-                >
-                  {AUTH_ITEMS.logout.label}
-                </motion.button>
-              )}
-            </div>
+            {/* =================================================
+                DIVIDER
+            ================================================= */}
+
+            <div
+              className="
+                h-6 w-px
+                bg-[#E2E8F0]
+                dark:bg-white/[0.08]
+              "
+              aria-hidden="true"
+            />
+
+
+            {/* =================================================
+                AUTH
+            ================================================= */}
+
+            {!isAuthenticated ? (
+              <Link
+                href={AUTH_ITEMS.login.href || '#'}
+                className="
+                  group
+                  inline-flex items-center gap-2
+                  rounded-full
+                  bg-[#004A87]
+                  px-5 py-2.5
+                  text-sm
+                  font-semibold
+                  text-white
+
+                  shadow-lg
+                  shadow-[#004A87]/15
+
+                  transition-all duration-300
+
+                  hover:-translate-y-0.5
+                  hover:bg-[#00345F]
+                  hover:shadow-xl
+                  hover:shadow-[#004A87]/20
+
+                  active:scale-95
+
+                  focus-visible:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#FF8201]
+                  focus-visible:ring-offset-2
+                  focus-visible:ring-offset-white
+                  dark:focus-visible:ring-offset-[#0B1624]
+                "
+              >
+                {AUTH_ITEMS.login.label}
+
+                <span
+                  className="
+                    h-1.5 w-1.5
+                    rounded-full
+                    bg-[#FF8201]
+                    transition-transform
+                    group-hover:scale-125
+                  "
+                />
+              </Link>
+            ) : (
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                onClick={handleLogout}
+                className="
+                  rounded-full
+                  px-4 py-2
+                  text-sm
+                  font-medium
+
+                  text-[#64748B]
+                  hover:bg-[#F5F7FA]
+                  hover:text-[#004A87]
+
+                  dark:text-white/60
+                  dark:hover:bg-white/[0.06]
+                  dark:hover:text-white
+
+                  transition-all
+                  duration-200
+
+                  focus-visible:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#FF8201]
+                "
+                aria-label="Log out of your account"
+              >
+                {AUTH_ITEMS.logout.label}
+              </motion.button>
+            )}
           </div>
 
-          {/* Mobile Menu Toggle Button */}
+
+          {/* =====================================================
+              MOBILE BUTTON
+          ===================================================== */}
+
           <div className="lg:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`relative p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950
-                ${isMenuOpen 
-                  ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700' 
-                  : 'bg-slate-50/80 text-slate-700 hover:bg-slate-100 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-                }`}
-              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              onClick={() =>
+                setIsMenuOpen(!isMenuOpen)
+              }
+              className={`
+                flex h-10 w-10
+                items-center justify-center
+                rounded-xl
+                border
+                transition-all
+
+                ${
+                  isMenuOpen
+                    ? `
+                      border-[#FF8201]/30
+                      bg-[#FFF1E5]
+                      text-[#004A87]
+
+                      dark:border-[#FF8201]/30
+                      dark:bg-[#FF8201]/10
+                      dark:text-[#FFB15C]
+                    `
+                    : `
+                      border-[#E2E8F0]
+                      bg-white/80
+                      text-[#004A87]
+
+                      dark:border-white/[0.08]
+                      dark:bg-[#102238]/80
+                      dark:text-white
+                    `
+                }
+              `}
+              aria-label={
+                isMenuOpen
+                  ? 'Close navigation menu'
+                  : 'Open navigation menu'
+              }
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
-              <AnimatePresence mode="wait" initial={false}>
+              <AnimatePresence
+                mode="wait"
+                initial={false}
+              >
                 {isMenuOpen ? (
-                  <motion.div 
-                    key="close" 
-                    initial={{ rotate: -90, opacity: 0 }} 
-                    animate={{ rotate: 0, opacity: 1 }} 
-                    exit={{ rotate: 90, opacity: 0 }} 
-                    transition={{ duration: 0.15 }}
+                  <motion.div
+                    key="close"
+                    initial={{
+                      rotate: -90,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      rotate: 0,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      rotate: 90,
+                      opacity: 0,
+                    }}
                   >
-                    <HiX className="w-5 h-5" aria-hidden="true" />
+                    <HiX
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
                   </motion.div>
                 ) : (
-                  <motion.div 
-                    key="menu" 
-                    initial={{ rotate: 90, opacity: 0 }} 
-                    animate={{ rotate: 0, opacity: 1 }} 
-                    exit={{ rotate: -90, opacity: 0 }} 
-                    transition={{ duration: 0.15 }}
+                  <motion.div
+                    key="menu"
+                    initial={{
+                      rotate: 90,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      rotate: 0,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      rotate: -90,
+                      opacity: 0,
+                    }}
                   >
-                    <HiMenuAlt3 className="w-5 h-5" aria-hidden="true" />
+                    <HiMenuAlt3
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Dropdown Container */}
+
+      {/* =========================================================
+          MOBILE MENU
+      ========================================================= */}
+
       <AnimatePresence>
         {isMenuOpen && (
-          <MobileMenu 
-            authenticated={isAuthenticated} 
+          <MobileMenu
+            authenticated={isAuthenticated}
             imagesFor={mobileData.categories}
             loading={mobileData.loading}
             error={mobileData.error}
@@ -304,6 +729,7 @@ export default function Navbar() {
           />
         )}
       </AnimatePresence>
+
     </motion.nav>
   );
 }

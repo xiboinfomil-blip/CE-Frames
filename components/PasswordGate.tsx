@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { 
-  HiLockClosed, 
-  HiEye, 
-  HiEyeSlash, 
-  HiExclamationCircle, 
-  HiArrowPath 
+import {
+  HiLockClosed,
+  HiEye,
+  HiEyeSlash,
+  HiExclamationCircle,
+  HiArrowPath,
 } from 'react-icons/hi2';
 
 interface PasswordGateProps {
@@ -17,12 +17,12 @@ interface PasswordGateProps {
   subtitle?: string;
 }
 
-export default function PasswordGate({ 
-  onUnlock, 
-  isLoading, 
+export default function PasswordGate({
+  onUnlock,
+  isLoading,
   error,
-  title = "Private Event Gallery",
-  subtitle = "Please enter your password to access the media collection."
+  title = 'Private Event Gallery',
+  subtitle = 'Please enter your password to access the media collection.',
 }: PasswordGateProps) {
   const [password, setPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
@@ -40,24 +40,26 @@ export default function PasswordGate({
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden font-sans">
-      
-      {/* Glow Orbs & Background Backdrop */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-900/10 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen w-full bg-[#F5F7FA] flex items-center justify-center p-6 relative overflow-hidden font-sans">
 
-      {/* Main Glassmorphism Card */}
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-800 shadow-2xl shadow-slate-950 p-8 md:p-10 relative z-10">
-        
+      {/* Brand Background Orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#004A87]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 bg-[#FF8201]/10 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Main Card */}
+      <div className="w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-3xl border border-[#E2E8F0] shadow-2xl shadow-[#00345F]/10 p-8 md:p-10 relative z-10">
+
         {/* Header Icon & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-rose-600/10 border border-rose-500/20 mb-6 text-rose-400">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#FFF1E5] border border-[#FF8201]/20 mb-6 text-[#FF8201]">
             <HiLockClosed className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight mb-2">
+
+          <h1 className="text-2xl font-bold text-[#172033] tracking-tight mb-2">
             {title}
           </h1>
-          <p className="text-slate-400 text-xs sm:text-sm font-normal leading-relaxed">
+
+          <p className="text-[#64748B] text-xs sm:text-sm font-normal leading-relaxed">
             {subtitle}
           </p>
         </div>
@@ -65,34 +67,43 @@ export default function PasswordGate({
         {/* Input Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative group">
-            <label htmlFor="gallery-password" className="sr-only">Password</label>
+            <label htmlFor="gallery-password" className="sr-only">
+              Password
+            </label>
+
             <input
               ref={inputRef}
               id="gallery-password"
-              type={isVisible ? "text" : "password"}
+              type={isVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter gallery password"
               disabled={isLoading}
               autoComplete="current-password"
               className={`
-                w-full pl-4 pr-12 py-3.5 bg-slate-800/80 border rounded-xl text-slate-100 text-sm placeholder:text-slate-500
-                focus:outline-none focus:ring-2 transition-all duration-200
-                ${error 
-                  ? 'border-red-500/80 focus:ring-red-500/50' 
-                  : 'border-slate-700/80 focus:border-rose-500 focus:ring-rose-500/30'
+                w-full pl-4 pr-12 py-3.5
+                bg-[#F5F7FA]
+                border rounded-xl
+                text-[#172033] text-sm
+                placeholder:text-[#94A3B8]
+                focus:outline-none focus:ring-2
+                transition-all duration-200
+                ${
+                  error
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                    : 'border-[#E2E8F0] focus:border-[#FF8201] focus:ring-[#FF8201]/20'
                 }
                 disabled:opacity-50 disabled:cursor-not-allowed
               `}
             />
-            
+
             {/* Toggle Visibility */}
             <button
               type="button"
               onClick={() => setIsVisible(!isVisible)}
               tabIndex={-1}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-200 transition-colors rounded-lg"
-              aria-label={isVisible ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[#64748B] hover:text-[#004A87] transition-colors rounded-lg"
+              aria-label={isVisible ? 'Hide password' : 'Show password'}
             >
               {isVisible ? (
                 <HiEyeSlash className="w-5 h-5" />
@@ -104,8 +115,8 @@ export default function PasswordGate({
 
           {/* Error Banner */}
           {error && (
-            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-950/40 border border-red-800/50 text-red-300">
-              <HiExclamationCircle className="w-5 h-5 shrink-0 text-red-400" />
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
+              <HiExclamationCircle className="w-5 h-5 shrink-0 text-red-500" />
               <p className="text-xs font-medium">{error}</p>
             </div>
           )}
@@ -115,16 +126,21 @@ export default function PasswordGate({
             type="submit"
             disabled={isLoading || !password.trim()}
             className={`
-              w-full py-3.5 px-6 rounded-xl font-semibold text-sm text-white shadow-lg
-              transition-all duration-200 flex items-center justify-center gap-2
-              ${isLoading || !password.trim()
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50' 
-                : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/25 active:scale-[0.99]'}
+              w-full py-3.5 px-6 rounded-xl
+              font-semibold text-sm text-white
+              shadow-lg
+              transition-all duration-200
+              flex items-center justify-center gap-2
+              ${
+                isLoading || !password.trim()
+                  ? 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed border border-[#CBD5E1]'
+                  : 'bg-[#FF8201] hover:bg-[#e87500] shadow-[#FF8201]/25 active:scale-[0.99]'
+              }
             `}
           >
             {isLoading ? (
               <>
-                <HiArrowPath className="animate-spin h-4 w-4 text-white" />
+                <HiArrowPath className="animate-spin h-4 w-4 text-[#64748B]" />
                 <span>Unlocking...</span>
               </>
             ) : (
@@ -134,12 +150,11 @@ export default function PasswordGate({
         </form>
 
         {/* Security Footer */}
-        <div className="mt-8 text-center border-t border-slate-800/80 pt-6">
-          <p className="text-[11px] font-mono text-slate-500">
-            Protected by end-to-end event token authentication
+        <div className="mt-8 text-center border-t border-[#E2E8F0] pt-6">
+          <p className="text-[11px] font-mono text-[#94A3B8]">
+            Protected by secure event authentication
           </p>
         </div>
-
       </div>
     </div>
   );

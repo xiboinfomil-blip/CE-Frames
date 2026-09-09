@@ -23,7 +23,7 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
         Aucune galerie pour le moment
       </h3>
       <p className="text-zinc-600 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
-        Partagez les moments forts des événements et activités du CSE. Créez votre premier album média pour les salariés.
+        Partagez les moments forts des événements et activités du CE. Créez votre premier album média pour les salariés.
       </p>
       <CustomButton 
         variant="primary"
@@ -41,7 +41,7 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
     <div className="w-full min-h-[60vh] flex flex-col">
       <CardGrid
         items={galleries}
-        ariaLabel="Galeries photos du CSE"
+        ariaLabel="Galeries photos du CE"
         emptyState={galleryEmptyState}
         getKey={(gallery) => gallery.id}
         /* 

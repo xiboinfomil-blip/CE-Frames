@@ -2,170 +2,250 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok, FaEnvelope, FaLinkedin } from 'react-icons/fa';
-import { HiPaperAirplane } from 'react-icons/hi2';
+import {
+  FaInstagram,
+  FaFacebook,
+  FaTiktok,
+  FaEnvelope,
+  FaLinkedin,
+} from 'react-icons/fa';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const navSections = [
-    {
-      title: 'Services',
-      links: [
-        { label: 'Corporate Galas', href: '#galas' },
-        { label: 'Team Retreats', href: '#retreats' },
-        { label: 'Executive Headshots', href: '#headshots' },
-        { label: 'CSE / CE Events', href: '#cse' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { label: 'Portfolio', href: '#portfolio' },
-        { label: 'About Us', href: '#about' },
-        { label: 'Client Reviews', href: '#reviews' },
-        { label: 'Contact & Inquiry', href: '#contact' },
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        { label: 'Privacy Policy', href: '/privacy' },
-        { label: 'Terms of Service', href: '/terms' },
-        { label: 'Cookie Settings', href: '#cookies' },
-      ],
-    },
-  ];
-
   const socialLinks = [
-    { 
-      name: 'LinkedIn', 
-      href: 'https://www.linkedin.com/',
-      icon: <FaLinkedin className="w-4 h-4" />
-    },
-    { 
-      name: 'Instagram', 
+    {
+      name: 'Instagram',
       href: 'https://www.instagram.com/',
-      icon: <FaInstagram className="w-4 h-4" />
+      icon: <FaInstagram />,
     },
-    { 
-      name: 'Facebook', 
+    {
+      name: 'Facebook',
       href: 'https://www.facebook.com/',
-      icon: <FaFacebook className="w-4 h-4" />
+      icon: <FaFacebook />,
     },
-    { 
-      name: 'TikTok', 
+    {
+      name: 'TikTok',
       href: 'https://www.tiktok.com/',
-      icon: <FaTiktok className="w-4 h-4" />
+      icon: <FaTiktok />,
     },
-    { 
-      name: 'Email', 
+    {
+      name: 'LinkedIn',
+      href: 'https://www.linkedin.com/',
+      icon: <FaLinkedin />,
+    },
+    {
+      name: 'Email',
       href: 'mailto:contact@ceframes.com',
-      icon: <FaEnvelope className="w-4 h-4" />
+      icon: <FaEnvelope />,
     },
   ];
 
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
-      {/* Top Main Section */}
-      <div className="container mx-auto px-6 md:px-12 pt-16 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          
-          {/* Brand & Newsletter Column (Spans 2 columns on desktop) */}
-          <div className="lg:col-span-2 space-y-6">
-            <Link 
-              href="/" 
-              className="inline-block hover:opacity-80 transition-opacity duration-300"
-               aria-label="CE Frames Home"
+    <footer
+      className="
+        relative overflow-hidden
+        border-t border-[#E2E8F0]
+        bg-white
+        text-[#172033]
+        transition-colors duration-300
+        dark:border-white/10
+        dark:bg-[#0B1624]
+        dark:text-white
+      "
+    >
+      {/* Decorative background accents */}
+      <div
+        className="
+          pointer-events-none
+          absolute -right-32 -top-32
+          h-64 w-64
+          rounded-full
+          bg-[#EAF4FB]
+          blur-3xl
+          dark:bg-[#004A87]/20
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute -bottom-32 -left-32
+          h-64 w-64
+          rounded-full
+          bg-[#FFF1E5]
+          blur-3xl
+          dark:bg-[#FF8201]/10
+        "
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6 py-12 md:px-10">
+
+        {/* Main Footer */}
+        <div
+          className="
+            flex flex-col
+            items-center justify-between
+            gap-10
+            md:flex-row
+          "
+        >
+
+          {/* Brand */}
+          <div
+            className="
+              flex flex-col
+              items-center
+              text-center
+              md:items-start
+              md:text-left
+            "
+          >
+            <Link
+              href="/"
+              aria-label="CE Frames Home"
+              className="
+                group
+                inline-flex
+                transition-transform duration-300
+                hover:-translate-y-0.5
+              "
             >
               <Image
                 src="/Logo name.png"
-                alt="CE Frames Logo"
+                alt="CE Frames"
                 width={130}
                 height={42}
-                className="h-auto brightness-0 invert" // Inverts logo for dark theme
+                className="
+                  h-auto w-[125px]
+                  transition-opacity duration-300
+                  group-hover:opacity-80
+                  dark:brightness-0 dark:invert
+                "
                 priority
               />
             </Link>
-            
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              High-end event photography for corporate galas, team retreats, and Comité d&apos;Entreprise gatherings across Europe.
+
+            <p
+              className="
+                mt-4 max-w-sm
+                text-sm leading-relaxed
+                text-[#64748B]
+                dark:text-white/50
+              "
+            >
+              Event moments captured for the Comité d&apos;Entreprise
+              of Infomil Mauritius.
             </p>
 
-            {/* Micro Newsletter Form */}
-            <div className="space-y-2 pt-2">
-              <span className="block text-xs font-mono font-semibold text-slate-200 uppercase tracking-wider">
-                Subscribe to Event Spotlights
-              </span>
-              <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 max-w-sm">
-                <input 
-                  type="email" 
-                  placeholder="enter your email..."
-                  className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl px-4 py-2.5 transition-colors flex items-center justify-center shrink-0 shadow-lg shadow-rose-600/20"
-                  aria-label="Subscribe"
-                >
-                  <HiPaperAirplane className="w-4 h-4" />
-                </button>
-              </form>
+            {/* Brand accent */}
+            <div className="mt-5 flex items-center gap-2">
+              <span className="h-1 w-8 rounded-full bg-[#004A87]" />
+              <span className="h-1 w-3 rounded-full bg-[#FF8201]" />
             </div>
           </div>
 
-          {/* Navigation Links Columns */}
-          {navSections.map((section) => (
-            <div key={section.title} className="space-y-4">
-                <h4 className="text-xs font-mono font-bold text-rose-400 uppercase tracking-widest">
-                {section.title}
-              </h4>
-              <ul className="space-y-2.5 text-xs font-medium">
-                {section.links.map((link) => (
-                  <li key={link.label}>
-                    <Link 
-                      href={link.href}
-                      className="text-slate-400 hover:text-white transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-        </div>
-      </div>
-
-      {/* Bottom Sub-Footer Bar */}
-      <div className="border-t border-slate-800/80 bg-slate-950/60">
-        <div className="container mx-auto px-6 md:px-12 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          
-          {/* Copyright */}
-          <div className="text-xs text-slate-500 font-medium">
-             © {currentYear} CE Frames. All rights reserved.
-          </div>
 
           {/* Social Links */}
-          <div className="flex gap-3" role="list" aria-label="Social media links">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-rose-600 text-slate-400 hover:text-white transition-all duration-300 flex items-center justify-center border border-slate-700/50"
-                aria-label={`Visit our ${social.name}`}
-                role="listitem"
-              >
-                {social.icon}
-              </a>
-            ))}
-          </div>
+          <div className="flex flex-col items-center md:items-end">
 
+            <p
+              className="
+                mb-4
+                text-[10px] font-bold uppercase
+                tracking-[0.2em]
+                text-[#64748B]
+                dark:text-white/40
+              "
+            >
+              Suivez-nous
+            </p>
+
+            <div
+              className="flex items-center gap-2"
+              aria-label="CE Frames social media"
+            >
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit CE Frames on ${social.name}`}
+                  className="
+                    group
+                    flex h-11 w-11
+                    items-center justify-center
+                    rounded-full
+                    border border-[#E2E8F0]
+                    bg-[#F5F7FA]
+                    text-[#64748B]
+                    shadow-sm
+                    transition-all duration-300
+
+                    hover:-translate-y-1
+                    hover:border-[#004A87]
+                    hover:bg-[#004A87]
+                    hover:text-white
+                    hover:shadow-lg
+                    hover:shadow-[#004A87]/20
+
+                    dark:border-white/10
+                    dark:bg-white/5
+                    dark:text-white/50
+
+                    dark:hover:border-[#FF8201]
+                    dark:hover:bg-[#FF8201]
+                    dark:hover:text-white
+                    dark:hover:shadow-[#FF8201]/20
+                  "
+                >
+                  <span className="text-sm transition-transform duration-300 group-hover:scale-110">
+                    {social.icon}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
+
+
+        {/* Bottom */}
+        <div
+          className="
+            mt-10
+            border-t border-[#E2E8F0]
+            pt-6
+            dark:border-white/10
+          "
+        >
+          <div
+            className="
+              flex flex-col
+              items-center justify-between
+              gap-3
+              text-xs
+              md:flex-row
+            "
+          >
+            <p className="text-[#64748B] dark:text-white/40">
+              © {currentYear} CE Frames. All rights reserved.
+            </p>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[#64748B] dark:text-white/40">
+                Comité d&apos;Entreprise
+              </span>
+
+              <span className="h-1 w-1 rounded-full bg-[#FF8201]" />
+
+              <span className="font-medium text-[#004A87] dark:text-white/60">
+                Infomil Mauritius
+              </span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </footer>
   );

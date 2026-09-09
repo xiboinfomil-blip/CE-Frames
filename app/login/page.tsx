@@ -21,7 +21,7 @@ export default function LoginPage() {
       {/* Main Card Container */}
       <div className="w-full max-w-6xl bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] border border-white/60 overflow-hidden flex flex-col lg:flex-row relative z-10 animate-in fade-in zoom-in-95 duration-700 ease-out">
         
-        {/* Left: Branding Panel CSE */}
+        {/* Left: Branding Panel CE */}
         <div className="hidden lg:block w-5/12 relative bg-stone-100">
           <BrandingPanel />
         </div>

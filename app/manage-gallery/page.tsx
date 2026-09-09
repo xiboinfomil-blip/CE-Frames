@@ -8,8 +8,8 @@ import { GallerySummary, MediaSummary, PaginatedResponse } from '@/types/types';
 import { VISIBILITY_STATUSES, MediaType, LayoutStyle } from '@/db/schema';
 
 export const metadata = {
-  title: 'Galeries Média CSE',
-  description: 'Gérez et consultez les albums médias et événements de votre CSE',
+  title: 'Galeries Média CE',
+  description: 'Gérez et consultez les albums médias et événements de votre CE',
 };
 
 interface PageProps {

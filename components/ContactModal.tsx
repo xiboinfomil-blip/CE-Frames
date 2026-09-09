@@ -61,7 +61,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <div className="relative z-10 flex flex-col justify-between p-10 h-full text-white">
             <div className="flex items-center gap-2 text-xs font-mono text-rose-400 tracking-widest uppercase">
               <HiSparkles className="w-4 h-4" />
-              <span>CSE & Event Coverage</span>
+              <span>CE & Event Coverage</span>
             </div>
             
             <div className="space-y-3">
@@ -133,7 +133,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomTextfield
-                  label="Company / CSE Name"
+                  label="Company / CE Name"
                   placeholder="Comité d'Entreprise Acme"
                   leftIcon={<HiBuildingOffice className="w-4 h-4 text-slate-400" />}
                   required

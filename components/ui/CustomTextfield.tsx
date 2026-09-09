@@ -1,8 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 import { HiExclamationCircle } from 'react-icons/hi2';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-export interface CustomTextfieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface CustomTextfieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   leftIcon?: React.ReactNode;
@@ -12,8 +13,23 @@ export interface CustomTextfieldProps extends React.InputHTMLAttributes<HTMLInpu
 /**
  * CustomTextfield - A compact and accessible text input matching the CE Frames palette.
  */
-const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>(
-  ({ className, type = "text", label, error, leftIcon, rightIcon, id, ...props }, ref) => {
+const CustomTextfield = React.forwardRef<
+  HTMLInputElement,
+  CustomTextfieldProps
+>(
+  (
+    {
+      className,
+      type = 'text',
+      label,
+      error,
+      leftIcon,
+      rightIcon,
+      id,
+      ...props
+    },
+    ref
+  ) => {
     // Generate fallback unique ID for accessible label and error pairing
     const generatedId = React.useId();
     const inputId = id || generatedId;
@@ -21,14 +37,16 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
 
     return (
       <div className="group relative w-full flex flex-col gap-1.5">
+
         {/* Label */}
         {label && (
-          <label 
+          <label
             htmlFor={inputId}
             className={cn(
-              "text-[11px] font-bold uppercase tracking-[0.1em] transition-colors duration-200 select-none pl-1",
-              "text-slate-400 group-focus-within:text-rose-400",
-              error && "text-rose-400 group-focus-within:text-rose-400"
+              'text-[11px] font-bold uppercase tracking-[0.1em] transition-colors duration-200 select-none pl-1',
+              'text-[#64748B] group-focus-within:text-[#004A87]',
+              error &&
+                'text-[#FF8201] group-focus-within:text-[#FF8201]'
             )}
           >
             {label}
@@ -37,13 +55,16 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
 
         {/* Input Container */}
         <div className="relative flex items-center">
+
           {/* Left Icon */}
           {leftIcon && (
-            <div className={cn(
-              "absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 pointer-events-none z-10",
-              "text-slate-500 group-focus-within:text-rose-400",
-              error && "text-rose-400"
-            )}>
+            <div
+              className={cn(
+                'absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 pointer-events-none z-10',
+                'text-[#94A3B8] group-focus-within:text-[#004A87]',
+                error && 'text-[#FF8201]'
+              )}
+            >
               {leftIcon}
             </div>
           )}
@@ -56,25 +77,26 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
             aria-describedby={error ? errorId : undefined}
             className={cn(
               // Base Layout & Typography
-              "w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200",
-              "bg-slate-900/60 text-slate-100 placeholder:text-slate-500",
-              
+              'w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200',
+              'bg-white text-[#172033] placeholder:text-[#94A3B8]',
+
               // Borders & Subtle Shadows
-              "border border-slate-800 shadow-sm hover:border-slate-700",
-              
-              // Focus State (Rose Ring)
-              "focus:outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20",
-              
+              'border border-[#E2E8F0] shadow-sm hover:border-[#CBD5E1]',
+
+              // Focus State
+              'focus:outline-none focus:border-[#FF8201] focus:ring-4 focus:ring-[#FF8201]/15',
+
               // Error State
-              error && "border-rose-900/60 text-rose-100 placeholder:text-rose-300/40 focus:border-rose-500 focus:ring-rose-500/20",
-              
+              error &&
+                'border-red-300 text-[#172033] placeholder:text-red-300 focus:border-red-500 focus:ring-red-500/15',
+
               // Disabled State
-              "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-950/80",
-              
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F5F7FA]',
+
               // Dynamic Padding based on Icons
-              leftIcon && "pl-11",
-              rightIcon && "pr-11",
-              
+              leftIcon && 'pl-11',
+              rightIcon && 'pr-11',
+
               className
             )}
             ref={ref}
@@ -83,11 +105,13 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
 
           {/* Right Icon */}
           {rightIcon && (
-            <div className={cn(
-              "absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 z-10",
-            "text-slate-500 group-focus-within:text-rose-400",
-              error && "text-rose-400"
-            )}>
+            <div
+              className={cn(
+                'absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 z-10',
+                'text-[#94A3B8] group-focus-within:text-[#004A87]',
+                error && 'text-[#FF8201]'
+              )}
+            >
               {rightIcon}
             </div>
           )}
@@ -95,10 +119,10 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
 
         {/* Error Message */}
         {error && (
-          <p 
+          <p
             id={errorId}
             role="alert"
-            className="text-xs font-medium text-rose-400 flex items-center gap-1.5 mt-0.5 pl-1 animate-in fade-in slide-in-from-top-1 duration-200"
+            className="text-xs font-medium text-red-600 flex items-center gap-1.5 mt-0.5 pl-1 animate-in fade-in slide-in-from-top-1 duration-200"
           >
             <HiExclamationCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{error}</span>
@@ -109,6 +133,6 @@ const CustomTextfield = React.forwardRef<HTMLInputElement, CustomTextfieldProps>
   }
 );
 
-CustomTextfield.displayName = "CustomTextfield";
+CustomTextfield.displayName = 'CustomTextfield';
 
 export { CustomTextfield };

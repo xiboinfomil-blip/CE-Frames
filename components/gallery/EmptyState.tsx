@@ -6,81 +6,102 @@ import { FolderOpen } from 'lucide-react';
 import { CustomButton } from '@/components/ui/CustomButton';
 
 interface EmptyStateProps {
-  title?: string;
-  description?: string;
-  actionLabel?: string;
-  onAction?: () => void;
-  icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+title?: string;
+description?: string;
+actionLabel?: string;
+onAction?: () => void;
+icon?: React.ComponentType<{
+className?: string;
+strokeWidth?: number;
+}>;
 }
 
 export default function EmptyState({
-  title = 'No galleries found',
-  description = "Try adjusting your filters or search terms to find what you're looking for.",
-  actionLabel,
-  onAction,
-  icon: Icon = FolderOpen,
+title = 'No galleries found',
+description = "Try adjusting your filters or search terms to find what you're looking for.",
+actionLabel,
+onAction,
+icon: Icon = FolderOpen,
 }: EmptyStateProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-4"
-    >
-      {/* Background Radial Glow */}
-      <div 
-        className="absolute inset-0 overflow-hidden pointer-events-none opacity-40 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08)_0%,transparent_70%)]" 
-        aria-hidden="true" 
+return (
+<motion.div
+initial={{ opacity: 0, y: 16 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{
+duration: 0.4,
+ease: [0.16, 1, 0.3, 1],
+}}
+className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-4"
+>
+{/* Background Radial Glow */} <div
+     className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 bg-[radial-gradient(ellipse_at_center,rgba(0,74,135,0.08)_0%,transparent_70%)]"
+     aria-hidden="true"
+   />
+
+```
+  {/* Decorative Grid Pattern */}
+  <div
+    className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#004A87_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"
+    aria-hidden="true"
+  />
+
+  {/* Content Container */}
+  <div className="relative z-10 text-center max-w-md mx-auto">
+
+    {/* Icon Wrapper */}
+    <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-6 relative">
+      {/* Decorative Back Layer */}
+      <div
+        className="absolute inset-0 bg-[#FFF1E5] rounded-3xl rotate-3 border border-[#FF8201]/20 transition-transform duration-500 hover:rotate-6"
       />
 
-      {/* Decorative Grid Pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" 
-        aria-hidden="true" 
-      />
-
-      {/* Content Container */}
-      <div className="relative z-10 text-center max-w-md mx-auto">
-        
-        {/* Icon Wrapper */}
-        <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-6 relative">
-          <div className="absolute inset-0 bg-rose-950/30 rounded-3xl rotate-3 border border-rose-500/10 transition-transform duration-500 hover:rotate-6" />
-          <div className="relative w-full h-full bg-slate-900/90 rounded-3xl shadow-xl shadow-slate-950/80 border border-slate-800/80 flex items-center justify-center transition-transform duration-500 hover:-translate-y-1">
-            <Icon className="w-9 h-9 sm:w-10 sm:h-10 text-slate-400" strokeWidth={1.5} />
-          </div>
-        </div>
-
-        {/* Text Content */}
-        <h3 className="text-2xl sm:text-3xl font-bold text-slate-100 mb-3 tracking-tight">
-          {title}
-        </h3>
-        
-        <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-normal mb-8">
-          {description}
-        </p>
-
-        {/* Optional Action Button */}
-        {actionLabel && onAction && (
-          <div className="mb-8">
-            <CustomButton
-              onClick={onAction}
-              variant="secondary"
-              size="md"
-              className="bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-800 hover:border-slate-700"
-            >
-              {actionLabel}
-            </CustomButton>
-          </div>
-        )}
-
-        {/* Visual Accent Dots */}
-        <div className="flex items-center justify-center gap-2" aria-hidden="true">
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
-          <div className="w-1.5 h-1.5 rounded-full bg-rose-500/60" />
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
-        </div>
-
+      {/* Main Icon Container */}
+      <div
+        className="relative w-full h-full bg-white rounded-3xl shadow-xl shadow-[#00345F]/10 border border-[#E2E8F0] flex items-center justify-center transition-transform duration-500 hover:-translate-y-1"
+      >
+        <Icon
+          className="w-9 h-9 sm:w-10 sm:h-10 text-[#004A87]"
+          strokeWidth={1.5}
+        />
       </div>
-    </motion.div>
-  );
+    </div>
+
+    {/* Text Content */}
+    <h3 className="text-2xl sm:text-3xl font-bold text-[#172033] mb-3 tracking-tight">
+      {title}
+    </h3>
+
+    <p className="text-[#64748B] text-sm sm:text-base leading-relaxed font-normal mb-8">
+      {description}
+    </p>
+
+    {/* Optional Action Button */}
+    {actionLabel && onAction && (
+      <div className="mb-8">
+        <CustomButton
+          onClick={onAction}
+          variant="secondary"
+          size="md"
+          className="bg-[#EAF4FB] hover:bg-[#DCEEF9] text-[#00345F] border-[#E2E8F0] hover:border-[#004A87]/30"
+        >
+          {actionLabel}
+        </CustomButton>
+      </div>
+    )}
+
+    {/* Visual Accent Dots */}
+    <div
+      className="flex items-center justify-center gap-2"
+      aria-hidden="true"
+    >
+      <div className="w-1.5 h-1.5 rounded-full bg-[#E2E8F0]" />
+      <div className="w-1.5 h-1.5 rounded-full bg-[#FF8201]" />
+      <div className="w-1.5 h-1.5 rounded-full bg-[#E2E8F0]" />
+    </div>
+
+  </div>
+</motion.div>
+
+
+);
 }

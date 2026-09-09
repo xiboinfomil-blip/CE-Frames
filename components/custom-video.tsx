@@ -1,55 +1,78 @@
 'use client';
 
-import React, { forwardRef, useCallback, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 
-interface CustomVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
-  poster?: string; // Standard image URL or low-res MP4 thumbnail
+interface CustomVideoProps
+  extends React.VideoHTMLAttributes<HTMLVideoElement> {
+  poster?: string;
   hoverPlay?: boolean;
   showPlayBadge?: boolean;
   aspectRatio?: string;
 }
 
 const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
-  ({ 
-    poster, 
-    hoverPlay = true, 
-    showPlayBadge = true,
-    aspectRatio,
-    className = '', 
-    onLoadedData,
-    onError,
-    ...props 
-  }, ref) => {
+  (
+    {
+      poster,
+      hoverPlay = true,
+      showPlayBadge = true,
+      aspectRatio,
+      className = '',
+      onLoadedData,
+      onError,
+      ...props
+    },
+    ref
+  ) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [hasError, setHasError] = useState(false);
-    
+
     // Internal reference if external ref is not provided
     const internalRef = useRef<HTMLVideoElement | null>(null);
 
     const setRefs = useCallback(
       (node: HTMLVideoElement | null) => {
         internalRef.current = node;
+
         if (typeof ref === 'function') {
           ref(node);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLVideoElement | null>).current = node;
+          (
+            ref as React.MutableRefObject<HTMLVideoElement | null>
+          ).current = node;
         }
       },
       [ref]
     );
 
-    const handleReady = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
-      setIsLoaded(true);
-      onLoadedData?.(e);
-    }, [onLoadedData]);
+    const handleReady = useCallback(
+      (e: React.SyntheticEvent<HTMLVideoElement>) => {
+        setIsLoaded(true);
+        onLoadedData?.(e);
+      },
+      [onLoadedData]
+    );
 
     const handleMouseEnter = useCallback(async () => {
-      if (!hoverPlay || !internalRef.current || hasError) return;
+      if (
+        !hoverPlay ||
+        !internalRef.current ||
+        hasError
+      ) {
+        return;
+      }
 
       const video = internalRef.current;
-      video.muted = true; // Guarantee browser autoplay policies pass
-      
+
+      // Guarantee browser autoplay policies pass
+      video.muted = true;
+
       try {
         await video.play();
         setIsPlaying(true);
@@ -60,34 +83,71 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
     }, [hoverPlay, hasError]);
 
     const handleMouseLeave = useCallback(() => {
-      if (!hoverPlay || !internalRef.current) return;
+      if (!hoverPlay || !internalRef.current) {
+        return;
+      }
 
       const video = internalRef.current;
+
       video.pause();
-      video.currentTime = 0; // Reset to start
+      video.currentTime = 0;
+
       setIsPlaying(false);
     }, [hoverPlay]);
 
-    const handleError = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-      console.error('Video failed to load:', props.src);
-      setHasError(true);
-      setIsLoaded(true); // Fade in gracefully to fallback container
-      onError?.(e);
-    }, [onError, props.src]);
+    const handleError = useCallback(
+      (
+        e: React.SyntheticEvent<HTMLVideoElement, Event>
+      ) => {
+        console.error(
+          'Video failed to load:',
+          props.src
+        );
 
-    // Check if poster string is an MP4 video or static image
-    const isVideoPoster = poster?.match(/\.(mp4|webm|ogg)($|\?)/i);
+        setHasError(true);
+        setIsLoaded(true);
+
+        onError?.(e);
+      },
+      [onError, props.src]
+    );
+
+    // Check if poster is a video file
+    const isVideoPoster = poster?.match(
+      /\.(mp4|webm|ogg)($|\?)/i
+    );
 
     return (
-      <div 
-        className={`group relative h-full w-full overflow-hidden bg-slate-900 ${className}`}
-        style={aspectRatio ? { aspectRatio } : undefined}
+      <div
+        className={`
+          group
+          relative
+          h-full
+          w-full
+          overflow-hidden
+          bg-[#F5F7FA]
+          ${className}
+        `}
+        style={
+          aspectRatio
+            ? { aspectRatio }
+            : undefined
+        }
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
+
         {/* Skeleton Loader */}
         {!isLoaded && !hasError && (
-          <div className="absolute inset-0 z-0 animate-pulse bg-slate-800" />
+          <div
+            className="
+              absolute
+              inset-0
+              z-0
+              animate-pulse
+              bg-[#EAF4FB]
+            "
+          />
         )}
 
         {/* 1. POSTER THUMBNAIL LAYER */}
@@ -97,14 +157,36 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
               src={poster}
               muted
               playsInline
-              preload="metadata" 
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              preload="metadata"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-700
+                ease-out
+                group-hover:scale-105
+              "
             />
           ) : (
             <img
               src={poster}
               alt=""
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-700
+                ease-out
+                group-hover:scale-105
+              "
             />
           )
         )}
@@ -113,36 +195,117 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
         {!hasError && (
           <video
             ref={setRefs}
-            {...props} 
+            {...props}
             loop
             playsInline
             preload="metadata"
-            disablePictureInPicture 
+            disablePictureInPicture
             onLoadedMetadata={handleReady}
             onLoadedData={handleReady}
             onError={handleError}
             muted
             controls={false}
-            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 will-change-transform ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`
+              absolute
+              inset-0
+              h-full
+              w-full
+              object-cover
+              transition-all
+              duration-700
+              ease-out
+              group-hover:scale-105
+              will-change-transform
+              ${
+                isLoaded
+                  ? 'opacity-100'
+                  : 'opacity-0'
+              }
+            `}
           />
         )}
 
-        {/* 3. OPTIONAL PLAY BADGE / INDICATOR */}
-        {showPlayBadge && !hasError && hoverPlay && (
-          <div className={`pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-slate-950/70 px-2.5 py-1 text-[10px] font-mono tracking-wider text-slate-200 backdrop-blur-md transition-all duration-300 ${
-            isPlaying ? 'bg-rose-600/90 text-white' : 'opacity-80 group-hover:opacity-100'
-          }`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${isPlaying ? 'animate-ping bg-white' : 'bg-slate-400'}`} />
-            {isPlaying ? 'PLAYING' : 'HOVER TO PLAY'}
-          </div>
-        )}
+        {/* 3. PLAY BADGE / INDICATOR */}
+        {showPlayBadge &&
+          !hasError &&
+          hoverPlay && (
+            <div
+              className={`
+                pointer-events-none
+                absolute
+                bottom-3
+                right-3
+                z-10
+                flex
+                items-center
+                gap-1.5
+                rounded-full
+                px-2.5
+                py-1
+                text-[10px]
+                font-mono
+                tracking-wider
+                backdrop-blur-md
+                border
+                transition-all
+                duration-300
 
-        {/* 4. ERROR FALLBACK CONTAINER */}
+                ${
+                  isPlaying
+                    ? `
+                      bg-[#FF8201]/95
+                      border-[#FF8201]
+                      text-white
+                      shadow-lg
+                      shadow-[#FF8201]/25
+                    `
+                    : `
+                      bg-[#00345F]/85
+                      border-white/10
+                      text-white
+                      opacity-80
+                      group-hover:opacity-100
+                    `
+                }
+              `}
+            >
+              <span
+                className={`
+                  h-1.5
+                  w-1.5
+                  rounded-full
+                  ${
+                    isPlaying
+                      ? 'animate-ping bg-white'
+                      : 'bg-[#FF8201]'
+                  }
+                `}
+              />
+
+              {isPlaying
+                ? 'PLAYING'
+                : 'HOVER TO PLAY'}
+            </div>
+          )}
+
+        {/* 4. ERROR FALLBACK */}
         {hasError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-500 text-xs font-mono">
-            <span>Video Unavailable</span>
+          <div
+            className="
+              absolute
+              inset-0
+              flex
+              items-center
+              justify-center
+              bg-[#EAF4FB]
+              text-[#64748B]
+              text-xs
+              font-mono
+            "
+          >
+            <span>
+              Video Unavailable
+            </span>
           </div>
         )}
       </div>
@@ -151,4 +314,5 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
 );
 
 CustomVideo.displayName = 'CustomVideo';
+
 export default CustomVideo;
