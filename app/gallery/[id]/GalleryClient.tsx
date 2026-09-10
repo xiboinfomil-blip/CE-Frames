@@ -130,6 +130,7 @@ export default function GalleryClient({
       </main>
 
       <GalleryLightbox
+        key={lightboxIndex}
         index={lightboxIndex}
         slides={photos}
         onClose={() => setLightboxIndex(-1)}

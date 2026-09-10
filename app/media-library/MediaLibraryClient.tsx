@@ -252,6 +252,7 @@ export default function MediaLibraryClient({
           },
         });
 
+        setMedia((current) => current.filter((item) => item.id !== id));
         router.refresh();
         return true;
       } catch (error) {
@@ -543,12 +544,22 @@ export default function MediaLibraryClient({
       </div>
 
       <GalleryLightbox
+        key={lightboxIndex}
         index={lightboxIndex}
         slides={slides}
         onClose={handleCloseLightbox}
         onDelete={async (slide) => {
           const mediaId = (slide as MediaItem & { mediaId?: string }).mediaId;
-          return mediaId ? handleDelete(mediaId) : false;
+          if (!mediaId) return false;
+          const openedIndex = lightboxIndex;
+          setLightboxIndex(-1);
+          const deleted = await handleDelete(mediaId);
+          if (deleted && media.length > 1) {
+            setLightboxIndex(Math.min(openedIndex, media.length - 2));
+          } else if (!deleted) {
+            setLightboxIndex(openedIndex);
+          }
+          return deleted;
         }}
       />
     </div>

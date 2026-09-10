@@ -973,6 +973,7 @@ export default function ManageGalleryClient({
             );
           }
 
+          setLocalMediaItems((current) => current.filter((item) => item.mediaId !== mediaId));
           router.refresh();
           return true;
         } catch (error) {
@@ -1353,12 +1354,22 @@ export default function ManageGalleryClient({
         />
 
         <GalleryLightbox
+          key={lightboxIndex}
           index={lightboxIndex}
           slides={lightboxSlides}
           onClose={() => setLightboxIndex(-1)}
           onDelete={async (slide) => {
             const mediaId = (slide as LightboxMediaItem & { mediaId?: string }).mediaId;
-            return mediaId ? handleRemoveMedia(mediaId) : false;
+            if (!mediaId) return false;
+            const openedIndex = lightboxIndex;
+            setLightboxIndex(-1);
+            const removed = await handleRemoveMedia(mediaId);
+            if (removed && localMediaItems.length > 1) {
+              setLightboxIndex(Math.min(openedIndex, localMediaItems.length - 2));
+            } else if (!removed) {
+              setLightboxIndex(openedIndex);
+            }
+            return removed;
           }}
         />
       </div>

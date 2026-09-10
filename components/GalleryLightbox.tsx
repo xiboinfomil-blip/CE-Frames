@@ -7,11 +7,8 @@ import Lightbox, { Slide } from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-import Captions from 'yet-another-react-lightbox/plugins/captions';
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Video from 'yet-another-react-lightbox/plugins/video';
-
-import 'yet-another-react-lightbox/plugins/captions.css';
 
 // -----------------------------------------------------
 // Types
@@ -114,9 +111,8 @@ export default function GalleryLightbox({
 
       event.preventDefault();
       setIsDeleting(true);
-      const deleted = await onDelete(normalizedSlides[currentIndex]);
+      await onDelete(normalizedSlides[currentIndex]);
       setIsDeleting(false);
-      if (deleted) onClose();
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -173,12 +169,7 @@ export default function GalleryLightbox({
         open={index >= 0}
         close={onClose}
         on={{ view: ({ index: viewedIndex }) => setCurrentIndex(viewedIndex) }}
-        plugins={[
-          Zoom,
-          Captions,
-          Fullscreen,
-          Video,
-        ]}
+        plugins={[Zoom, Fullscreen, Video]}
         carousel={{
           finite: false,
           preload: 2,
@@ -198,10 +189,6 @@ export default function GalleryLightbox({
           autoPlay: false,
           controls: true,
           playsInline: true,
-        }}
-        captions={{
-          descriptionTextAlign: 'center',
-          descriptionMaxLines: 3,
         }}
         animation={{
           fade: 300,
@@ -388,6 +375,8 @@ export default function GalleryLightbox({
             rgba(0, 74, 135, 0.75) !important;
 
           color: #FFFFFF !important;
+
+          transform: none !important;
         }
 
         /* ---------------------------------------------
