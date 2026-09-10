@@ -78,6 +78,7 @@ export default function MediaLibraryClient({
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(() => filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingMedia, setEditingMedia] = useState<MediaSchema | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [media, setMedia] = useState(initialMedia);
@@ -276,6 +277,78 @@ export default function MediaLibraryClient({
     [router]
   );
 
+  const toggleSelection = useCallback((id: string) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedIds((current) =>
+      current.size === media.length
+        ? new Set()
+        : new Set(media.map((item) => item.id))
+    );
+  }, [media]);
+
+  const handleBulkDelete = useCallback(async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+
+    const result = await Swal.fire({
+      title: `Supprimer ${ids.length} éléments ?`,
+      text: 'Cette action supprimera définitivement les éléments sélectionnés de votre bibliothèque.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748B',
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
+    });
+
+    if (!result.isConfirmed) return;
+
+    setIsDeleting('bulk');
+    try {
+      const response = await fetch('/api/media', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) throw new Error('Échec de la suppression des éléments');
+
+      setMedia((current) => current.filter((item) => !selectedIds.has(item.id)));
+      setSelectedIds(new Set());
+      router.refresh();
+      await Swal.fire({
+        icon: 'success',
+        title: 'Supprimés',
+        text: `${ids.length} éléments ont été supprimés.`,
+        timer: 1500,
+        showConfirmButton: false,
+        background: 'var(--page-background)',
+        color: 'var(--page-foreground)',
+      });
+    } catch (error) {
+      console.error('Failed to delete media:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Échec de la suppression',
+        text: 'Une erreur est survenue lors de la suppression des éléments. Veuillez réessayer.',
+        background: 'var(--page-background)',
+        color: 'var(--page-foreground)',
+      });
+    } finally {
+      setIsDeleting(null);
+    }
+  }, [router, selectedIds]);
+
   const handleResetFilters = useCallback(() => {
     setSearchInput('');
 
@@ -396,6 +469,28 @@ export default function MediaLibraryClient({
             Affichage de {initialMedia.length} sur {pagination.totalItems} éléments.
           </div>
 
+          {media.length > 0 && (
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
+              <button
+                type="button"
+                onClick={handleSelectAll}
+                className="text-sm font-semibold text-[#004A87] hover:text-[#FF8201]"
+              >
+                {selectedIds.size === media.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+              </button>
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={handleBulkDelete}
+                  disabled={isDeleting === 'bulk'}
+                  className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isDeleting === 'bulk' ? 'Suppression...' : `Supprimer ${selectedIds.size}`}
+                </button>
+              )}
+            </div>
+          )}
+
           <CardGrid
             items={media}
             ariaLabel="Éléments de la médiathèque"
@@ -409,6 +504,8 @@ export default function MediaLibraryClient({
                 onOpenLightbox={() =>
                   handleOpenLightbox(index)
                 }
+                onSelect={toggleSelection}
+                isSelected={selectedIds.has(item.id)}
                 isDeleting={isDeleting === item.id}
                 priority={index < 4}
                 sizes={MEDIA_CARD_SIZES}

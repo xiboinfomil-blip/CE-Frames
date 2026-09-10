@@ -2,7 +2,6 @@
 
 import { useCallback, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import Swal from 'sweetalert2';
 import { MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport';
 import {
@@ -36,6 +35,8 @@ media: MediaSchema;
 onDelete: (id: string) => void;
 onEdit: () => void;
 onOpenLightbox: () => void;
+onSelect: (id: string) => void;
+isSelected?: boolean;
 isDeleting?: boolean;
 priority?: boolean;
 sizes?: string;
@@ -60,6 +61,8 @@ media,
 onDelete,
 onEdit,
 onOpenLightbox,
+onSelect,
+isSelected = false,
 isDeleting = false,
 priority = false,
 sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
@@ -85,55 +88,15 @@ media.width && media.height
 : null;
 
 const handleDeleteClick = useCallback(
-async (e: React.MouseEvent | React.KeyboardEvent) => {
-e.stopPropagation();
-
-  if (isDeleting) return;
-
-  const result = await Swal.fire({
-    title: 'Delete Frame Asset?',
-    text: `You are about to permanently remove “${media.originalFilename || 'this asset'}” from CE Frames.`,
-    icon: 'warning',
-    showCancelButton: true,
-
-    // CE Frames brand colors
-    confirmButtonColor: '#FF8201',
-    cancelButtonColor: '#E2E8F0',
-
-    confirmButtonText: 'Yes, delete asset',
-    cancelButtonText: 'Cancel',
-
-    background: 'var(--page-background)',
-
-    customClass: {
-      popup:
-        'rounded-2xl shadow-xl border border-[#E2E8F0] p-6',
-      title:
-        'font-bold text-[#172033] text-lg tracking-tight',
-      htmlContainer:
-        'mt-2',
-      confirmButton:
-        'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:bg-[#E87500] hover:shadow-md cursor-pointer',
-      cancelButton:
-        'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#64748B] hover:bg-[#F5F7FA] cursor-pointer',
-    },
-  });
-
-  if (result.isConfirmed) {
-    onDelete(media.id);
-  }
-},
-[
-  isDeleting,
-  onDelete,
-  media.id,
-  media.originalFilename,
-]
-
+  (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    if (!isDeleting) onDelete(media.id);
+  },
+  [isDeleting, media.id, onDelete]
 );
 
 return ( <figure
-   className="
+  className={`
      group relative flex flex-col w-full h-full
     bg-white dark:bg-[#102238]
      rounded-2xl overflow-hidden
@@ -142,7 +105,8 @@ return ( <figure
      hover:shadow-xl hover:shadow-[#00345F]/10
      hover:border-[#CBD5E1]
      transition-all duration-500 ease-out
-   "
+     ${isSelected ? 'ring-2 ring-[#FF8201] ring-offset-2' : ''}
+   `}
  >
 {/* --- Media Viewport Wrapper --- */}
 <div
@@ -202,6 +166,21 @@ aria-label={`Open ${
         pointer-events-none
       "
     />
+
+    {/* Selection */}
+    <label
+      className="absolute top-3 left-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/95 shadow-sm backdrop-blur-md dark:bg-[#102238]/95"
+      onClick={(event) => event.stopPropagation()}
+      title={isSelected ? 'Désélectionner' : 'Sélectionner'}
+    >
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => onSelect(media.id)}
+        aria-label={`Sélectionner ${media.originalFilename || 'cet élément'}`}
+        className="h-4 w-4 accent-[#FF8201]"
+      />
+    </label>
 
     {/* Top Badges */}
     <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">

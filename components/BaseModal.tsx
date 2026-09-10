@@ -25,7 +25,6 @@ interface BaseModalProps {
   isLoading?: boolean;
 }
 
-// Hoisted outside component to prevent recreation on every render
 const widthClasses = {
   sm: 'sm:max-w-sm',
   md: 'sm:max-w-md',
@@ -56,74 +55,75 @@ export default function BaseModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
+
   const titleId = `modal-title-${useId()}`;
   const subtitleId = `modal-subtitle-${useId()}`;
 
   // ============================================================
-  // MOUNT / UNMOUNT
+  // OPEN / CLOSE ANIMATION STATE
   // ============================================================
 
   useEffect(() => {
     if (isOpen) {
       hasBeenOpened.current = true;
+      setIsClosing(false);
       return;
     }
 
     if (!hasBeenOpened.current) return;
 
     setIsClosing(true);
+
     const timer = setTimeout(() => {
       setIsClosing(false);
-    }, 300);
+    }, 280);
 
     return () => clearTimeout(timer);
   }, [isOpen]);
 
   // ============================================================
-  // KEYBOARD ACCESSIBILITY + FOCUS TRAP
+  // KEYBOARD + FOCUS TRAP
   // ============================================================
 
   useEffect(() => {
     if (!isRendered) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape
       if (e.key === 'Escape' && !isLoading) {
         e.preventDefault();
         onClose();
         return;
       }
 
-      // Tab focus trap
-      if (e.key === 'Tab') {
-        const modal = modalRef.current;
+      if (e.key !== 'Tab') return;
 
-        if (!modal) return;
+      const modal = modalRef.current;
 
-        const focusableElements =
-          modal.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
+      if (!modal) return;
 
-        if (focusableElements.length === 0) return;
+      const focusableElements =
+        modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
 
-        const firstElement = focusableElements[0];
-        const lastElement =
-          focusableElements[focusableElements.length - 1];
+      if (focusableElements.length === 0) return;
 
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else {
-          if (
-            document.activeElement === lastElement ||
-            document.activeElement === document.body
-          ) {
-            e.preventDefault();
-            firstElement.focus();
-          }
+      const firstElement = focusableElements[0];
+      const lastElement =
+        focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (
+          document.activeElement === lastElement ||
+          document.activeElement === document.body
+        ) {
+          e.preventDefault();
+          firstElement.focus();
         }
       }
     };
@@ -136,7 +136,7 @@ export default function BaseModal({
   }, [isRendered, onClose, isLoading]);
 
   // ============================================================
-  // FOCUS MANAGEMENT + BODY SCROLL LOCK
+  // FOCUS MANAGEMENT + SCROLL LOCK
   // ============================================================
 
   useEffect(() => {
@@ -145,16 +145,18 @@ export default function BaseModal({
     previousActiveElement.current =
       document.activeElement as HTMLElement;
 
+    const originalOverflow = document.body.style.overflow;
+
     document.body.style.overflow = 'hidden';
 
     const timer = setTimeout(() => {
       closeBtnRef.current?.focus();
-    }, 50);
+    }, 80);
 
     return () => {
       clearTimeout(timer);
 
-      document.body.style.overflow = '';
+      document.body.style.overflow = originalOverflow;
 
       previousActiveElement.current?.focus();
     };
@@ -170,8 +172,8 @@ export default function BaseModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{
-          duration: 0.3,
-          ease: 'easeInOut',
+          duration: 0.2,
+          ease: 'easeOut',
         }}
         className="
           fixed
@@ -180,8 +182,6 @@ export default function BaseModal({
           flex
           items-end
           justify-center
-          p-0
-
           sm:items-center
           sm:p-6
         "
@@ -200,17 +200,16 @@ export default function BaseModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
           className="
             absolute
             inset-0
 
-            bg-[#00345F]/55
-            backdrop-blur-md
+            bg-[#00345F]/35
+            backdrop-blur-[18px]
 
-            transition-colors
-            duration-300
-
-            dark:bg-[#06101C]/75
+            dark:bg-[#06101C]/65
+            dark:backdrop-blur-[20px]
           "
           onClick={!isLoading ? onClose : undefined}
           aria-hidden="true"
@@ -224,8 +223,8 @@ export default function BaseModal({
           ref={modalRef}
           initial={{
             opacity: 0,
-            scale: 0.96,
-            y: 16,
+            scale: 0.97,
+            y: 8,
           }}
           animate={{
             opacity: 1,
@@ -234,53 +233,61 @@ export default function BaseModal({
           }}
           exit={{
             opacity: 0,
-            scale: 0.96,
-            y: 16,
+            scale: 0.97,
+            y: 8,
           }}
           transition={{
             type: 'spring',
-            stiffness: 380,
-            damping: 28,
+            stiffness: 420,
+            damping: 32,
+            mass: 0.8,
           }}
           className={`
             relative
             flex
-            max-h-[92vh]
+            max-h-[90vh]
             w-full
             flex-col
             overflow-hidden
 
-            rounded-t-3xl
+            rounded-t-[26px]
             border
-            border-[#E2E8F0]
-            bg-white
+            border-white/70
+            bg-white/95
 
-            shadow-2xl
-            shadow-[#00345F]/20
+            shadow-[0_24px_80px_rgba(0,52,95,0.22)]
 
-            sm:max-h-[88vh]
-            sm:rounded-3xl
+            backdrop-blur-2xl
 
-            dark:border-white/[0.08]
-            dark:bg-[#0E1C2D]
-            dark:shadow-black/70
+            sm:max-h-[86vh]
+            sm:rounded-[22px]
+
+            dark:border-white/[0.10]
+            dark:bg-[#0E1C2D]/95
+            dark:shadow-[0_28px_90px_rgba(0,0,0,0.55)]
 
             ${widthClasses[maxWidth]}
           `}
         >
           {/* ================================================== */}
-          {/* BRAND ACCENT */}
+          {/* TOP ACCENT */}
           {/* ================================================== */}
 
           <div
             className="
-              h-1.5
-              w-full
+              absolute
+              left-0
+              right-0
+              top-0
+              z-30
+              h-[2px]
+
               bg-linear-to-r
               from-[#00345F]
               via-[#004A87]
               to-[#FF8201]
             "
+            aria-hidden="true"
           />
 
           {/* ================================================== */}
@@ -290,34 +297,87 @@ export default function BaseModal({
           <div
             className="
               relative
-              z-10
+              z-20
               flex
-              items-start
+              min-h-[68px]
+              items-center
               justify-between
+
               border-b
-              border-[#E2E8F0]
-              bg-white
-              px-6
-              py-5
+              border-[#00345F]/[0.07]
 
-              sm:px-8
-              sm:py-6
+              bg-white/80
+              px-5
+              py-3.5
 
-              dark:border-white/[0.08]
-              dark:bg-[#0E1C2D]
+              backdrop-blur-xl
+
+              sm:px-6
+
+              dark:border-white/[0.07]
+              dark:bg-[#0E1C2D]/75
             "
           >
-            <div className="pr-8">
+            {/* macOS-style traffic-light inspired controls */}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-2
+              "
+              aria-hidden="true"
+            >
+              <span
+                className="
+                  h-3
+                  w-3
+                  rounded-full
+                  bg-[#FF5F57]
+                  shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.15)]
+                "
+              />
+
+              <span
+                className="
+                  h-3
+                  w-3
+                  rounded-full
+                  bg-[#FFBD2E]
+                  shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.15)]
+                "
+              />
+
+              <span
+                className="
+                  h-3
+                  w-3
+                  rounded-full
+                  bg-[#28C840]
+                  shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.15)]
+                "
+              />
+            </div>
+
+            {/* Title */}
+
+            <div
+              className="
+                absolute
+                left-1/2
+                max-w-[55%]
+                -translate-x-1/2
+                text-center
+              "
+            >
               <h2
                 id={titleId}
                 className="
-                  text-xl
-                  font-bold
-                  leading-tight
-                  tracking-tight
+                  truncate
+                  text-[15px]
+                  font-semibold
+                  tracking-[-0.01em]
                   text-[#172033]
-
-                  sm:text-2xl
 
                   dark:text-white
                 "
@@ -329,13 +389,13 @@ export default function BaseModal({
                 <p
                   id={subtitleId}
                   className="
-                    mt-1.5
-                    text-sm
+                    mt-0.5
+                    truncate
+                    text-[11px]
                     font-medium
-                    leading-relaxed
                     text-[#64748B]
 
-                    dark:text-white/50
+                    dark:text-white/45
                   "
                 >
                   {subtitle}
@@ -344,49 +404,66 @@ export default function BaseModal({
             </div>
 
             {/* Close */}
+
             <button
               ref={closeBtnRef}
               onClick={onClose}
               disabled={isLoading}
               className="
                 group
+                ml-auto
                 flex
-                h-10
-                w-10
+                h-8
+                w-8
                 shrink-0
                 items-center
                 justify-center
                 rounded-full
 
+                border
+                border-[#00345F]/[0.06]
+
+                bg-[#F5F7FA]/80
+
                 text-[#64748B]
 
-                transition-all
-                duration-200
+                shadow-sm
 
+                transition-all
+                duration-150
+
+                hover:border-[#FF8201]/20
                 hover:bg-[#FFF1E5]
                 hover:text-[#00345F]
 
+                active:scale-95
+
+                disabled:pointer-events-none
                 disabled:opacity-30
 
                 focus:outline-none
                 focus-visible:ring-2
                 focus-visible:ring-[#FF8201]
                 focus-visible:ring-offset-2
-                focus-visible:ring-offset-white
 
+                dark:border-white/[0.08]
+                dark:bg-white/[0.06]
                 dark:text-white/45
+
+                dark:hover:border-[#FF8201]/30
                 dark:hover:bg-[#FF8201]/10
                 dark:hover:text-white
+
                 dark:focus-visible:ring-offset-[#0E1C2D]
               "
               aria-label="Close modal"
             >
               <HiXMark
                 className="
-                  h-5
-                  w-5
+                  h-[17px]
+                  w-[17px]
                   transition-transform
-                  duration-300
+                  duration-200
 
                   group-hover:rotate-90
                 "
@@ -404,38 +481,67 @@ export default function BaseModal({
               relative
               flex-1
               overflow-y-auto
-              bg-white
 
-              dark:bg-[#0E1C2D]
+              bg-white/75
+
+              dark:bg-[#0E1C2D]/70
             "
           >
-            {/* Subtle decorative glow */}
+            {/* Subtle Infomil blue glow */}
+
             <div
               className="
                 pointer-events-none
                 absolute
-                -right-24
-                -top-24
-                h-48
-                w-48
+                -right-32
+                -top-32
+                h-64
+                w-64
                 rounded-full
+
                 bg-[#EAF4FB]
-                blur-3xl
-                opacity-60
+
+                opacity-50
+                blur-[70px]
 
                 dark:bg-[#004A87]/10
+                dark:opacity-80
               "
+              aria-hidden="true"
+            />
+
+            {/* Subtle orange glow */}
+
+            <div
+              className="
+                pointer-events-none
+                absolute
+                -bottom-32
+                -left-32
+                h-56
+                w-56
+                rounded-full
+
+                bg-[#FFF1E5]
+
+                opacity-30
+                blur-[70px]
+
+                dark:bg-[#FF8201]/[0.04]
+                dark:opacity-100
+              "
+              aria-hidden="true"
             />
 
             <div
               className="
                 relative
                 z-10
-                px-6
+                px-5
                 py-6
 
-                sm:px-8
-                sm:py-8
+                sm:px-7
+                sm:py-7
               "
             >
               {children}
@@ -450,39 +556,31 @@ export default function BaseModal({
             <div
               className="
                 relative
-                z-10
+                z-20
+
                 flex
-                justify-end
-                gap-3
+                flex-col-reverse
+                gap-2
+
                 border-t
-                border-[#E2E8F0]
-                bg-[#F5F7FA]/90
-                px-6
+                border-[#00345F]/[0.07]
+
+                bg-[#F8FAFC]/85
+
+                px-5
                 py-4
+
                 backdrop-blur-xl
 
-                sm:px-8
-                sm:py-5
+                sm:flex-row
+                sm:items-center
+                sm:justify-end
+                sm:px-6
 
-                dark:border-white/[0.08]
+                dark:border-white/[0.07]
                 dark:bg-[#091522]/80
               "
             >
-              {/* Orange accent */}
-              <div
-                className="
-                  absolute
-                  left-6
-                  top-0
-                  h-px
-                  w-12
-                  bg-[#FF8201]
-
-                  sm:left-8
-                "
-                aria-hidden="true"
-              />
-
               {footer}
             </div>
           )}
@@ -490,12 +588,12 @@ export default function BaseModal({
       </motion.div>
 
       {/* ================================================== */}
-      {/* CUSTOM SCROLLBAR */}
+      {/* MAC-STYLE SCROLLBAR */}
       {/* ================================================== */}
 
       <style>{`
         .modal-scroll::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
 
         .modal-scroll::-webkit-scrollbar-track {
@@ -503,29 +601,37 @@ export default function BaseModal({
         }
 
         .modal-scroll::-webkit-scrollbar-thumb {
-          background-color: #e2e8f0;
-          border-radius: 9999px;
+          background: rgba(100, 116, 139, 0.28);
+          border: 2px solid transparent;
+          background-clip: padding-box;
+          border-radius: 999px;
         }
 
         .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background-color: #64748b;
+          background: rgba(100, 116, 139, 0.48);
+          border: 2px solid transparent;
+          background-clip: padding-box;
         }
 
         .dark .modal-scroll::-webkit-scrollbar-thumb {
-          background-color: rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.14);
+          border: 2px solid transparent;
+          background-clip: padding-box;
         }
 
         .dark .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(255, 130, 1, 0.45);
+          background: rgba(255, 130, 1, 0.38);
+          border: 2px solid transparent;
+          background-clip: padding-box;
         }
 
         .modal-scroll {
           scrollbar-width: thin;
-          scrollbar-color: #e2e8f0 transparent;
+          scrollbar-color: rgba(100, 116, 139, 0.28) transparent;
         }
 
         .dark .modal-scroll {
-          scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+          scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
         }
       `}</style>
     </AnimatePresence>

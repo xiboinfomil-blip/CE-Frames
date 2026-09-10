@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { mediaHelpers } from '@/lib/db-helpers';
 import { db } from '@/lib/db';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { media } from '@/db/schema';
 
 export async function GET(req: Request) {
@@ -156,25 +156,34 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
-  }
-
   try {
-    const mediaItem = await db.query.media.findFirst({
-      where: eq(media.id, id)
+    const { searchParams } = new URL(req.url);
+    let ids: string[] = [];
+    const body = await req.json().catch(() => null);
+
+    if (Array.isArray(body?.ids)) {
+      ids = body.ids.filter((id: unknown): id is string => typeof id === 'string');
+    } else {
+      const id = searchParams.get('id');
+      if (id) ids = [id];
+    }
+
+    ids = [...new Set(ids)];
+    if (ids.length === 0) {
+      return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    }
+
+    const mediaItems = await db.query.media.findMany({
+      where: inArray(media.id, ids),
     });
-    
-    if (!mediaItem) {
+
+    if (mediaItems.length === 0) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
-    await mediaHelpers.delete(id);
+    await Promise.all(mediaItems.map((item) => mediaHelpers.delete(item.id)));
     
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, deleted: mediaItems.length });
   } catch (error) {
     console.error('Media deletion error:', error);
     return NextResponse.json({ error: 'Failed to delete media' }, { status: 500 });
