@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { memo, useState, useRef, useEffect } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 
 import { GallerySummary } from '@/types/types';
@@ -13,7 +13,7 @@ import {
   Trash2,
   Image as ImageIcon,
   Play,
-  MoreVertical,
+  MoreHorizontal,
   Check,
   ArrowUpRight,
 } from 'lucide-react';
@@ -40,33 +40,30 @@ export const GalleryCard = memo(function GalleryCard({
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle outside clicks AND Escape key for accessibility
+  /*
+   * ------------------------------------------------------------
+   * Close menu when clicking outside / pressing Escape
+   * ------------------------------------------------------------
+   */
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node)
       ) {
         setIsMenuOpen(false);
       }
-    }
+    };
 
-    function handleEscape(event: KeyboardEvent) {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isMenuOpen) {
         setIsMenuOpen(false);
         menuButtonRef.current?.focus();
       }
-    }
+    };
 
-    document.addEventListener(
-      'mousedown',
-      handleClickOutside
-    );
-
-    document.addEventListener(
-      'keydown',
-      handleEscape
-    );
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
 
     return () => {
       document.removeEventListener(
@@ -81,10 +78,17 @@ export const GalleryCard = memo(function GalleryCard({
     };
   }, [isMenuOpen]);
 
+  /*
+   * ------------------------------------------------------------
+   * Delete confirmation
+   * ------------------------------------------------------------
+   */
   const handleDeleteClick = async (
     e: React.MouseEvent
   ) => {
+    e.preventDefault();
     e.stopPropagation();
+
     setIsMenuOpen(false);
 
     const result = await Swal.fire({
@@ -108,7 +112,7 @@ export const GalleryCard = memo(function GalleryCard({
 
       customClass: {
         popup:
-          'rounded-2xl shadow-2xl border border-[#E2E8F0] p-6 max-w-md',
+          'rounded-3xl shadow-2xl border border-[#E2E8F0] p-6 max-w-md',
 
         title:
           'font-semibold text-[#172033] mb-2',
@@ -129,222 +133,87 @@ export const GalleryCard = memo(function GalleryCard({
     }
   };
 
-  const getMediaInfo = () => {
-    const media = gallery.coverMedia || gallery.randomMedia;
+  /*
+   * ------------------------------------------------------------
+   * Media
+   * ------------------------------------------------------------
+   */
+  const media = gallery.coverMedia || gallery.randomMedia;
 
-    if (!media) {
-      return {
-        sourceUrl: null,
-        posterUrl: null,
-        mediaType: null,
-      };
-    }
+  const sourceUrl = media?.thumbnailUrl ?? null;
+  const posterUrl = media?.thumbnailUrl ?? null;
+  const mediaType = media?.type ?? null;
 
-    return {
-      sourceUrl: media.thumbnailUrl,
-      posterUrl: media.thumbnailUrl,
-      mediaType: media.type,
-    };
-  };
-
-  const {
-    sourceUrl,
-    posterUrl,
-    mediaType,
-  } = getMediaInfo();
-
-  const hasMedia = !!sourceUrl;
+  const hasMedia = Boolean(sourceUrl);
   const mediaCount = gallery.mediaCount || 0;
 
-  const createdDate = new Date(
-    gallery.createdAt
-  );
+  /*
+   * ------------------------------------------------------------
+   * Date
+   * ------------------------------------------------------------
+   */
+  const createdDate = new Date(gallery.createdAt);
 
-  const formattedDate =
-    createdDate.toLocaleDateString('fr-FR', {
-      month: 'long',
+  const formattedDate = createdDate.toLocaleDateString(
+    'fr-FR',
+    {
       day: 'numeric',
+      month: 'long',
       year: 'numeric',
-    });
+    }
+  );
 
   return (
     <article
-      className="
+      className={`
         group
         relative
         flex
+        h-full
+        min-w-0
         flex-col
-        bg-white
-        dark:bg-[#102238]
-        rounded-3xl
+        overflow-hidden
+        rounded-[26px]
         border
-        border-[#E2E8F0]
-        dark:border-white/10
-        shadow-[0_2px_8px_rgba(0,74,135,0.05)]
-        dark:shadow-[0_2px_8px_rgba(2,6,23,0.35)]
-        hover:shadow-[0_16px_32px_rgba(0,52,95,0.12)]
-        dark:hover:shadow-[0_16px_32px_rgba(2,6,23,0.45)]
-        hover:-translate-y-1
+        bg-white
         transition-all
         duration-500
         ease-out
-        h-full
-      "
+
+        ${
+          isSelected
+            ? `
+              border-[#004A87]
+              shadow-[0_0_0_2px_rgba(0,74,135,0.12),0_18px_45px_rgba(0,74,135,0.14)]
+            `
+            : `
+              border-[#E2E8F0]
+              shadow-[0_3px_12px_rgba(0,74,135,0.055)]
+              hover:-translate-y-1
+              hover:border-[#C9D8E5]
+              hover:shadow-[0_18px_45px_rgba(0,52,95,0.12)]
+            `
+        }
+
+        dark:bg-[#102238]
+        dark:border-white/[0.08]
+        dark:shadow-[0_4px_20px_rgba(2,6,23,0.3)]
+        dark:hover:border-white/[0.15]
+        dark:hover:shadow-[0_20px_50px_rgba(2,6,23,0.5)]
+      `}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 dark:border-white/10 dark:bg-[#0E1C2D]">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onToggleSelect?.();
-          }}
-          className="flex items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5 text-left text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-[#102238] dark:text-white dark:hover:bg-white/5"
-          aria-label={isSelected ? 'Désélectionner la galerie' : 'Sélectionner la galerie'}
-        >
-          <span className={`flex h-4 w-4 items-center justify-center rounded border ${isSelected ? 'border-[#004A87] bg-[#004A87] text-white' : 'border-[#94A3B8] bg-transparent text-transparent dark:border-white/50'}`}>
-            {isSelected && <Check className="h-3 w-3" />}
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#64748B] dark:text-white/60">
-            {isSelected ? 'Sélectionné' : 'Sélectionner'}
-          </span>
-        </button>
+      {/* ======================================================
+          MEDIA
+          ====================================================== */}
 
-        <div ref={menuRef} className="relative">
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsMenuOpen(!isMenuOpen);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setIsMenuOpen(!isMenuOpen);
-              }
-            }}
-            className="
-              flex items-center gap-2
-              rounded-xl border border-[#E2E8F0]
-              bg-white/95 px-2.5 py-2 text-left shadow-sm
-              text-[#00345F] transition-all duration-200
-              hover:bg-[#EAF4FB] hover:text-[#004A87]
-              dark:border-white/10 dark:bg-[#102238]/95 dark:text-white dark:hover:bg-white/5
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2
-            "
-            aria-label="Plus d'options"
-            aria-haspopup="menu"
-            aria-expanded={isMenuOpen}
-            aria-controls="gallery-menu"
-          >
-            <MoreVertical className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Actions</span>
-          </button>
-
-          {isMenuOpen && (
-            <div
-              id="gallery-menu"
-              role="menu"
-              className="
-                absolute right-0 top-full z-50 mt-2 w-52
-                bg-white
-                dark:bg-[#0E1C2D]
-                rounded-2xl
-                shadow-xl
-                border
-                border-[#E2E8F0]
-                dark:border-white/10
-                py-2
-                overflow-hidden
-                animate-in
-                fade-in
-                zoom-in-95
-                duration-200
-                origin-top-right
-              "
-            >
-              <button
-                role="menuitem"
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(false);
-                  onEdit();
-                }}
-                className="
-                  w-full
-                  text-left
-                  px-4
-                  py-3
-                  text-sm
-                  font-medium
-                  text-[#64748B]
-                  hover:bg-[#EAF4FB]
-                  dark:text-white/80
-                  dark:hover:bg-white/[0.06]
-                  hover:text-[#004A87]
-                  flex
-                  items-center
-                  gap-3
-                  transition-colors
-                  focus:outline-none
-                  focus-visible:bg-[#EAF4FB]
-                  focus-visible:ring-2
-                  focus-visible:ring-inset
-                  focus-visible:ring-[#FF8201]
-                "
-              >
-                <Pencil className="w-4 h-4 text-[#004A87] dark:text-[#9BCBFF]" />
-                Éditer les détails
-              </button>
-
-              <div className="h-px bg-[#E2E8F0] dark:bg-white/10 my-1.5 mx-3" />
-
-              <button
-                role="menuitem"
-                type="button"
-                onClick={handleDeleteClick}
-                className="
-                  w-full
-                  text-left
-                  px-4
-                  py-3
-                  text-sm
-                  font-medium
-                  text-red-600
-                  hover:bg-red-50
-                  dark:hover:bg-red-950/30
-                  flex
-                  items-center
-                  gap-3
-                  transition-colors
-                  focus:outline-none
-                  focus-visible:bg-red-50
-                  focus-visible:ring-2
-                  focus-visible:ring-inset
-                  focus-visible:ring-red-500
-                "
-              >
-                <Trash2 className="w-4 h-4" />
-                Supprimer l&apos;album
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* --- Media Area --- */}
       <div
         className="
           relative
-          aspect-[3/4]
+          aspect-[4/5]
           w-full
-          rounded-t-3xl
           overflow-hidden
-          bg-[#F5F7FA]
-          dark:bg-[#0E1C2D]
+          bg-[#F3F7FA]
+          dark:bg-[#0B1828]
         "
       >
         <Link
@@ -358,85 +227,107 @@ export const GalleryCard = memo(function GalleryCard({
             focus-visible:ring-2
             focus-visible:ring-[#FF8201]
             focus-visible:ring-inset
-            rounded-t-3xl
           "
-          aria-label={`Voir et gérer les détails de l'album ${gallery.title}`}
+          aria-label={`Ouvrir l'album ${gallery.title}`}
         >
           {hasMedia && mediaType ? (
             <>
+              {/* Image */}
               <div
                 className="
-                  w-full
-                  h-full
-                  transform
-                  group-hover:scale-105
+                  absolute
+                  inset-0
                   transition-transform
                   duration-700
                   ease-out
-                  will-change-transform
+                  group-hover:scale-[1.035]
                 "
               >
                 <MediaViewport
                   mediaType={mediaType}
                   fullResUrl={sourceUrl!}
-                  thumbnailUrl={
-                    posterUrl || sourceUrl!
-                  }
+                  thumbnailUrl={posterUrl || sourceUrl!}
                   caption={gallery.title}
                   originalFilename={null}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   priority={priority}
                 />
               </div>
 
+              {/* Cinematic overlay */}
               <div
                 className="
+                  pointer-events-none
                   absolute
                   inset-0
-                  bg-gradient-to-t
-                  from-[#00345F]/30
+                  bg-gradient-to-b
+                  from-[#00345F]/25
                   via-transparent
-                  to-transparent
-                  opacity-0
-                  group-hover:opacity-100
+                  to-[#00345F]/45
+                  opacity-70
                   transition-opacity
                   duration-500
-                  pointer-events-none
+                  group-hover:opacity-90
                 "
               />
 
+              {/* Bottom shine */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-x-0
+                  bottom-0
+                  h-32
+                  bg-gradient-to-t
+                  from-black/30
+                  to-transparent
+                  opacity-60
+                "
+              />
+
+              {/* Video indicator */}
               {mediaType === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    z-10
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
                   <div
                     className="
-                      w-16
-                      h-16
-                      md:w-20
-                      md:h-20
-                      rounded-full
-                      bg-white/90
-                      backdrop-blur-md
-                      shadow-lg
                       flex
+                      h-14
+                      w-14
                       items-center
                       justify-center
-                      opacity-90
-                      scale-90
-                      group-hover:scale-100
-                      group-hover:opacity-100
+                      rounded-full
+                      border
+                      border-white/50
+                      bg-white/90
+                      shadow-[0_8px_30px_rgba(0,0,0,0.18)]
+                      backdrop-blur-xl
                       transition-all
                       duration-500
+                      group-hover:scale-110
+                      md:h-16
+                      md:w-16
                     "
                   >
                     <Play
                       className="
-                        w-6
+                        ml-0.5
                         h-6
-                        md:w-8
-                        md:h-8
+                        w-6
+                        fill-[#004A87]
                         text-[#004A87]
-                        ml-1
-                        fill-current
+                        md:h-7
+                        md:w-7
                       "
                     />
                   </div>
@@ -444,38 +335,58 @@ export const GalleryCard = memo(function GalleryCard({
               )}
             </>
           ) : (
+            /* Empty state */
             <div
               className="
-                w-full
-                h-full
                 flex
+                h-full
+                w-full
                 flex-col
                 items-center
                 justify-center
-                bg-[#EAF4FB]
+                bg-gradient-to-br
+                from-[#EAF4FB]
+                to-[#F5F8FB]
+                dark:from-[#102A42]
+                dark:to-[#0D1E31]
               "
             >
               <div
                 className="
-                  p-5
-                  rounded-2xl
-                  bg-white
-                  border
-                  border-[#E2E8F0]
-                  shadow-sm
                   mb-4
+                  flex
+                  h-16
+                  w-16
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-[#D7E5EF]
+                  bg-white/80
+                  shadow-sm
+                  backdrop-blur
+                  dark:border-white/10
+                  dark:bg-white/5
                 "
               >
-                <ImageIcon className="w-8 h-8 text-[#004A87]" />
+                <ImageIcon
+                  className="
+                    h-7
+                    w-7
+                    text-[#004A87]
+                    dark:text-[#9BCBFF]
+                  "
+                />
               </div>
 
               <span
                 className="
-                  text-sm
-                  font-semibold
+                  text-[11px]
+                  font-bold
                   uppercase
-                  tracking-widest
+                  tracking-[0.18em]
                   text-[#64748B]
+                  dark:text-white/50
                 "
               >
                 Aucun média
@@ -484,143 +395,387 @@ export const GalleryCard = memo(function GalleryCard({
           )}
         </Link>
 
-        {/* Top Badges Overlay */}
+        {/* ====================================================
+            TOP CONTROLS
+            ==================================================== */}
+
         <div
           className="
             absolute
-            top-4
             left-4
-            right-16
+            right-4
+            top-4
+            z-30
             flex
-            justify-between
             items-start
-            z-20
-            pointer-events-none
+            justify-between
           "
         >
-          <VisibilityBadge type={gallery.visibility} />
+          {/* Selection */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleSelect?.();
+            }}
+            aria-label={
+              isSelected
+                ? 'Désélectionner la galerie'
+                : 'Sélectionner la galerie'
+            }
+            aria-pressed={isSelected}
+            className={`
+              group/select
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-xl
+              border
+              shadow-lg
+              backdrop-blur-xl
+              transition-all
+              duration-200
+              focus:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#FF8201]
 
-          {mediaCount > 0 && (
+              ${
+                isSelected
+                  ? `
+                    border-[#004A87]
+                    bg-[#004A87]
+                    text-white
+                  `
+                  : `
+                    border-white/70
+                    bg-white/90
+                    text-transparent
+                    hover:bg-white
+                    dark:border-white/20
+                    dark:bg-[#102238]/80
+                    dark:hover:bg-[#102238]
+                  `
+              }
+            `}
+          >
+            <Check
+              className={`
+                h-4
+                w-4
+                transition-transform
+                duration-200
+                ${
+                  isSelected
+                    ? 'scale-100'
+                    : 'scale-75 group-hover/select:scale-90'
+                }
+              `}
+            />
+          </button>
+
+          {/* Right controls */}
+          <div className="flex items-center gap-2">
+            {/* Visibility */}
+            <div className="pointer-events-none">
+              <VisibilityBadge
+                type={gallery.visibility}
+              />
+            </div>
+
+            {/* Menu */}
             <div
-              className="
-                bg-white/90
-                backdrop-blur-md
-                border
-                border-white/70
-                text-[#00345F]
-                text-xs
-                font-bold
-                uppercase
-                tracking-wider
-                px-3
-                py-2
-                rounded-full
-                shadow-sm
-                flex
-                items-center
-                gap-2
-                pointer-events-auto
-                transform
-                translate-y-2
-                opacity-0
-                group-hover:translate-y-0
-                group-hover:opacity-100
-                transition-all
-                duration-300
-              "
+              ref={menuRef}
+              className="relative"
             >
-              <ImageIcon className="w-3.5 h-3.5 text-[#004A87]" />
+              <button
+                ref={menuButtonRef}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMenuOpen((current) => !current);
+                }}
+                aria-label="Options de l'album"
+                aria-haspopup="menu"
+                aria-expanded={isMenuOpen}
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-xl
+                  border
+                  border-white/70
+                  bg-white/90
+                  text-[#00345F]
+                  shadow-lg
+                  backdrop-blur-xl
+                  transition-all
+                  duration-200
+                  hover:bg-white
+                  hover:text-[#004A87]
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#FF8201]
+                  dark:border-white/20
+                  dark:bg-[#102238]/80
+                  dark:text-white
+                  dark:hover:bg-[#102238]
+                "
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
 
+              {isMenuOpen && (
+                <div
+                  role="menu"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-50
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-[#E2E8F0]
+                    bg-white
+                    p-1.5
+                    shadow-[0_20px_50px_rgba(0,52,95,0.16)]
+                    animate-in
+                    fade-in
+                    zoom-in-95
+                    duration-150
+                    origin-top-right
+                    dark:border-white/10
+                    dark:bg-[#0E1C2D]
+                    dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]
+                  "
+                >
+                  <button
+                    role="menuitem"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsMenuOpen(false);
+                      onEdit();
+                    }}
+                    className="
+                      flex
+                      w-full
+                      items-center
+                      gap-3
+                      rounded-xl
+                      px-3
+                      py-2.5
+                      text-left
+                      text-sm
+                      font-medium
+                      text-[#334155]
+                      transition-colors
+                      hover:bg-[#EAF4FB]
+                      hover:text-[#004A87]
+                      focus:outline-none
+                      focus-visible:ring-2
+                      focus-visible:ring-inset
+                      focus-visible:ring-[#FF8201]
+                      dark:text-white/80
+                      dark:hover:bg-white/[0.06]
+                      dark:hover:text-white
+                    "
+                  >
+                    <span
+                      className="
+                        flex
+                        h-8
+                        w-8
+                        items-center
+                        justify-center
+                        rounded-lg
+                        bg-[#EAF4FB]
+                        text-[#004A87]
+                        dark:bg-[#004A87]/20
+                        dark:text-[#9BCBFF]
+                      "
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </span>
+
+                    <span>Modifier les détails</span>
+                  </button>
+
+                  <div className="my-1 h-px bg-[#E2E8F0] dark:bg-white/10" />
+
+                  <button
+                    role="menuitem"
+                    type="button"
+                    onClick={handleDeleteClick}
+                    className="
+                      flex
+                      w-full
+                      items-center
+                      gap-3
+                      rounded-xl
+                      px-3
+                      py-2.5
+                      text-left
+                      text-sm
+                      font-medium
+                      text-red-600
+                      transition-colors
+                      hover:bg-red-50
+                      focus:outline-none
+                      focus-visible:ring-2
+                      focus-visible:ring-inset
+                      focus-visible:ring-red-500
+                      dark:hover:bg-red-950/30
+                    "
+                  >
+                    <span
+                      className="
+                        flex
+                        h-8
+                        w-8
+                        items-center
+                        justify-center
+                        rounded-lg
+                        bg-red-50
+                        text-red-600
+                        dark:bg-red-500/10
+                      "
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </span>
+
+                    <span>Supprimer l'album</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ====================================================
+            MEDIA COUNT
+            ==================================================== */}
+
+        {mediaCount > 0 && (
+          <div
+            className="
+              pointer-events-none
+              absolute
+              bottom-4
+              left-4
+              z-20
+              flex
+              items-center
+              gap-1.5
+              rounded-full
+              border
+              border-white/30
+              bg-black/30
+              px-3
+              py-1.5
+              text-xs
+              font-semibold
+              text-white
+              shadow-sm
+              backdrop-blur-xl
+            "
+          >
+            <ImageIcon className="h-3.5 w-3.5" />
+
+            <span>
               {mediaCount}{' '}
               {mediaCount === 1
                 ? 'élément'
                 : 'éléments'}
-            </div>
-          )}
-        </div>
+            </span>
+          </div>
+        )}
 
-        {/* Action Overlay Button */}
-        <div
+        {/* ====================================================
+            QUICK OPEN
+            ==================================================== */}
+
+        <Link
+          href={`/manage-gallery/${gallery.id}`}
+          aria-label={`Gérer ${gallery.title}`}
           className="
             absolute
-            bottom-0
-            left-0
-            right-0
+            bottom-4
+            right-4
             z-20
-            translate-y-full
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
+            rounded-xl
+            border
+            border-white/40
+            bg-white/90
+            text-[#00345F]
+            opacity-0
+            shadow-lg
+            backdrop-blur-xl
+            translate-y-2
+            transition-all
+            duration-300
             group-hover:translate-y-0
-            transition-transform
-            duration-500
-            ease-out
-            pointer-events-none
-            p-4
-            md:p-6
+            group-hover:opacity-100
+            hover:bg-white
+            hover:text-[#004A87]
+            focus:translate-y-0
+            focus:opacity-100
+            focus:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-[#FF8201]
+            md:flex
           "
         >
-          <Link
-            href={`/manage-gallery/${gallery.id}`}
-            className="
-              pointer-events-auto
-              w-full
-              bg-white/95
-              backdrop-blur-xl
-              border
-              border-white/70
-              text-[#00345F]
-              text-sm
-              md:text-base
-              font-semibold
-              px-5
-              py-3.5
-              rounded-2xl
-              shadow-lg
-              flex
-              items-center
-              justify-center
-              gap-2.5
-              hover:bg-[#EAF4FB]
-              hover:text-[#004A87]
-              transition-all
-              focus:outline-none
-              focus-visible:ring-2
-              focus-visible:ring-[#FF8201]
-              focus-visible:ring-offset-2
-            "
-          >
-            Gérer l&apos;album
-
-            <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />
-          </Link>
-        </div>
+          <ArrowUpRight className="h-4 w-4" />
+        </Link>
       </div>
 
-      {/* --- Content Area --- */}
-      <div className="flex flex-col grow p-6 md:p-8">
-        <div className="mb-4">
+      {/* ======================================================
+          CONTENT
+          ====================================================== */}
+
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        {/* Title + date */}
+        <div className="min-w-0">
           <Link
             href={`/manage-gallery/${gallery.id}`}
             className="
               block
-              group/title
+              rounded-lg
               focus:outline-none
               focus-visible:ring-2
               focus-visible:ring-[#FF8201]
               focus-visible:ring-offset-2
-              rounded-lg
             "
           >
             <h3
               className="
-                text-xl
-                md:text-2xl
+                line-clamp-2
+                text-lg
                 font-semibold
+                leading-[1.25]
+                tracking-[-0.02em]
                 text-[#172033]
-                leading-tight
-                group-hover/title:text-[#004A87]
                 transition-colors
-                duration-300
-                line-clamp-1
-                tracking-tight
+                duration-200
+                group-hover:text-[#004A87]
+                dark:text-white
+                dark:group-hover:text-[#9BCBFF]
+                md:text-xl
               "
             >
               {gallery.title}
@@ -628,34 +783,100 @@ export const GalleryCard = memo(function GalleryCard({
           </Link>
 
           <time
+            dateTime={createdDate.toISOString()}
             className="
-              text-sm
-              font-medium
-              text-[#64748B]
               mt-2
               block
+              text-xs
+              font-medium
+              tracking-wide
+              text-[#94A3B8]
+              dark:text-white/40
             "
           >
             {formattedDate}
           </time>
         </div>
 
+        {/* Description */}
         {gallery.description ? (
           <p
             className="
-              text-base
-              text-[#64748B]
+              mt-4
               line-clamp-3
+              text-sm
               leading-relaxed
+              text-[#64748B]
+              dark:text-white/55
             "
           >
             {gallery.description}
           </p>
         ) : (
-          <div className="grow" />
+          <div className="flex-1" />
         )}
+
+        {/* Bottom action */}
+        <div
+          className="
+            mt-5
+            flex
+            items-center
+            justify-between
+            border-t
+            border-[#E2E8F0]
+            pt-4
+            dark:border-white/[0.07]
+          "
+        >
+          <span
+            className="
+              text-[10px]
+              font-bold
+              uppercase
+              tracking-[0.16em]
+              text-[#94A3B8]
+              dark:text-white/35
+            "
+          >
+            Album CE
+          </span>
+
+          <Link
+            href={`/manage-gallery/${gallery.id}`}
+            className="
+              group/open
+              inline-flex
+              items-center
+              gap-1.5
+              rounded-lg
+              text-xs
+              font-semibold
+              text-[#004A87]
+              transition-colors
+              hover:text-[#FF8201]
+              focus:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#FF8201]
+              dark:text-[#9BCBFF]
+              dark:hover:text-[#FF9B35]
+            "
+          >
+            Ouvrir
+
+            <ArrowUpRight
+              className="
+                h-3.5
+                w-3.5
+                transition-transform
+                duration-200
+                group-hover/open:translate-x-0.5
+                group-hover/open:-translate-y-0.5
+              "
+            />
+          </Link>
+        </div>
       </div>
     </article>
   );
 });
-
