@@ -1,4 +1,6 @@
 import { galleryHelpers } from '@/lib/db-helpers';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import GalleryClient from './GalleryClient';
 import { GallerySummary } from '@/types/types'; 
 import { Suspense } from 'react';
@@ -57,12 +59,14 @@ async function GalleryContent({ searchParams }: { searchParams: Promise<SearchPa
   let result: FindPublicResult = { items: [], total: 0, hasMore: false };
   
   try {
+    const session = await getServerSession(authOptions);
     const res = await galleryHelpers.findPublic({
       limit,
       offset,
       search: params.search,
        sortBy: params.sort === 'name' ? 'title' : params.sort || 'newest',
-      filter: params.filter || 'all'
+      filter: params.filter || 'all',
+      includePrivate: Boolean(session?.user?.id),
     });
     
     result = res as FindPublicResult; 

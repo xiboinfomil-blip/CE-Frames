@@ -784,6 +784,7 @@ getLatestPublic: async (limit = 3) => {
     search?: string;
     filter?: string;
     sortBy?: 'newest' | 'oldest' | 'title';
+    includePrivate?: boolean;
   }): Promise<
     PaginatedResponse<EnrichedGallery>
   > => {
@@ -793,6 +794,7 @@ getLatestPublic: async (limit = 3) => {
       search,
       filter,
       sortBy = 'newest',
+      includePrivate = false,
     } = options || {};
 
     const conditions: SQL[] = [];
@@ -812,6 +814,15 @@ getLatestPublic: async (limit = 3) => {
           galleries.visibility,
           filter as GalleryRow['visibility']
         )
+      );
+    } else if (includePrivate) {
+      conditions.push(
+        or(
+          eq(galleries.visibility, 'public'),
+          eq(galleries.visibility, 'unlisted'),
+          eq(galleries.visibility, 'password_protected'),
+          eq(galleries.visibility, 'private')
+        ) as SQL
       );
     } else {
       conditions.push(

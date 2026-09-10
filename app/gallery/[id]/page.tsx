@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import GalleryClient from './GalleryClient';
 import { galleryHelpers } from '@/lib/db-helpers';
 import { GalleryDetail } from '@/types/types';
@@ -36,8 +38,11 @@ function SingleGalleryLoading() {
 async function GalleryContent({ params }: PageProps) {
   const { id } = await params;
   
-  // 1. Récupération des données de la galerie
-  const gallery = await galleryHelpers.findByNotPrivateId(id);
+  // 1. Récupération des données selon le statut de connexion
+  const session = await getServerSession(authOptions);
+  const gallery = session?.user?.id
+    ? await galleryHelpers.findById(id)
+    : await galleryHelpers.findByNotPrivateId(id);
 
   if (!gallery) {
     notFound();

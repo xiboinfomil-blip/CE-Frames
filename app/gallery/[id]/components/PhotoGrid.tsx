@@ -108,20 +108,34 @@ export default function PhotoGrid({
     );
   }
 
-  const isGrid = layoutStyle === 'grid';
+  const albumLayout =
+    layoutStyle === 'row'
+      ? 'rows'
+      : layoutStyle === 'column'
+        ? 'columns'
+        : 'masonry';
 
   return (
     <div className="w-full -mx-1 sm:-mx-2">
       <PhotoAlbum
         photos={sanitizedPhotos}
-        layout={isGrid ? 'rows' : 'masonry'}
-        spacing={isGrid ? 16 : 12}
+        layout={albumLayout}
+        spacing={layoutStyle === 'masonry' ? 12 : 16}
         padding={0}
-        {...(isGrid
+        {...(layoutStyle === 'row'
           ? {
               targetRowHeight: 280,
             }
-          : {
+          : layoutStyle === 'column'
+            ? {
+                columns: (containerWidth: number) => {
+                  if (containerWidth < 640) return 2;
+                  if (containerWidth < 1024) return 3;
+                  if (containerWidth < 1536) return 4;
+                  return 5;
+                },
+              }
+            : {
               columns: (containerWidth: number) => {
                 if (containerWidth < 640) return 2;
                 if (containerWidth < 1024) return 3;

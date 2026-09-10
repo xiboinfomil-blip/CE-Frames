@@ -18,8 +18,9 @@ export async function GET(request: NextRequest) {
       : 'newest';
   const filter = searchParams.get('filter') || searchParams.get('visibility') || undefined;
   const isPublic = searchParams.get('public') === 'true';
+  const session = await getServerSession(authOptions);
   const result = isPublic
-    ? await galleryHelpers.findPublic({ limit, offset: (page - 1) * limit, search, sortBy: sort, filter })
+    ? await galleryHelpers.findPublic({ limit, offset: (page - 1) * limit, search, sortBy: sort, filter, includePrivate: Boolean(session?.user?.id) })
     : await galleryHelpers.findAll({ limit, offset: (page - 1) * limit, search, sortBy: sort === 'title' ? 'name' : sort, filter });
 
   return NextResponse.json({
