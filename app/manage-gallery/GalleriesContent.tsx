@@ -6,6 +6,7 @@ import {
   usePathname,
   useSearchParams,
 } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 import GalleryGrid from './components/GalleryGrid';
 import CreateGalleryModal from '@/app/manage-gallery/components/CreateGalleryModal';
@@ -18,7 +19,7 @@ import FloatingActionButton from '@/components/FloatingActionButton';
 
 import { VISIBILITY_STATUSES } from '@/db/schema';
 import { GallerySummary } from '@/types/types';
-import { Images } from 'lucide-react';
+import { Images, Trash2 } from 'lucide-react';
 
 interface GalleriesContentProps {
   initialGalleries: GallerySummary[];
@@ -90,6 +91,7 @@ export default function GalleriesContent({
   const [searchInput, setSearchInput] =
     useState(filters.search);
   const [galleries, setGalleries] = useState(initialGalleries);
+  const [selectedGalleryIds, setSelectedGalleryIds] = useState<string[]>([]);
   const [nextPage, setNextPage] = useState((pagination.currentPage || 1) + 1);
   const [hasMore, setHasMore] = useState(pagination.hasNext ?? false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -220,6 +222,9 @@ export default function GalleriesContent({
           );
         }
 
+        setSelectedGalleryIds((current) =>
+          current.filter((galleryId) => galleryId !== id)
+        );
         router.refresh();
       } catch (error) {
         console.error(
@@ -230,6 +235,72 @@ export default function GalleriesContent({
     },
     [router]
   );
+
+  const handleToggleGallerySelect = useCallback((id: string) => {
+    setSelectedGalleryIds((current) =>
+      current.includes(id)
+        ? current.filter((galleryId) => galleryId !== id)
+        : [...current, id]
+    );
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedGalleryIds((current) =>
+      current.length === galleries.length
+        ? []
+        : galleries.map((gallery) => gallery.id)
+    );
+  }, [galleries]);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedGalleryIds.length === 0) return;
+
+    const result = await Swal.fire({
+      title: `Supprimer ${selectedGalleryIds.length} galeries ?`,
+      text: 'Cette action supprimera définitivement les galeries sélectionnées.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748B',
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
+      customClass: {
+        popup: 'rounded-2xl shadow-xl border border-[#E2E8F0] dark:border-white/10',
+        title: 'font-semibold text-[#172033] dark:text-white text-lg',
+        htmlContainer: 'text-[#64748B] dark:text-white/70 font-medium',
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const responses = await Promise.all(
+        selectedGalleryIds.map((galleryId) =>
+          fetch(`/api/galleries/${galleryId}`, { method: 'DELETE' })
+        )
+      );
+
+      const failed = responses.some((response) => !response.ok);
+      if (failed) {
+        throw new Error('Une ou plusieurs suppressions ont échoué.');
+      }
+
+      setSelectedGalleryIds([]);
+      router.refresh();
+    } catch (error) {
+      console.error('Bulk delete galleries failed:', error);
+      await Swal.fire({
+        title: 'Suppression impossible',
+        text: error instanceof Error ? error.message : 'Une erreur est survenue.',
+        icon: 'error',
+        confirmButtonColor: '#004A87',
+        background: 'var(--page-background)',
+        color: 'var(--page-foreground)',
+      });
+    }
+  }, [router, selectedGalleryIds]);
 
   const currentVisibility =
     filters.visibility || 'all';
@@ -441,18 +512,52 @@ export default function GalleriesContent({
             ================================================== */
             <div
               className="
-                space-y-10
-                md:space-y-12
+                space-y-6
+                md:space-y-8
                 animate-in
                 fade-in
                 slide-in-from-bottom-4
                 duration-500
               "
             >
+              {galleries.length > 0 && (
+                <div className="rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
+                      <span className="inline-block h-2 w-2 rounded-full bg-[#FF8201]" />
+                      Actions groupées
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSelectAll}
+                        className="rounded-xl border border-[#E2E8F0] bg-[#F5F7FA] px-3.5 py-2 text-sm font-semibold text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                      >
+                        {selectedGalleryIds.length === galleries.length ? 'Tout désélectionner' : 'Sélectionner tout'}
+                      </button>
+
+                      {selectedGalleryIds.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleBulkDelete}
+                          className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-3.5 py-2 text-sm font-bold text-white transition hover:bg-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Supprimer {selectedGalleryIds.length}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <GalleryGrid
                 galleries={galleries}
                 onEdit={handleOpenEditModal}
                 onDelete={handleDelete}
+                selectedGalleryIds={selectedGalleryIds}
+                onToggleSelect={handleToggleGallerySelect}
               />
 
               <InfiniteScroll

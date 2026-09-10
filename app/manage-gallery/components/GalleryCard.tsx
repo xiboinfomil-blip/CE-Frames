@@ -14,7 +14,8 @@ import {
   Image as ImageIcon,
   Play,
   MoreVertical,
-  ExternalLink,
+  Check,
+  ArrowUpRight,
 } from 'lucide-react';
 
 interface GalleryCardProps {
@@ -22,6 +23,8 @@ interface GalleryCardProps {
   onEdit: () => void;
   onDelete: () => void;
   priority?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
 }
 
 export const GalleryCard = memo(function GalleryCard({
@@ -29,6 +32,8 @@ export const GalleryCard = memo(function GalleryCard({
   onEdit,
   onDelete,
   priority = false,
+  isSelected = false,
+  onToggleSelect,
 }: GalleryCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -174,8 +179,11 @@ export const GalleryCard = memo(function GalleryCard({
         rounded-3xl
         border
         border-[#E2E8F0]
+        dark:border-white/10
         shadow-[0_2px_8px_rgba(0,74,135,0.05)]
+        dark:shadow-[0_2px_8px_rgba(2,6,23,0.35)]
         hover:shadow-[0_16px_32px_rgba(0,52,95,0.12)]
+        dark:hover:shadow-[0_16px_32px_rgba(2,6,23,0.45)]
         hover:-translate-y-1
         transition-all
         duration-500
@@ -183,133 +191,148 @@ export const GalleryCard = memo(function GalleryCard({
         h-full
       "
     >
-      {/* --- Action rail --- */}
-      <div
-        className="absolute top-4 right-4 z-30 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
-        ref={menuRef}
-      >
+      <div className="flex items-center justify-between gap-3 border-b border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 dark:border-white/10 dark:bg-[#0E1C2D]">
         <button
-          ref={menuButtonRef}
+          type="button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            setIsMenuOpen(!isMenuOpen);
+            onToggleSelect?.();
           }}
-          onKeyDown={(e) => {
-            if (
-              e.key === 'Enter' ||
-              e.key === ' '
-            ) {
-              e.preventDefault();
-              setIsMenuOpen(!isMenuOpen);
-            }
-          }}
-          className="
-            flex items-center gap-2
-            rounded-xl border border-[#E2E8F0]
-            bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md
-            px-2.5 py-2 text-left shadow-md
-            text-[#00345F] dark:text-white
-            transition-all duration-200
-            hover:bg-[#EAF4FB] hover:text-[#004A87]
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2
-          "
-          aria-label="Plus d'options"
-          aria-haspopup="menu"
-          aria-expanded={isMenuOpen}
-          aria-controls="gallery-menu"
+          className="flex items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5 text-left text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-[#102238] dark:text-white dark:hover:bg-white/5"
+          aria-label={isSelected ? 'Désélectionner la galerie' : 'Sélectionner la galerie'}
         >
-          <MoreVertical className="w-4 h-4" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Actions</span>
+          <span className={`flex h-4 w-4 items-center justify-center rounded border ${isSelected ? 'border-[#004A87] bg-[#004A87] text-white' : 'border-[#94A3B8] bg-transparent text-transparent dark:border-white/50'}`}>
+            {isSelected && <Check className="h-3 w-3" />}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#64748B] dark:text-white/60">
+            {isSelected ? 'Sélectionné' : 'Sélectionner'}
+          </span>
         </button>
 
-        {isMenuOpen && (
-          <div
-            id="gallery-menu"
-            role="menu"
+        <div ref={menuRef} className="relative">
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsMenuOpen(!isMenuOpen);
+              }
+            }}
             className="
-              w-52
-              bg-white
-              dark:bg-[#0E1C2D]
-              rounded-2xl
-              shadow-xl
-              border
-              border-[#E2E8F0]
-              dark:border-white/10
-              py-2
-              overflow-hidden
-              animate-in
-              fade-in
-              zoom-in-95
-              duration-200
-              origin-top-right
-              z-50
+              flex items-center gap-2
+              rounded-xl border border-[#E2E8F0]
+              bg-white/95 px-2.5 py-2 text-left shadow-sm
+              text-[#00345F] transition-all duration-200
+              hover:bg-[#EAF4FB] hover:text-[#004A87]
+              dark:border-white/10 dark:bg-[#102238]/95 dark:text-white dark:hover:bg-white/5
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2
             "
+            aria-label="Plus d'options"
+            aria-haspopup="menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="gallery-menu"
           >
-            <button
-              role="menuitem"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMenuOpen(false);
-                onEdit();
-              }}
+            <MoreVertical className="w-4 h-4" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Actions</span>
+          </button>
+
+          {isMenuOpen && (
+            <div
+              id="gallery-menu"
+              role="menu"
               className="
-                w-full
-                text-left
-                px-4
-                py-3
-                text-sm
-                font-medium
-                text-[#64748B]
-                hover:bg-[#EAF4FB]
-                dark:hover:bg-white/[0.06]
-                hover:text-[#004A87]
-                flex
-                items-center
-                gap-3
-                transition-colors
-                focus:outline-none
-                focus-visible:bg-[#EAF4FB]
-                focus-visible:ring-2
-                focus-visible:ring-inset
-                focus-visible:ring-[#FF8201]
+                absolute right-0 top-full z-50 mt-2 w-52
+                bg-white
+                dark:bg-[#0E1C2D]
+                rounded-2xl
+                shadow-xl
+                border
+                border-[#E2E8F0]
+                dark:border-white/10
+                py-2
+                overflow-hidden
+                animate-in
+                fade-in
+                zoom-in-95
+                duration-200
+                origin-top-right
               "
             >
-              <Pencil className="w-4 h-4 text-[#004A87]" />
-              Éditer les détails
-            </button>
+              <button
+                role="menuitem"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(false);
+                  onEdit();
+                }}
+                className="
+                  w-full
+                  text-left
+                  px-4
+                  py-3
+                  text-sm
+                  font-medium
+                  text-[#64748B]
+                  hover:bg-[#EAF4FB]
+                  dark:text-white/80
+                  dark:hover:bg-white/[0.06]
+                  hover:text-[#004A87]
+                  flex
+                  items-center
+                  gap-3
+                  transition-colors
+                  focus:outline-none
+                  focus-visible:bg-[#EAF4FB]
+                  focus-visible:ring-2
+                  focus-visible:ring-inset
+                  focus-visible:ring-[#FF8201]
+                "
+              >
+                <Pencil className="w-4 h-4 text-[#004A87] dark:text-[#9BCBFF]" />
+                Éditer les détails
+              </button>
 
-            <div className="h-px bg-[#E2E8F0] dark:bg-white/10 my-1.5 mx-3" />
+              <div className="h-px bg-[#E2E8F0] dark:bg-white/10 my-1.5 mx-3" />
 
-            <button
-              role="menuitem"
-              onClick={handleDeleteClick}
-              className="
-                w-full
-                text-left
-                px-4
-                py-3
-                text-sm
-                font-medium
-                text-red-600
-                hover:bg-red-50
-                dark:hover:bg-red-950/30
-                flex
-                items-center
-                gap-3
-                transition-colors
-                focus:outline-none
-                focus-visible:bg-red-50
-                focus-visible:ring-2
-                focus-visible:ring-inset
-                focus-visible:ring-red-500
-              "
-            >
-              <Trash2 className="w-4 h-4" />
-              Supprimer l&apos;album
-            </button>
-          </div>
-        )}
+              <button
+                role="menuitem"
+                type="button"
+                onClick={handleDeleteClick}
+                className="
+                  w-full
+                  text-left
+                  px-4
+                  py-3
+                  text-sm
+                  font-medium
+                  text-red-600
+                  hover:bg-red-50
+                  dark:hover:bg-red-950/30
+                  flex
+                  items-center
+                  gap-3
+                  transition-colors
+                  focus:outline-none
+                  focus-visible:bg-red-50
+                  focus-visible:ring-2
+                  focus-visible:ring-inset
+                  focus-visible:ring-red-500
+                "
+              >
+                <Trash2 className="w-4 h-4" />
+                Supprimer l&apos;album
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* --- Media Area --- */}
@@ -566,7 +589,7 @@ export const GalleryCard = memo(function GalleryCard({
           >
             Gérer l&apos;album
 
-            <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
+            <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </div>
       </div>

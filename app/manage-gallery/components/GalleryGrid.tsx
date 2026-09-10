@@ -10,9 +10,11 @@ interface GalleryGridProps {
   galleries: GallerySummary[];
   onEdit: (gallery: GallerySummary) => void;
   onDelete: (id: string) => Promise<void>;
+  selectedGalleryIds: string[];
+  onToggleSelect: (id: string) => void;
 }
 
-export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGridProps) {
+export default function GalleryGrid({ galleries, onEdit, onDelete, selectedGalleryIds, onToggleSelect }: GalleryGridProps) {
   
   const galleryEmptyState = (
     <div className="flex flex-col items-center justify-center py-24 md:py-40 text-center w-full animate-in fade-in zoom-in-95 duration-500">
@@ -44,18 +46,15 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
         ariaLabel="Galeries photos du CE"
         emptyState={galleryEmptyState}
         getKey={(gallery) => gallery.id}
-        /* 
-            RESPONSIVE PHOTOGRAPHY GRID LAYOUT:
-            - Fluid breakpoint-driven columns for 3:4 cards.
-            - 1 col (mobile), 2 cols (tablet), 3 cols (laptop), 4 cols (large desktop).
-        */
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 xl:gap-10 p-4 md:p-8 lg:p-12 w-full max-w-[1920px] mx-auto"
         renderItem={(gallery, index) => (
           <GalleryCard 
             gallery={gallery} 
             onEdit={() => onEdit(gallery)}
             onDelete={() => onDelete(gallery.id)}
-            priority={index < 4} // Prioritize LCP for the first row only
+            onToggleSelect={() => onToggleSelect(gallery.id)}
+            isSelected={selectedGalleryIds.includes(gallery.id)}
+            priority={index < 4}
           />
         )}
       />
