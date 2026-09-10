@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useId, useCallback, useEffect } from 'react';
+import { useState, useId, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -109,8 +109,26 @@ export default function CreateGalleryModal({
   const visibilityId = useId();
   const passwordId = useId();
 
+  const buildInitialFormData = useCallback(
+    (data: GalleryData | null) => {
+      if (!data) return DEFAULT_FORM_DATA;
+
+      return {
+        id: data.id,
+        title: data.title || '',
+        description: data.description ?? '',
+        visibility: data.visibility || 'public',
+        password: '',
+        coverMediaId: data.coverMediaId || '',
+        layoutStyle: data.layoutStyle || 'masonry',
+        coverMedia: data.coverMedia || null,
+      };
+    },
+    []
+  );
+
   const [formData, setFormData] =
-    useState<GalleryData>(DEFAULT_FORM_DATA);
+    useState<GalleryData>(() => buildInitialFormData(initialData));
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,31 +150,6 @@ export default function CreateGalleryModal({
 
   const [mediaFilters, setMediaFilters] =
     useState(DEFAULT_FILTERS);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const timer = setTimeout(() => {
-      setError(null);
-
-      if (initialData) {
-        setFormData({
-          id: initialData.id,
-          title: initialData.title || '',
-          description: initialData.description ?? '',
-          visibility: initialData.visibility || 'public',
-          password: '',
-          coverMediaId: initialData.coverMediaId || '',
-          layoutStyle: initialData.layoutStyle || 'masonry',
-          coverMedia: initialData.coverMedia || null,
-        });
-      } else {
-        setFormData(DEFAULT_FORM_DATA);
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [isOpen, initialData]);
 
   const initialGalleryId = initialData?.id;
 

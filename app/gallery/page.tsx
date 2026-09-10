@@ -4,7 +4,7 @@ import { GallerySummary } from '@/types/types';
 import { Suspense } from 'react';
 import Skeleton from '@/components/Skeleton';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 interface SearchParams {
   search?: string;

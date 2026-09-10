@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, memo } from 'react';
 
 import { MEDIA_TYPES } from '@/db/schema';
 import MediaViewport from '@/components/media-viewport';
@@ -108,7 +108,7 @@ interface MediaCardProps {
   isAdding: boolean;
 }
 
-function MediaCard({
+const MediaCard = memo(function MediaCard({
   media,
   isSelected,
   onToggle,
@@ -338,7 +338,7 @@ function MediaCard({
       </div>
     </div>
   );
-}
+});
 
 // --- Main Modal Component ---
 export default function AddMediaModal({
@@ -400,10 +400,12 @@ export default function AddMediaModal({
     []
   );
 
-  const isAllSelected =
-    availableMedia.length > 0 &&
-    selectedIds.size ===
-      availableMedia.length;
+  const isAllSelected = useMemo(
+    () =>
+      availableMedia.length > 0 &&
+      selectedIds.size === availableMedia.length,
+    [availableMedia.length, selectedIds.size]
+  );
 
   const selectAll = useCallback(() => {
     const validIds = availableMedia

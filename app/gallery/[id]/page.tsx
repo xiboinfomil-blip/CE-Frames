@@ -5,6 +5,8 @@ import { GalleryDetail } from '@/types/types';
 import { Suspense } from 'react';
 import Skeleton from '@/components/Skeleton';
 
+export const revalidate = 300;
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

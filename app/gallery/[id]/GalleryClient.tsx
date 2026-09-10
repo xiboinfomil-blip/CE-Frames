@@ -1,12 +1,17 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import PasswordGate from '@/components/PasswordGate';
 import GalleryHeader from './components/GalleryHeader';
 import PhotoGrid from './components/PhotoGrid';
-import GalleryLightbox from '@/components/GalleryLightbox';
 import { GalleryDetail } from '@/types/types';
 import { Loader2 } from 'lucide-react';
+
+const GalleryLightbox = dynamic(
+  () => import('@/components/GalleryLightbox'),
+  { ssr: false, loading: () => null }
+);
 
 interface GalleryClientProps {
   initialGallery: GalleryDetail | null;

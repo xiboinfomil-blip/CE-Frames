@@ -1,22 +1,30 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 import MediaCard, { MediaSchema } from '@/app/media-library/components/MediaCard';
-import UploadModal from '@/app/media-library/components/UploadModal';
+const UploadModal = dynamic(
+  () => import('@/app/media-library/components/UploadModal'),
+  { ssr: false, loading: () => null }
+);
 import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
 import Pagination from '@/components/Pagination';
 import FloatingActionButton from '@/components/FloatingActionButton';
-import GalleryLightbox, { MediaItem } from '@/components/GalleryLightbox';
+import type { MediaItem } from '@/components/GalleryLightbox';
 import CardGrid from '@/components/displayGrid';
 import { MEDIA_TYPES } from '@/db/schema';
-
 import { HiPhoto } from 'react-icons/hi2';
+
+const GalleryLightbox = dynamic(
+  () => import('@/components/GalleryLightbox'),
+  { ssr: false, loading: () => null }
+);
 
 interface MediaLibraryClientProps {
   initialMedia: MediaSchema[];
@@ -67,18 +75,9 @@ export default function MediaLibraryClient({
   const searchParams = useSearchParams();
 
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState(filters.search || '');
+  const [searchInput, setSearchInput] = useState(() => filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
-
-  // Synchronize local search state when filter prop changes via router navigation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchInput(filters.search || '');
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [filters.search]);
 
   // Transform media array to lightbox slide format
   const slides = useMemo(

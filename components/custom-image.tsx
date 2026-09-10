@@ -10,21 +10,22 @@ interface CustomImageProps extends Omit<React.ComponentProps<typeof Image>, 'src
 }
 
 const CustomImage = ({ 
-  src, 
-  fallbackSrc = 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1000&auto=format&fit=crop', 
-  alt, 
-  className = '', 
+  src,
+  fallbackSrc,
+  alt,
+  className = '',
   onLoad,
   onError,
   aspectRatio,
+  quality = 75,
+  loading = 'lazy',
   ...props 
 }: CustomImageProps) => {
   const [imgError, setImgError] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Determine current image source
-  const currentSrc = imgError ? fallbackSrc : src;
+  const currentSrc = imgError ? (fallbackSrc || src) : src;
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoaded(true);
@@ -34,7 +35,7 @@ const CustomImage = ({
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (!imgError && fallbackSrc) {
       setImgError(true);
-      setIsLoaded(false); // Reset load state so fallback fades in smoothly
+      setIsLoaded(false);
     } else {
       setFallbackFailed(true);
     }
@@ -46,12 +47,10 @@ const CustomImage = ({
       className={`relative h-full w-full overflow-hidden bg-slate-100 dark:bg-slate-800 ${className}`}
       style={aspectRatio ? { aspectRatio } : undefined}
     >
-      {/* Loading Skeleton */}
       {!isLoaded && !fallbackFailed && (
         <div className="absolute inset-0 z-0 animate-pulse bg-slate-200 dark:bg-slate-800" />
       )}
 
-      {/* Fallback Placeholder Icon if both primary and fallback sources fail */}
       {fallbackFailed ? (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 dark:bg-slate-900 dark:text-slate-600 text-xs font-mono">
           <span>Image Unavailable</span>
@@ -61,6 +60,8 @@ const CustomImage = ({
           src={currentSrc}
           alt={alt || 'Photo d’un événement du CE'}
           fill
+          quality={quality}
+          loading={loading}
           className={`object-cover transition-opacity duration-500 ease-in-out ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}

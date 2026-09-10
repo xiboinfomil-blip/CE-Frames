@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
@@ -242,40 +242,14 @@ export default function ManageGalleryClient({
   const [isAddModalOpen, setIsAddModalOpen] =
     useState(false);
 
-  const [localMediaItems, setLocalMediaItems] =
-    useState(galleryMediaItems);
-
+  // Use the server-provided values as the initial state for this client view.
+  // The page refreshes on mutation, so we avoid extra render-churn sync loops here.
   const [gallerySearchInput, setGallerySearchInput] =
-    useState(
-      initialFilters.gallerySearch
-    );
-
+    useState(() => initialFilters.gallerySearch);
   const [modalSearchInput, setModalSearchInput] =
-    useState(initialFilters.search);
-
-  // ==========================================================
-  // Sync server state to local state
-  // ==========================================================
-
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    setGallerySearchInput(
-      initialFilters.gallerySearch
-    );
-
-    setModalSearchInput(
-      initialFilters.search
-    );
-
-    setLocalMediaItems(
-      galleryMediaItems
-    );
-  }, [
-    initialFilters.gallerySearch,
-    initialFilters.search,
-    galleryMediaItems,
-  ]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+    useState(() => initialFilters.search);
+  const [localMediaItems, setLocalMediaItems] =
+    useState(() => galleryMediaItems);
 
   // ==========================================================
   // Shared Reorder Logic

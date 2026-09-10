@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, KeyboardEvent } from 'react';
+import { memo, useState, useMemo, KeyboardEvent } from 'react';
 import { MEDIA_TYPES } from '@/db/schema';
 import CustomImage from './custom-image';
 import CustomVideo from './custom-video';
@@ -26,7 +26,7 @@ interface MediaViewportProps {
   showMagnifyingGlass?: boolean;
 }
 
-const MediaViewport = ({
+const MediaViewport = memo(function MediaViewport({
   mediaType,
   fullResUrl,
   thumbnailUrl,
@@ -41,7 +41,7 @@ const MediaViewport = ({
   showTitle = true,
   showFilename = true,
   showMagnifyingGlass = true,
-}: MediaViewportProps) => {
+}: MediaViewportProps) {
   const [errorSource, setErrorSource] =
     useState<string | null>(null);
 
@@ -279,6 +279,6 @@ const MediaViewport = ({
         )}
     </figure>
   );
-};
+});
 
 export default MediaViewport;

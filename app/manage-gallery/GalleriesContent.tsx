@@ -500,11 +500,14 @@ export default function GalleriesContent({
         {/* =====================================================
             Create / Edit Gallery Modal
         ====================================================== */}
-        <CreateGalleryModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          initialData={editingGallery}
-        />
+        {isModalOpen && (
+          <CreateGalleryModal
+            key={editingGallery?.id ?? 'new-gallery'}
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            initialData={editingGallery}
+          />
+        )}
       </div>
     </div>
   );
