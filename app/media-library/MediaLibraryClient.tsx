@@ -185,22 +185,22 @@ export default function MediaLibraryClient({
         confirmButtonText: 'Supprimer',
         cancelButtonText: 'Annuler',
 
-        background: '#FFFFFF',
-        color: '#172033',
+        background: 'var(--page-background)',
+        color: 'var(--page-foreground)',
 
         customClass: {
           popup:
             'rounded-2xl shadow-xl border border-[#E2E8F0]',
           title:
-            'font-semibold text-[#172033] text-lg',
+            'font-semibold text-[#172033] dark:text-white text-lg',
           htmlContainer:
-            'text-[#64748B] font-medium',
+            'text-[#64748B] dark:text-white/60 font-medium',
 
           confirmButton:
             'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500',
 
           cancelButton:
-            'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-[#EAF4FB] text-[#00345F] focus:outline-none focus:ring-2 focus:ring-[#FF8201]',
+            'font-semibold px-4 py-2.5 rounded-xl transition-colors hover:bg-[#EAF4FB] dark:hover:bg-white/[0.06] text-[#00345F] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#FF8201]',
         },
       });
 
@@ -224,14 +224,14 @@ export default function MediaLibraryClient({
           timer: 1500,
           showConfirmButton: false,
 
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
 
           customClass: {
             popup:
               'rounded-2xl shadow-xl border border-[#E2E8F0]',
             title:
-              'font-semibold text-[#172033]',
+              'font-semibold text-[#172033] dark:text-white',
           },
         });
 
@@ -244,8 +244,8 @@ export default function MediaLibraryClient({
           title: 'Échec de la suppression',
           text: 'Une erreur est survenue lors de la suppression de l’élément. Veuillez réessayer.',
 
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
 
           customClass: {
             popup:

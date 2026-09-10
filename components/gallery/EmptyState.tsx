@@ -34,14 +34,14 @@ ease: [0.16, 1, 0.3, 1],
 className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-4"
 >
 {/* Background Radial Glow */} <div
-     className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 bg-[radial-gradient(ellipse_at_center,rgba(0,74,135,0.08)_0%,transparent_70%)]"
+    className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 bg-[radial-gradient(ellipse_at_center,rgba(0,74,135,0.08)_0%,transparent_70%)] dark:opacity-30"
      aria-hidden="true"
    />
 
 ```
   {/* Decorative Grid Pattern */}
   <div
-    className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#004A87_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"
+    className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#004A87_1px,transparent_1px)] dark:opacity-[0.08] [background-size:16px_16px] pointer-events-none"
     aria-hidden="true"
   />
 
@@ -52,7 +52,7 @@ className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-
     <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-6 relative">
       {/* Decorative Back Layer */}
       <div
-        className="absolute inset-0 bg-[#FFF1E5] rounded-3xl rotate-3 border border-[#FF8201]/20 transition-transform duration-500 hover:rotate-6"
+        className="absolute inset-0 bg-[#FFF1E5] dark:bg-[#00345F]/40 rounded-3xl rotate-3 border border-[#FF8201]/20 dark:border-[#FF8201]/20 transition-transform duration-500 hover:rotate-6"
       />
 
       {/* Main Icon Container */}
@@ -82,7 +82,7 @@ className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-
           onClick={onAction}
           variant="secondary"
           size="md"
-          className="bg-[#EAF4FB] hover:bg-[#DCEEF9] text-[#00345F] border-[#E2E8F0] hover:border-[#004A87]/30"
+          className="bg-[#EAF4FB] dark:bg-[#00345F]/50 hover:bg-[#DCEEF9] dark:hover:bg-[#004A87]/60 text-[#00345F] dark:text-white border-[#E2E8F0] dark:border-white/10 hover:border-[#004A87]/30"
         >
           {actionLabel}
         </CustomButton>

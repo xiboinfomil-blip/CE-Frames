@@ -92,7 +92,7 @@ export default function GalleryClient({
 
   if (!gallery) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#091522] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-[#004A87] animate-spin" />
       </div>
     );
@@ -104,6 +104,8 @@ export default function GalleryClient({
         min-h-screen
         bg-[#F5F7FA]
         text-[#172033]
+        dark:bg-[#091522]
+        dark:text-white
         font-sans
         selection:bg-[#FF8201]/30
         selection:text-[#00345F]

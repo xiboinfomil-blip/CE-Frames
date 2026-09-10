@@ -127,6 +127,7 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
           w-full
           overflow-hidden
           bg-[#F5F7FA]
+          dark:bg-[#0E1C2D]
           ${className}
         `}
         style={
@@ -147,6 +148,7 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
               z-0
               animate-pulse
               bg-[#EAF4FB]
+              dark:bg-[#00345F]/40
             "
           />
         )}

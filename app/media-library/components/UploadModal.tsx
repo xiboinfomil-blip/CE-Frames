@@ -775,8 +775,8 @@ try {
     timer: 1500,
     showConfirmButton: false,
 
-    background: '#FFFFFF',
-    color: '#172033',
+    background: 'var(--page-background)',
+    color: 'var(--page-foreground)',
   });
 
   router.refresh();
@@ -798,8 +798,8 @@ try {
 
     confirmButtonColor: '#FF8201',
 
-    background: '#FFFFFF',
-    color: '#172033',
+    background: 'var(--page-background)',
+    color: 'var(--page-foreground)',
 
     customClass: {
       popup:
@@ -924,6 +924,9 @@ isLoading={isCheckingStorage}
           bg-[#FFF1E5]
           border border-[#FF8201]/30
           text-[#00345F]
+          dark:bg-[#FF8201]/10
+          dark:border-[#FF8201]/30
+          dark:text-[#FFB15C]
           rounded-xl
           text-sm
           font-medium
@@ -946,6 +949,7 @@ isLoading={isCheckingStorage}
             className="
               font-semibold
               text-[#00345F]
+              dark:text-[#FFB15C]
               text-xs
               mb-1
               uppercase
@@ -958,6 +962,7 @@ isLoading={isCheckingStorage}
           <p
             className="
               text-[#64748B]
+              dark:text-white/60
               leading-relaxed
             "
           >

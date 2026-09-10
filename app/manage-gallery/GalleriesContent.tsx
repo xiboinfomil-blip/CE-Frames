@@ -244,6 +244,8 @@ export default function GalleriesContent({
         min-h-screen
         bg-[#F5F7FA]
         text-[#172033]
+        dark:bg-[#091522]
+        dark:text-white
         font-sans
         selection:bg-[#FF8201]/30
         selection:text-[#00345F]
@@ -267,6 +269,8 @@ export default function GalleriesContent({
             transition-all
             duration-300
             supports-[backdrop-filter]:bg-white/70
+            dark:bg-[#0B1624]/80
+            dark:border-white/10
           "
         >
           <div

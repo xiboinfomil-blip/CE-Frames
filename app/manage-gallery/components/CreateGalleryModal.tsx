@@ -512,6 +512,9 @@ export default function CreateGalleryModal({
                   placeholder:text-[#94A3B8]
                   border
                   border-[#E2E8F0]
+                  dark:bg-[#0E1C2D]
+                  dark:text-white
+                  dark:border-white/10
                   hover:border-[#004A87]/40
                   focus:outline-none
                   focus-visible:ring-4
@@ -558,6 +561,9 @@ export default function CreateGalleryModal({
                       text-[#172033]
                       border
                       border-[#E2E8F0]
+                      dark:bg-[#0E1C2D]
+                      dark:text-white
+                      dark:border-white/10
                       hover:border-[#004A87]/40
                       focus:outline-none
                       focus-visible:ring-4

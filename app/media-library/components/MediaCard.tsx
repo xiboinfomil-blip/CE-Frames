@@ -100,7 +100,7 @@ e.stopPropagation();
     confirmButtonText: 'Yes, delete asset',
     cancelButtonText: 'Cancel',
 
-    background: '#FFFFFF',
+    background: 'var(--page-background)',
 
     customClass: {
       popup:

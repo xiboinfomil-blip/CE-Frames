@@ -109,8 +109,8 @@ export const GalleryCard = memo(function GalleryCard({
       confirmButtonText: 'Supprimer définitivement',
       cancelButtonText: 'Annuler',
 
-      background: '#FFFFFF',
-      color: '#172033',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
 
       customClass: {
         popup:

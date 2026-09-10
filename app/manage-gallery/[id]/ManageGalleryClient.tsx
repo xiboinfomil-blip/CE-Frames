@@ -301,8 +301,8 @@ export default function ManageGalleryClient({
           confirmButtonText: 'Fermer',
           confirmButtonColor:
             '#004A87',
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
           customClass: {
             popup:
               'rounded-2xl shadow-2xl border border-[#E2E8F0]',
@@ -433,24 +433,24 @@ export default function ManageGalleryClient({
           cancelButtonColor:
             '#EAF4FB',
 
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
 
           customClass: {
             popup:
               'rounded-2xl shadow-2xl border border-[#E2E8F0]',
 
             title:
-              'font-semibold text-[#172033]',
+              'font-semibold text-[#172033] dark:text-white',
 
             input:
-              'border-[#E2E8F0] text-[#172033] rounded-xl focus:border-[#004A87] focus:ring-[#FF8201]',
+              'border-[#E2E8F0] dark:border-white/10 bg-white dark:bg-[#0E1C2D] text-[#172033] dark:text-white rounded-xl focus:border-[#004A87] focus:ring-[#FF8201]',
 
             confirmButton:
               'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-[#00345F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201]',
 
             cancelButton:
-              'px-5 py-2.5 rounded-xl text-sm font-medium text-[#00345F] hover:bg-[#EAF4FB] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201]',
+              'px-5 py-2.5 rounded-xl text-sm font-medium text-[#00345F] dark:text-white hover:bg-[#EAF4FB] dark:hover:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201]',
           },
         };
 
@@ -485,8 +485,8 @@ export default function ManageGalleryClient({
           confirmButtonText: 'Fermer',
           confirmButtonColor:
             '#004A87',
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
           customClass: {
             popup:
               'rounded-2xl shadow-2xl border border-[#E2E8F0]',
@@ -536,8 +536,8 @@ export default function ManageGalleryClient({
           text: `Déplacé à la position ${targetPosition}`,
           timer: 1500,
           showConfirmButton: false,
-          background: '#FFFFFF',
-          color: '#172033',
+          background: 'var(--page-background)',
+          color: 'var(--page-foreground)',
           customClass: {
             popup:
               'rounded-2xl shadow-2xl border border-[#E2E8F0]',
@@ -885,8 +885,8 @@ export default function ManageGalleryClient({
             cancelButtonText:
               'Annuler',
 
-            background: '#FFFFFF',
-            color: '#172033',
+            background: 'var(--page-background)',
+            color: 'var(--page-foreground)',
 
             customClass: {
               popup:
@@ -939,8 +939,8 @@ export default function ManageGalleryClient({
               'Fermer',
             confirmButtonColor:
               '#004A87',
-            background: '#FFFFFF',
-            color: '#172033',
+            background: 'var(--page-background)',
+            color: 'var(--page-foreground)',
             customClass: {
               popup:
                 'rounded-2xl shadow-2xl border border-[#E2E8F0]',
