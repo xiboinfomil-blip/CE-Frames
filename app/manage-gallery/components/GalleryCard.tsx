@@ -181,6 +181,7 @@ export const GalleryCard = memo(function GalleryCard({
         flex
         flex-col
         bg-white
+        dark:bg-[#102238]
         rounded-3xl
         border
         border-[#E2E8F0]
@@ -217,12 +218,15 @@ export const GalleryCard = memo(function GalleryCard({
           className="
             p-2.5
             bg-white/90
+            dark:bg-[#102238]/90
             backdrop-blur-md
             border
             border-white/70
+            dark:border-white/10
             rounded-full
             shadow-sm
             hover:bg-white
+            dark:hover:bg-[#00345F]/60
             hover:shadow-md
             text-[#00345F]
             transition-all
@@ -251,10 +255,12 @@ export const GalleryCard = memo(function GalleryCard({
               mt-2
               w-56
               bg-white
+              dark:bg-[#0E1C2D]
               rounded-2xl
               shadow-xl
               border
               border-[#E2E8F0]
+              dark:border-white/10
               py-2
               overflow-hidden
               animate-in
@@ -281,6 +287,7 @@ export const GalleryCard = memo(function GalleryCard({
                 font-medium
                 text-[#64748B]
                 hover:bg-[#EAF4FB]
+                dark:hover:bg-white/[0.06]
                 hover:text-[#004A87]
                 flex
                 items-center
@@ -297,7 +304,7 @@ export const GalleryCard = memo(function GalleryCard({
               Éditer les détails
             </button>
 
-            <div className="h-px bg-[#E2E8F0] my-1.5 mx-3" />
+            <div className="h-px bg-[#E2E8F0] dark:bg-white/10 my-1.5 mx-3" />
 
             <button
               role="menuitem"
@@ -311,6 +318,7 @@ export const GalleryCard = memo(function GalleryCard({
                 font-medium
                 text-red-600
                 hover:bg-red-50
+                dark:hover:bg-red-950/30
                 flex
                 items-center
                 gap-3
@@ -338,6 +346,7 @@ export const GalleryCard = memo(function GalleryCard({
           rounded-t-3xl
           overflow-hidden
           bg-[#F5F7FA]
+          dark:bg-[#0E1C2D]
         "
       >
         <Link

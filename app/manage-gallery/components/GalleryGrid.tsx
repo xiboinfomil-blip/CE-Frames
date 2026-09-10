@@ -16,13 +16,13 @@ export default function GalleryGrid({ galleries, onEdit, onDelete }: GalleryGrid
   
   const galleryEmptyState = (
     <div className="flex flex-col items-center justify-center py-24 md:py-40 text-center w-full animate-in fade-in zoom-in-95 duration-500">
-      <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-50 rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-zinc-100 shadow-sm">
-        <Images className="w-10 h-10 md:w-12 md:h-12 text-zinc-300" />
+      <div className="w-24 h-24 md:w-32 md:h-32 bg-[#F5F7FA] dark:bg-[#0E1C2D] rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-[#E2E8F0] dark:ring-white/10 shadow-sm">
+        <Images className="w-10 h-10 md:w-12 md:h-12 text-[#CBD5E1] dark:text-white/30" />
       </div>
-      <h3 className="text-2xl md:text-3xl font-light text-zinc-900 tracking-tight">
+      <h3 className="text-2xl md:text-3xl font-light text-[#172033] dark:text-white tracking-tight">
         Aucune galerie pour le moment
       </h3>
-      <p className="text-zinc-600 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
+      <p className="text-[#64748B] dark:text-white/60 text-base md:text-lg mt-4 max-w-md mx-auto font-light leading-relaxed">
         Archivez et partagez les photos des activités du CE. Créez votre premier album média pour les salariés.
       </p>
       <CustomButton 

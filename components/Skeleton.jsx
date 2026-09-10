@@ -20,7 +20,7 @@ export default function Skeleton({
   `;
 
   const ShimmerOverlay = () => (
-    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-slate-700/20 to-transparent" />
+    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-[#004A87]/10 to-transparent dark:via-white/10" />
   );
 
   const renderVariant = () => {
@@ -29,26 +29,26 @@ export default function Skeleton({
         return (
           <div className={`flex flex-col gap-3.5 ${className}`}>
             {/* Image Aspect Box */}
-            <div className="relative w-full aspect-[4/5] rounded-2xl bg-slate-800/80 overflow-hidden border border-slate-700/50">
+            <div className="relative w-full aspect-[4/5] rounded-2xl bg-[#F5F7FA] dark:bg-[#0E1C2D] overflow-hidden border border-[#E2E8F0] dark:border-white/10">
               <ShimmerOverlay />
             </div>
             
             {/* Title Line */}
-            <div className="h-5 w-3/4 rounded-lg bg-slate-800 overflow-hidden relative">
+            <div className="h-5 w-3/4 rounded-lg bg-[#EAF4FB] dark:bg-[#102238] overflow-hidden relative">
               <ShimmerOverlay />
             </div>
             
             {/* Meta Tag Line */}
-            <div className="h-3 w-1/3 rounded-md bg-slate-800/60 overflow-hidden relative">
+            <div className="h-3 w-1/3 rounded-md bg-[#E2E8F0] dark:bg-[#102238]/70 overflow-hidden relative">
               <ShimmerOverlay />
             </div>
             
             {/* Description Lines */}
             <div className="space-y-2 pt-1">
-              <div className="h-3 w-full rounded-md bg-slate-800/40 overflow-hidden relative">
+              <div className="h-3 w-full rounded-md bg-[#E2E8F0]/70 dark:bg-[#102238]/60 overflow-hidden relative">
                 <ShimmerOverlay />
               </div>
-              <div className="h-3 w-4/5 rounded-md bg-slate-800/40 overflow-hidden relative">
+              <div className="h-3 w-4/5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#102238]/60 overflow-hidden relative">
                 <ShimmerOverlay />
               </div>
             </div>
@@ -57,21 +57,21 @@ export default function Skeleton({
 
       case 'text-line':
         return (
-          <div className={`h-4 w-full rounded-lg bg-slate-800 overflow-hidden relative ${className}`}>
+          <div className={`h-4 w-full rounded-lg bg-[#EAF4FB] dark:bg-[#102238] overflow-hidden relative ${className}`}>
             <ShimmerOverlay />
           </div>
         );
 
       case 'avatar':
         return (
-          <div className={`w-10 h-10 rounded-full bg-slate-800 overflow-hidden relative shrink-0 ${className}`}>
+          <div className={`w-10 h-10 rounded-full bg-[#EAF4FB] dark:bg-[#102238] overflow-hidden relative shrink-0 ${className}`}>
             <ShimmerOverlay />
           </div>
         );
 
       case 'thumbnail':
         return (
-          <div className={`w-full aspect-video rounded-xl bg-slate-800/80 border border-slate-700/50 overflow-hidden relative ${className}`}>
+          <div className={`w-full aspect-video rounded-xl bg-[#F5F7FA] dark:bg-[#0E1C2D] border border-[#E2E8F0] dark:border-white/10 overflow-hidden relative ${className}`}>
             <ShimmerOverlay />
           </div>
         );

@@ -65,25 +65,25 @@ export default function DropdownMenu({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`group/trigger relative flex items-center gap-1.5 px-2 py-2 text-sm font-medium tracking-wide transition-colors duration-200 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
+        className={`group/trigger relative flex items-center gap-1.5 px-2 py-2 text-sm font-medium tracking-wide transition-colors duration-200 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0B1624]
           ${
             isOpen
-              ? 'text-slate-100'
-              : 'text-slate-400 hover:text-slate-100'
+              ? 'text-[#004A87] dark:text-white'
+              : 'text-[#64748B] hover:text-[#004A87] dark:text-white/65 dark:hover:text-white'
           }`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
       >
         <span>{title}</span>
         <HiChevronDown
-          className={`w-4 h-4 text-slate-400 transition-transform duration-200 ease-out group-hover/trigger:text-slate-200
-            ${isOpen ? 'rotate-180 text-slate-100' : ''}`}
+          className={`w-4 h-4 text-[#64748B] dark:text-white/50 transition-transform duration-200 ease-out group-hover/trigger:text-[#004A87] dark:group-hover/trigger:text-white
+            ${isOpen ? 'rotate-180 text-[#004A87] dark:text-white' : ''}`}
           aria-hidden="true"
         />
 
         {/* Animated Underline */}
         <span
-          className={`absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-full transition-all duration-300 ease-out
+          className={`absolute bottom-0 left-0 h-0.5 bg-[#FF8201] rounded-full transition-all duration-300 ease-out
             ${isOpen ? 'w-full' : 'w-0 group-hover/trigger:w-full'}`}
         />
       </button>
@@ -100,32 +100,32 @@ export default function DropdownMenu({
             role="menu"
             aria-label={`${title} categories`}
           >
-            <div className="bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-slate-950/80 border border-slate-800/80 rounded-2xl overflow-hidden ring-1 ring-slate-800/50">
+            <div className="bg-white/95 dark:bg-[#0E1C2D]/95 backdrop-blur-2xl shadow-2xl shadow-[#00345F]/10 dark:shadow-black/70 border border-[#E2E8F0] dark:border-white/10 rounded-2xl overflow-hidden ring-1 ring-[#E2E8F0]/50 dark:ring-white/5">
               
               {/* Header */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800/60">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E2E8F0] dark:border-white/10">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] dark:text-white/50">
                   {title}
                 </span>
-                <div className="flex-1 h-px bg-slate-800/60" aria-hidden="true" />
+                <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-white/10" aria-hidden="true" />
               </div>
 
               {/* Content Area */}
               <div className="p-2">
                 {loading ? (
-                  <div className="flex items-center justify-center gap-2.5 px-3 py-6 text-sm text-slate-400">
+                  <div className="flex items-center justify-center gap-2.5 px-3 py-6 text-sm text-[#64748B] dark:text-white/55">
                     <HiArrowPath
-                      className="animate-spin h-4 w-4 text-rose-400"
+                      className="animate-spin h-4 w-4 text-[#FF8201]"
                       aria-hidden="true"
                     />
                     <span className="font-medium">Loading...</span>
                   </div>
                 ) : error ? (
-                  <div className="px-3 py-4 text-xs text-rose-400 bg-rose-950/30 rounded-xl text-center border border-rose-900/40">
+                  <div className="px-3 py-4 text-xs text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl text-center border border-red-200 dark:border-red-900/40">
                     Unable to load categories.
                   </div>
                 ) : visibleCategories.length > 0 ? (
-                  <div className="space-y-0.5 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent pr-1">
+                  <div className="space-y-0.5 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-[#CBD5E1] dark:scrollbar-thumb-white/10 scrollbar-track-transparent pr-1">
                     {visibleCategories.map((categoryObj) => (
                       <Link
                         key={categoryObj.name}
@@ -133,12 +133,12 @@ export default function DropdownMenu({
                           categoryObj.name
                         )}`}
                         onClick={() => setIsOpen(false)}
-                        className="group/item relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                        className="group/item relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-[#64748B] dark:text-white/65 hover:text-[#004A87] dark:hover:text-white hover:bg-[#F5F7FA] dark:hover:bg-white/[0.06] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0B1624]"
                         role="menuitem"
                       >
                         {/* Indicator Dot */}
                         <span
-                          className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover/item:bg-rose-400 group-hover/item:scale-125 transition-all duration-200"
+                          className="w-1.5 h-1.5 rounded-full bg-[#CBD5E1] dark:bg-white/30 group-hover/item:bg-[#FF8201] group-hover/item:scale-125 transition-all duration-200"
                           aria-hidden="true"
                         />
                         <span className="capitalize truncate">
@@ -148,7 +148,7 @@ export default function DropdownMenu({
                     ))}
                   </div>
                 ) : (
-                  <div className="px-3 py-6 text-xs text-slate-500 text-center font-medium">
+                  <div className="px-3 py-6 text-xs text-[#64748B] dark:text-white/50 text-center font-medium">
                     No categories available
                   </div>
                 )}

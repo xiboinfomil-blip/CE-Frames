@@ -111,8 +111,10 @@ const MediaCard = memo(function MediaCard({
         overflow-hidden
         rounded-2xl
         bg-white
+        dark:bg-[#102238]
         border
         border-[#E2E8F0]/80
+        dark:border-white/10
         shadow-[0_2px_8px_rgba(0,52,95,0.05)]
         hover:shadow-[0_16px_32px_rgba(0,52,95,0.12)]
         transition-all
@@ -130,6 +132,7 @@ const MediaCard = memo(function MediaCard({
           w-full
           aspect-4/3
           bg-[#F5F7FA]
+          dark:bg-[#0E1C2D]
           overflow-hidden
         "
       >

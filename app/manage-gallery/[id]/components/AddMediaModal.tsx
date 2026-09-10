@@ -141,6 +141,8 @@ const MediaCard = memo(function MediaCard({
           border
           border-[#E2E8F0]
           bg-white
+          dark:border-white/10
+          dark:bg-[#102238]
           shadow-sm
           hover:shadow-[0_8px_20px_rgba(0,52,95,0.10)]
           hover:-translate-y-1
@@ -150,6 +152,7 @@ const MediaCard = memo(function MediaCard({
           focus-visible:ring-2
           focus-visible:ring-[#FF8201]
           focus-visible:ring-offset-2
+          dark:focus-visible:ring-offset-[#102238]
         "
         onClick={onPreview}
         onKeyDown={(e) => {

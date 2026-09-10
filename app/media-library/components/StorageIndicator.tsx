@@ -111,6 +111,8 @@ if (isLoading) {
         rounded-2xl
         border border-[#E2E8F0]
         bg-white/90
+        dark:border-white/10
+        dark:bg-[#102238]/90
         backdrop-blur-sm
         p-5
         shadow-sm

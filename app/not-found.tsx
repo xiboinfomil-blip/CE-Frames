@@ -14,8 +14,8 @@ export default function NotFound() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-zinc-50 via-white to-white dark:from-[#102238] dark:via-[#091522] dark:to-[#091522] -z-10" />
       
       {/* Animated Background Elements */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-zinc-100/50 rounded-full blur-3xl animate-fade-scale-in" style={{ animationDelay: '0ms' }} />
-      <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-zinc-50 rounded-full blur-3xl animate-fade-scale-in" style={{ animationDelay: '200ms' }} />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#EAF4FB]/50 dark:bg-[#00345F]/20 rounded-full blur-3xl animate-fade-scale-in" style={{ animationDelay: '0ms' }} />
+      <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-[#F5F7FA] dark:bg-[#102238]/50 rounded-full blur-3xl animate-fade-scale-in" style={{ animationDelay: '200ms' }} />
 
       <main className="max-w-2xl w-full text-center z-10 flex flex-col items-center">
         
@@ -46,7 +46,7 @@ export default function NotFound() {
 
           <Link 
             href="/"
-            className="group flex items-center justify-center gap-2 px-8 py-4 bg-zinc-900 text-white rounded-xl hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-600/20 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+            className="group flex items-center justify-center gap-2 px-8 py-4 bg-[#004A87] text-white rounded-xl hover:bg-[#00345F] hover:shadow-lg hover:shadow-[#00345F]/20 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2"
           >
             <Home className="w-4 h-4 transition-transform group-hover:scale-110" />
             <span className="font-medium text-xs uppercase tracking-widest">Accueil</span>

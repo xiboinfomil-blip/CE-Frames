@@ -9,7 +9,7 @@ export default function NavbarSkeleton() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 py-3"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/85 dark:bg-[#0B1624]/80 backdrop-blur-md border-b border-[#E2E8F0] dark:border-white/10 py-3"
       role="status"
       aria-label="Loading navbar"
     >
@@ -36,7 +36,7 @@ export default function NavbarSkeleton() {
               ))}
             </div>
 
-            <div className="w-px h-5 bg-slate-800" aria-hidden="true" />
+            <div className="w-px h-5 bg-[#E2E8F0] dark:bg-white/10" aria-hidden="true" />
             
             {/* Auth Button Skeleton */}
             <Skeleton variant="text-line" className="w-24 h-9 !rounded-xl" />
