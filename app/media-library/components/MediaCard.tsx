@@ -95,7 +95,8 @@ const handleDeleteClick = useCallback(
   [isDeleting, media.id, onDelete]
 );
 
-return ( <figure
+return ( <>
+<figure
   className={`
      group relative flex flex-col w-full h-full
     bg-white dark:bg-[#102238]
@@ -166,21 +167,6 @@ aria-label={`Open ${
         pointer-events-none
       "
     />
-
-    {/* Selection */}
-    <label
-      className="absolute top-3 left-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/95 shadow-sm backdrop-blur-md dark:bg-[#102238]/95"
-      onClick={(event) => event.stopPropagation()}
-      title={isSelected ? 'Désélectionner' : 'Sélectionner'}
-    >
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={() => onSelect(media.id)}
-        aria-label={`Sélectionner ${media.originalFilename || 'cet élément'}`}
-        className="h-4 w-4 accent-[#FF8201]"
-      />
-    </label>
 
     {/* Top Badges */}
     <div className="absolute top-3 left-3 z-10 flex gap-2 pointer-events-none">
@@ -572,7 +558,22 @@ aria-label={`Open ${
       transition-transform duration-500
     "
   />
-</figure>
+ </figure>
+
+ <label
+   className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-semibold text-[#64748B] shadow-sm dark:border-white/10 dark:bg-[#102238] dark:text-white/70"
+   title={isSelected ? 'Désélectionner' : 'Sélectionner'}
+ >
+   <input
+     type="checkbox"
+     checked={isSelected}
+     onChange={() => onSelect(media.id)}
+     aria-label={`Sélectionner ${media.originalFilename || 'cet élément'}`}
+     className="h-4 w-4 accent-[#FF8201]"
+   />
+   {isSelected ? 'Sélectionné' : 'Sélectionner'}
+ </label>
+</>
 
 );
 });
