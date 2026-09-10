@@ -245,6 +245,7 @@ export const GalleryCard = memo(function GalleryCard({
               >
                 <MediaViewport
                   mediaType={mediaType}
+                  showMagnifyingGlass={false}
                   fullResUrl={sourceUrl!}
                   thumbnailUrl={posterUrl || sourceUrl!}
                   caption={gallery.title}

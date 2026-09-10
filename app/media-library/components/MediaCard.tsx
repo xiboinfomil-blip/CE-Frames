@@ -23,7 +23,6 @@ import {
 import {
   MoreHorizontal,
   Check,
-  Maximize2,
 } from 'lucide-react';
 
 export interface MediaSchema {
@@ -759,47 +758,6 @@ const MediaCard = memo(function MediaCard({
               )}
             </div>
           )}
-
-        {/* ----------------------------------------------------
-            Open indicator
-            ---------------------------------------------------- */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-10
-            flex
-            items-center
-            justify-center
-          "
-        >
-          <div
-            className="
-              flex
-              h-12
-              w-12
-              scale-90
-              items-center
-              justify-center
-              rounded-full
-              border
-              border-white/40
-              bg-white/90
-              text-[#004A87]
-              opacity-0
-              shadow-[0_8px_30px_rgba(0,0,0,0.2)]
-              backdrop-blur-xl
-              transition-all
-              duration-300
-              group-hover:scale-100
-              group-hover:opacity-100
-            "
-          >
-            <Maximize2 className="h-4.5 w-4.5" />
-          </div>
-        </div>
       </div>
 
       {/* ======================================================
@@ -876,8 +834,6 @@ const MediaCard = memo(function MediaCard({
               dark:border-white/[0.07]
             "
           >
-            {/* Camera */}
-
             {cameraModelStr && (
               <div
                 className="
@@ -920,8 +876,6 @@ const MediaCard = memo(function MediaCard({
                 </span>
               </div>
             )}
-
-            {/* Technical values */}
 
             <div
               className="
