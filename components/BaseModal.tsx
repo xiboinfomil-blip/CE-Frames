@@ -51,6 +51,7 @@ export default function BaseModal({
 }: BaseModalProps) {
   const [isClosing, setIsClosing] = useState(false);
   const isRendered = isOpen || isClosing;
+  const hasBeenOpened = useRef(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -61,19 +62,19 @@ export default function BaseModal({
   // ============================================================
 
   useEffect(() => {
-    if (!isOpen) {
-      const openTimer = setTimeout(() => {
-        setIsClosing(true);
-      }, 0);
-      const timer = setTimeout(() => {
-        setIsClosing(false);
-      }, 300);
-
-      return () => {
-        clearTimeout(openTimer);
-        clearTimeout(timer);
-      };
+    if (isOpen) {
+      hasBeenOpened.current = true;
+      return;
     }
+
+    if (!hasBeenOpened.current) return;
+
+    setIsClosing(true);
+    const timer = setTimeout(() => {
+      setIsClosing(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   // ============================================================
