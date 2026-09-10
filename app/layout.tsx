@@ -31,7 +31,7 @@ export default function RootLayout({
       className={`h-full antialiased ${inter.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-white text-[#172033] dark:bg-[#091522] dark:text-white">
         {/* Changed min-h-full to min-h-screen for reliable viewport height */}
         <Providers>
           <Navbar />

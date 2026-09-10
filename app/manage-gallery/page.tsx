@@ -57,8 +57,8 @@ interface EnrichedGallery {
 
 function GalleriesLoading() {
   return (
-    <div className="min-h-screen bg-white">
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-zinc-100 py-6 px-6 lg:px-12 mb-8">
+    <div className="min-h-screen bg-white text-[#172033] dark:bg-[#091522] dark:text-white">
+      <div className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1624]/80 backdrop-blur-md border-b border-zinc-100 dark:border-white/10 py-6 px-6 lg:px-12 mb-8">
         <div className="flex justify-between items-end mb-8">
           <div className="space-y-3">
             <div className="h-10 w-48 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">

@@ -67,12 +67,12 @@ export default function PhotoGrid({
             h-20
             mb-6
             rounded-2xl
-            bg-[#EAF4FB]
+            bg-[#EAF4FB] dark:bg-[#00345F]/40
             flex
             items-center
             justify-center
             border
-            border-[#E2E8F0]
+            border-[#E2E8F0] dark:border-white/10
             shadow-sm
           "
         >
@@ -83,7 +83,7 @@ export default function PhotoGrid({
           className="
             text-lg
             font-medium
-            text-[#172033]
+            text-[#172033] dark:text-white
             tracking-tight
           "
         >
@@ -93,7 +93,7 @@ export default function PhotoGrid({
         <p
           className="
             text-sm
-            text-[#64748B]
+            text-[#64748B] dark:text-white/60
             mt-2
             max-w-xs
             font-light

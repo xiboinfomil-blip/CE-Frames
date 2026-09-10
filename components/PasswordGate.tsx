@@ -40,14 +40,14 @@ export default function PasswordGate({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F5F7FA] flex items-center justify-center p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full bg-[#F5F7FA] dark:bg-[#091522] text-[#172033] dark:text-white flex items-center justify-center p-6 relative overflow-hidden font-sans">
 
       {/* Brand Background Orbs */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#004A87]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-[#FF8201]/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Main Card */}
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-3xl border border-[#E2E8F0] shadow-2xl shadow-[#00345F]/10 p-8 md:p-10 relative z-10">
+      <div className="w-full max-w-md bg-white/95 dark:bg-[#102238]/95 backdrop-blur-2xl rounded-3xl border border-[#E2E8F0] dark:border-white/10 shadow-2xl shadow-[#00345F]/10 p-8 md:p-10 relative z-10">
 
         {/* Header Icon & Title */}
         <div className="text-center mb-8">
@@ -55,11 +55,11 @@ export default function PasswordGate({
             <HiLockClosed className="w-7 h-7" />
           </div>
 
-          <h1 className="text-2xl font-bold text-[#172033] tracking-tight mb-2">
+          <h1 className="text-2xl font-bold text-[#172033] dark:text-white tracking-tight mb-2">
             {title}
           </h1>
 
-          <p className="text-[#64748B] text-xs sm:text-sm font-normal leading-relaxed">
+          <p className="text-[#64748B] dark:text-white/60 text-xs sm:text-sm font-normal leading-relaxed">
             {subtitle}
           </p>
         </div>
@@ -82,16 +82,16 @@ export default function PasswordGate({
               autoComplete="current-password"
               className={`
                 w-full pl-4 pr-12 py-3.5
-                bg-[#F5F7FA]
+                bg-[#F5F7FA] dark:bg-[#0E1C2D]
                 border rounded-xl
-                text-[#172033] text-sm
+                text-[#172033] dark:text-white text-sm
                 placeholder:text-[#94A3B8]
                 focus:outline-none focus:ring-2
                 transition-all duration-200
                 ${
                   error
                     ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
-                    : 'border-[#E2E8F0] focus:border-[#FF8201] focus:ring-[#FF8201]/20'
+                    : 'border-[#E2E8F0] dark:border-white/10 focus:border-[#FF8201] focus:ring-[#FF8201]/20'
                 }
                 disabled:opacity-50 disabled:cursor-not-allowed
               `}

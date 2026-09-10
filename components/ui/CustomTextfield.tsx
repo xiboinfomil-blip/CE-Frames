@@ -78,20 +78,20 @@ const CustomTextfield = React.forwardRef<
             className={cn(
               // Base Layout & Typography
               'w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200',
-              'bg-white text-[#172033] placeholder:text-[#94A3B8]',
+              'bg-white dark:bg-[#0E1C2D] text-[#172033] dark:text-white placeholder:text-[#94A3B8]',
 
               // Borders & Subtle Shadows
-              'border border-[#E2E8F0] shadow-sm hover:border-[#CBD5E1]',
+              'border border-[#E2E8F0] dark:border-white/10 shadow-sm hover:border-[#CBD5E1]',
 
               // Focus State
               'focus:outline-none focus:border-[#FF8201] focus:ring-4 focus:ring-[#FF8201]/15',
 
               // Error State
               error &&
-                'border-red-300 text-[#172033] placeholder:text-red-300 focus:border-red-500 focus:ring-red-500/15',
+                'border-red-300 text-[#172033] dark:text-white placeholder:text-red-300 focus:border-red-500 focus:ring-red-500/15',
 
               // Disabled State
-              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F5F7FA]',
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F5F7FA] dark:disabled:bg-[#102238]',
 
               // Dynamic Padding based on Icons
               leftIcon && 'pl-11',

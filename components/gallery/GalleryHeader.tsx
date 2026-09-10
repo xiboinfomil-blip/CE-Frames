@@ -11,7 +11,7 @@ export default function GalleryHeader({
 title = 'Gallery',
 description = 'Browse our collection of galleries',
 }: GalleryHeaderProps) {
-return ( <div className="relative overflow-hidden bg-white border-b border-[#E2E8F0] shadow-sm shadow-[#00345F]/5">
+return ( <div className="relative overflow-hidden bg-white dark:bg-[#0B1624] border-b border-[#E2E8F0] dark:border-white/10 shadow-sm shadow-[#00345F]/5">
 {/* Background Accent Gradient Glow */} <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#EAF4FB] rounded-full blur-3xl pointer-events-none" />
 
 ```
@@ -22,13 +22,13 @@ return ( <div className="relative overflow-hidden bg-white border-b border-[#E2E
     <div className="flex items-center gap-3 mb-2">
       <div className="w-1 h-8 sm:h-9 rounded-full bg-[#FF8201]" />
 
-      <h1 className="text-3xl sm:text-4xl font-extrabold text-[#172033] tracking-tight">
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-[#172033] dark:text-white tracking-tight">
         {title}
       </h1>
     </div>
 
     {description && (
-      <p className="mt-2 ml-4 text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">
+      <p className="mt-2 ml-4 text-sm sm:text-base text-[#64748B] dark:text-white/60 max-w-2xl leading-relaxed">
         {description}
       </p>
     )}

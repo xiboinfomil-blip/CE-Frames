@@ -293,16 +293,16 @@ export default function MediaLibraryClient({
   const currentSort = filters.sortBy || 'newest';
 
   const mediaEmptyState = (
-    <div className="flex flex-col items-center justify-center py-24 px-6 text-center bg-white rounded-3xl border border-[#E2E8F0] shadow-sm">
+    <div className="flex flex-col items-center justify-center py-24 px-6 text-center bg-white dark:bg-[#102238] rounded-3xl border border-[#E2E8F0] dark:border-white/10 shadow-sm">
       <div className="w-20 h-20 bg-[#EAF4FB] rounded-2xl flex items-center justify-center mb-6 border border-[#D8EAF6]">
         <HiPhoto className="w-8 h-8 text-[#004A87]" />
       </div>
 
-      <h3 className="text-xl font-bold text-[#172033] tracking-tight">
+      <h3 className="text-xl font-bold text-[#172033] dark:text-white tracking-tight">
         Aucun élément trouvé
       </h3>
 
-      <p className="text-[#64748B] text-sm mt-2 max-w-xs font-medium">
+      <p className="text-[#64748B] dark:text-white/60 text-sm mt-2 max-w-xs font-medium">
         Aucun élément ne correspond à vos filtres actuels. Essayez d’ajuster votre recherche ou d’ajouter de nouveaux médias.
       </p>
 
@@ -339,8 +339,8 @@ export default function MediaLibraryClient({
     <div
       className="
         min-h-screen
-        bg-[#F5F7FA]
-        text-[#172033]
+        bg-[#F5F7FA] dark:bg-[#091522]
+        text-[#172033] dark:text-white
         font-sans
         selection:bg-[#FF8201]/30
         selection:text-[#00345F]

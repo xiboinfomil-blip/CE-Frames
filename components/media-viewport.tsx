@@ -91,9 +91,9 @@ const MediaViewport = memo(function MediaViewport({
         overflow-hidden
         rounded-2xl
 
-        bg-white
+        bg-white dark:bg-[#102238]
         border
-        border-[#E2E8F0]
+        border-[#E2E8F0] dark:border-white/10
 
         transition-all
         duration-300
@@ -107,7 +107,7 @@ const MediaViewport = memo(function MediaViewport({
         focus-visible:ring-2
         focus-visible:ring-[#FF8201]
         focus-visible:ring-offset-2
-        focus-visible:ring-offset-white
+        focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#102238]
 
         ${isInteractive ? 'cursor-pointer' : ''}
 
@@ -173,11 +173,11 @@ const MediaViewport = memo(function MediaViewport({
 
               rounded-full
 
-              bg-white/95
+              bg-white/95 dark:bg-[#102238]/95
               backdrop-blur-md
 
               border
-              border-[#E2E8F0]
+              border-[#E2E8F0] dark:border-white/10
 
               text-[#004A87]
 

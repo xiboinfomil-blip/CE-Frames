@@ -61,7 +61,7 @@ const CustomImage = ({
           alt={alt || 'Photo d’un événement du CE'}
           fill
           quality={quality}
-          loading={loading}
+          loading={props.priority ? undefined : loading}
           className={`object-cover transition-opacity duration-500 ease-in-out ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}

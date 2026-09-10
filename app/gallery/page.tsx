@@ -21,7 +21,7 @@ type FindPublicResult = {
 
 function GalleryPageLoading() {
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 px-6 lg:px-12 py-12">
+    <div className="min-h-screen bg-white dark:bg-[#091522] px-6 lg:px-12 py-12">
       {/* Skeleton d'en-tête */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-900 overflow-hidden relative">

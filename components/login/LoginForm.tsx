@@ -73,7 +73,7 @@ export default function LoginForm() {
   {/* Loading State */}
   if (status === 'loading') {
     return (
-      <div className="h-full w-full min-h-[400px] flex items-center justify-center bg-white">
+      <div className="h-full w-full min-h-[400px] flex items-center justify-center bg-white dark:bg-[#0E1C2D]">
         <div className="flex flex-col items-center gap-4">
           <HiArrowPath className="w-8 h-8 text-[#FF8201] animate-spin" />
 
@@ -101,11 +101,11 @@ export default function LoginForm() {
     >
       {/* Header */}
       <header className="mb-8">
-        <h2 className="text-3xl font-bold text-[#172033] tracking-tight mb-2">
+        <h2 className="text-3xl font-bold text-[#172033] dark:text-white tracking-tight mb-2">
           Bon retour
         </h2>
 
-        <p className="text-[#64748B] text-sm font-medium">
+        <p className="text-[#64748B] dark:text-white/65 text-sm font-medium">
           Saisissez vos identifiants pour gérer vos galeries CE.
         </p>
       </header>

@@ -57,7 +57,7 @@ className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-
 
       {/* Main Icon Container */}
       <div
-        className="relative w-full h-full bg-white rounded-3xl shadow-xl shadow-[#00345F]/10 border border-[#E2E8F0] flex items-center justify-center transition-transform duration-500 hover:-translate-y-1"
+        className="relative w-full h-full bg-white dark:bg-[#102238] rounded-3xl shadow-xl shadow-[#00345F]/10 border border-[#E2E8F0] dark:border-white/10 flex items-center justify-center transition-transform duration-500 hover:-translate-y-1"
       >
         <Icon
           className="w-9 h-9 sm:w-10 sm:h-10 text-[#004A87]"
@@ -67,11 +67,11 @@ className="relative flex flex-col items-center justify-center py-20 sm:py-28 px-
     </div>
 
     {/* Text Content */}
-    <h3 className="text-2xl sm:text-3xl font-bold text-[#172033] mb-3 tracking-tight">
+    <h3 className="text-2xl sm:text-3xl font-bold text-[#172033] dark:text-white mb-3 tracking-tight">
       {title}
     </h3>
 
-    <p className="text-[#64748B] text-sm sm:text-base leading-relaxed font-normal mb-8">
+    <p className="text-[#64748B] dark:text-white/60 text-sm sm:text-base leading-relaxed font-normal mb-8">
       {description}
     </p>
 

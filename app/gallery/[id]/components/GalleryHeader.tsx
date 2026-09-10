@@ -19,9 +19,9 @@ export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
         {/* Barre fixe épurée avec effet de flou */}
         <div
           className="
-            bg-white/90
+            bg-white/90 dark:bg-[#102238]/95
             backdrop-blur-2xl
-            border border-[#E2E8F0]/80
+            border border-[#E2E8F0]/80 dark:border-white/10
             shadow-sm
             rounded-2xl
             px-6 py-4
@@ -35,7 +35,7 @@ export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
               className="
                 text-lg md:text-xl
                 font-bold
-                text-[#172033]
+                text-[#172033] dark:text-white
                 tracking-tight
                 truncate
               "
@@ -48,12 +48,12 @@ export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
               className="
                 hidden sm:flex items-center gap-3
                 text-xs font-medium
-                text-[#64748B]
+                text-[#64748B] dark:text-white/60
                 whitespace-nowrap
-                bg-[#F5F7FA]/80
+                bg-[#F5F7FA]/80 dark:bg-[#0E1C2D]/80
                 px-3 py-1.5
                 rounded-lg
-                border border-[#E2E8F0]
+                border border-[#E2E8F0] dark:border-white/10
               "
             >
               <time className="flex items-center gap-1.5">

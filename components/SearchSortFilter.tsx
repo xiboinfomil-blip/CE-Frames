@@ -84,14 +84,14 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
       <div className="container mx-auto max-w-[1800px] pointer-events-auto">
 
         {/* Floating Control Deck */}
-        <div className="bg-white/95 backdrop-blur-xl border border-[#E2E8F0] shadow-2xl shadow-[#00345F]/10 rounded-2xl p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-3 transition-all duration-300">
+        <div className="bg-white/95 dark:bg-[#102238]/95 backdrop-blur-xl border border-[#E2E8F0] dark:border-white/10 shadow-2xl shadow-[#00345F]/10 rounded-2xl p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-3 transition-all duration-300">
 
           {/* Left Cluster: Search & Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
 
             {/* Search Input */}
             {hasSearch && (
-              <div className="relative group flex items-center w-full md:w-auto min-w-[240px] h-10 rounded-xl bg-[#F5F7FA] hover:bg-[#EAF4FB] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#FF8201]/30 border border-[#E2E8F0] focus-within:border-[#FF8201] transition-all duration-200">
+              <div className="relative group flex items-center w-full md:w-auto min-w-[240px] h-10 rounded-xl bg-[#F5F7FA] dark:bg-[#0E1C2D] hover:bg-[#EAF4FB] dark:hover:bg-[#00345F]/50 focus-within:bg-white dark:focus-within:bg-[#102238] focus-within:ring-2 focus-within:ring-[#FF8201]/30 border border-[#E2E8F0] dark:border-white/10 focus-within:border-[#FF8201] transition-all duration-200">
 
                 <div className="pl-3.5 text-[#64748B] group-focus-within:text-[#FF8201] transition-colors">
                   <HiMagnifyingGlass className="w-4 h-4" />
@@ -105,7 +105,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     onSearchChange?.(e.target.value)
                   }
                   onKeyDown={handleKeyDown}
-                  className="w-full bg-transparent border-none outline-none px-2.5 text-sm text-[#172033] placeholder:text-[#94A3B8] font-medium"
+                  className="w-full bg-transparent border-none outline-none px-2.5 text-sm text-[#172033] dark:text-white placeholder:text-[#94A3B8] font-medium"
                 />
 
                 <div className="pr-2 flex items-center">
@@ -133,7 +133,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
             {/* Filter Tabs */}
             {hasFilters && (
               <nav
-                className="flex items-center gap-1 p-1 rounded-xl bg-[#F5F7FA] border border-[#E2E8F0] overflow-x-auto no-scrollbar"
+                className="flex items-center gap-1 p-1 rounded-xl bg-[#F5F7FA] dark:bg-[#0E1C2D] border border-[#E2E8F0] dark:border-white/10 overflow-x-auto no-scrollbar"
                 role="tablist"
               >
                 {filters.map((f) => {
@@ -150,7 +150,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                       className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap ${
                         active
                           ? 'bg-[#004A87] text-white shadow-md shadow-[#004A87]/20'
-                          : 'text-[#64748B] hover:text-[#00345F] hover:bg-[#EAF4FB]'
+                          : 'text-[#64748B] dark:text-white/60 hover:text-[#00345F] dark:hover:text-white hover:bg-[#EAF4FB] dark:hover:bg-[#00345F]/50'
                       }`}
                     >
                       {f.label}
@@ -179,7 +179,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     <option
                       key={s.value}
                       value={s.value}
-                      className="bg-white text-[#172033]"
+                      className="bg-white dark:bg-[#102238] text-[#172033] dark:text-white"
                     >
                       {s.label}
                     </option>
@@ -189,7 +189,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                 <div
                   className={`flex items-center gap-2 h-10 px-3.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
                     isDefaultSort
-                      ? 'bg-[#F5F7FA] border-[#E2E8F0] text-[#64748B] hover:bg-[#EAF4FB]'
+                        ? 'bg-[#F5F7FA] dark:bg-[#0E1C2D] border-[#E2E8F0] dark:border-white/10 text-[#64748B] dark:text-white/60 hover:bg-[#EAF4FB] dark:hover:bg-[#00345F]/50'
                       : 'bg-[#FFF1E5] border-[#FF8201]/30 text-[#00345F] shadow-sm'
                   }`}
                 >
@@ -214,7 +214,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
             {showCount && totalItems > 0 && (
               <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#EAF4FB] border border-[#E2E8F0]">
 
-                <span className="text-xs font-bold text-[#172033] tabular-nums tracking-tight">
+                <span className="text-xs font-bold text-[#172033] dark:text-white tabular-nums tracking-tight">
                   {totalItems.toLocaleString()}
                 </span>
 

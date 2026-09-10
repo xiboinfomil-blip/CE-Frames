@@ -8,10 +8,10 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 flex flex-col items-center justify-center px-6 relative overflow-hidden selection:bg-rose-500/30 selection:text-rose-900 dark:selection:bg-rose-500/30 dark:selection:text-rose-100">
+    <div className="min-h-screen bg-white dark:bg-[#091522] text-zinc-900 dark:text-white flex flex-col items-center justify-center px-6 relative overflow-hidden selection:bg-rose-500/30 selection:text-rose-900 dark:selection:bg-rose-500/30 dark:selection:text-rose-100">
       
       {/* Subtle Background Texture & Gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-zinc-50 via-white to-white -z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-zinc-50 via-white to-white dark:from-[#102238] dark:via-[#091522] dark:to-[#091522] -z-10" />
       
       {/* Animated Background Elements */}
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-zinc-100/50 rounded-full blur-3xl animate-fade-scale-in" style={{ animationDelay: '0ms' }} />
@@ -20,16 +20,16 @@ export default function NotFound() {
       <main className="max-w-2xl w-full text-center z-10 flex flex-col items-center">
         
         {/* Brand Badge Icon Container */}
-        <div className="mb-8 p-6 bg-zinc-50 rounded-3xl border border-zinc-100 shadow-sm animate-slide-up" style={{ animationDelay: '0ms' }}>
+        <div className="mb-8 p-6 bg-zinc-50 dark:bg-[#102238] rounded-3xl border border-zinc-100 dark:border-white/10 shadow-sm animate-slide-up" style={{ animationDelay: '0ms' }}>
           <Aperture className="w-12 h-12 text-rose-500" strokeWidth={1.5} />
         </div>
 
         {/* Typography */}
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-zinc-900 mb-4 animate-slide-up" style={{ animationDelay: '100ms' }}>
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-zinc-900 dark:text-white mb-4 animate-slide-up" style={{ animationDelay: '100ms' }}>
           404
         </h1>
         
-        <p className="text-xl md:text-2xl text-zinc-500 font-light mb-12 max-w-md leading-relaxed animate-slide-up" style={{ animationDelay: '200ms' }}>
+        <p className="text-xl md:text-2xl text-zinc-500 dark:text-white/60 font-light mb-12 max-w-md leading-relaxed animate-slide-up" style={{ animationDelay: '200ms' }}>
           La galerie ou le cadre que vous cherchez est introuvable ou a été déplacé.
         </p>
 
@@ -38,7 +38,7 @@ export default function NotFound() {
           
           <button
             onClick={() => router.back()}
-            className="group flex items-center justify-center gap-2 px-8 py-4 bg-white border border-zinc-200 text-zinc-700 rounded-xl hover:border-zinc-300 hover:bg-zinc-50 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 cursor-pointer"
+            className="group flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-[#102238] border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-white/70 rounded-xl hover:border-zinc-300 hover:bg-zinc-50 dark:hover:bg-[#00345F]/50 transition-all duration-300 w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             <span className="font-medium text-xs uppercase tracking-widest">Retour</span>

@@ -96,11 +96,11 @@ const Pagination = memo(function Pagination({
 
           rounded-2xl
 
-          bg-white
+          bg-white dark:bg-[#102238]
           backdrop-blur-md
 
           border
-          border-[#E2E8F0]
+          border-[#E2E8F0] dark:border-white/10
 
           shadow-xl
           shadow-[#00345F]/10
@@ -130,7 +130,7 @@ const Pagination = memo(function Pagination({
 
             rounded-xl
 
-            text-[#64748B]
+            text-[#64748B] dark:text-white/60
 
             hover:text-[#004A87]
             hover:bg-[#EAF4FB]
@@ -147,7 +147,7 @@ const Pagination = memo(function Pagination({
             focus-visible:ring-2
             focus-visible:ring-[#FF8201]
             focus-visible:ring-offset-1
-            focus-visible:ring-offset-white
+            focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#102238]
           "
           aria-label="Go to previous page"
         >
@@ -168,7 +168,7 @@ const Pagination = memo(function Pagination({
           className="
             w-px
             h-5
-            bg-[#E2E8F0]
+            bg-[#E2E8F0] dark:bg-white/10
             mx-0.5
           "
         />

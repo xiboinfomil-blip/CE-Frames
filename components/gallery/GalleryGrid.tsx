@@ -69,10 +69,10 @@ return ( <GalleryCard
         key={gallery.id}
         variants={itemVariants}
         onClick={() => onGalleryClick(gallery)}
-        className="group cursor-pointer flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg shadow-[#00345F]/10 hover:border-[#004A87]/30 hover:shadow-xl hover:shadow-[#00345F]/15 transition-all duration-300"
+        className="group cursor-pointer flex flex-col h-full bg-white dark:bg-[#102238] rounded-2xl border border-[#E2E8F0] dark:border-white/10 overflow-hidden shadow-lg shadow-[#00345F]/10 hover:border-[#004A87]/30 hover:shadow-xl hover:shadow-[#00345F]/15 transition-all duration-300"
       >
         {/* Media Aspect Container */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F5F7FA] flex items-center justify-center">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F5F7FA] dark:bg-[#0E1C2D] flex items-center justify-center">
           {displayMedia?.thumbnailUrl ? (
             <Image
               src={displayMedia.thumbnailUrl}
@@ -85,7 +85,7 @@ return ( <GalleryCard
           ) : (
             <div className="text-center p-4">
               <HiPhoto className="h-10 w-10 mx-auto text-[#94A3B8] mb-2" />
-              <p className="text-[#64748B] text-xs font-semibold uppercase tracking-wider">
+              <p className="text-[#64748B] dark:text-white/55 text-xs font-semibold uppercase tracking-wider">
                 Aucun média
               </p>
             </div>
@@ -106,13 +106,13 @@ return ( <GalleryCard
         </div>
 
         {/* Gallery Info Details */}
-        <div className="p-4 flex flex-col flex-grow bg-white">
-          <h3 className="text-[#172033] font-bold text-base line-clamp-1 group-hover:text-[#004A87] transition-colors duration-200">
+        <div className="p-4 flex flex-col flex-grow bg-white dark:bg-[#102238]">
+          <h3 className="text-[#172033] dark:text-white font-bold text-base line-clamp-1 group-hover:text-[#004A87] dark:group-hover:text-[#FFB15C] transition-colors duration-200">
             {gallery.title}
           </h3>
 
           {gallery.description && (
-            <p className="text-[#64748B] text-xs mt-1.5 line-clamp-2 leading-relaxed">
+            <p className="text-[#64748B] dark:text-white/60 text-xs mt-1.5 line-clamp-2 leading-relaxed">
               {gallery.description}
             </p>
           )}
@@ -120,9 +120,9 @@ return ( <GalleryCard
           <div className="grow min-h-[12px]" />
 
           {/* Meta Info Line */}
-          <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-medium pt-3 border-t border-[#E2E8F0] mt-2">
+          <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-medium pt-3 border-t border-[#E2E8F0] dark:border-white/10 mt-2">
             {gallery.owner?.username ? (
-              <span className="text-[#64748B]">
+              <span className="text-[#64748B] dark:text-white/60">
                 @{gallery.owner.username}
               </span>
             ) : (

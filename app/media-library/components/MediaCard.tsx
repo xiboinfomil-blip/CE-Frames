@@ -132,9 +132,9 @@ e.stopPropagation();
 return ( <figure
    className="
      group relative flex flex-col w-full h-full
-     bg-white
+    bg-white dark:bg-[#102238]
      rounded-2xl overflow-hidden
-     border border-[#E2E8F0]
+    border border-[#E2E8F0] dark:border-white/10
      shadow-sm
      hover:shadow-xl hover:shadow-[#00345F]/10
      hover:border-[#CBD5E1]
@@ -145,7 +145,7 @@ return ( <figure
 <div
 className="
 relative aspect-4/3
-bg-[#F5F7FA]
+ bg-[#F5F7FA] dark:bg-[#0E1C2D]
 overflow-hidden
 cursor-zoom-in
 shrink-0
@@ -153,7 +153,7 @@ focus:outline-none
 focus-visible:ring-2
 focus-visible:ring-[#FF8201]
 focus-visible:ring-offset-2
-focus-visible:ring-offset-white
+ focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0E1C2D]
 "
 onClick={onOpenLightbox}
 onKeyDown={(e) => {
@@ -208,14 +208,14 @@ aria-label={`Open ${
           flex items-center gap-1.5
           px-2.5 py-1.5
           rounded-full
-          bg-white/95
+          bg-white/95 dark:bg-[#102238]/95
           backdrop-blur-md
-          border border-white/70
+          border border-white/70 dark:border-white/10
           text-[10px]
           font-bold
           uppercase
           tracking-wider
-          text-[#00345F]
+          text-[#00345F] dark:text-white
           shadow-sm
         "
       >
@@ -234,14 +234,14 @@ aria-label={`Open ${
             items-center gap-1.5
             px-2.5 py-1.5
             rounded-full
-            bg-white/95
+            bg-white/95 dark:bg-[#102238]/95
             backdrop-blur-md
-            border border-white/70
+            border border-white/70 dark:border-white/10
             text-[10px]
             font-bold
             uppercase
             tracking-wider
-            text-[#00345F]
+            text-[#00345F] dark:text-white
             shadow-sm
             max-w-32
             transform translate-y-2
@@ -273,10 +273,10 @@ aria-label={`Open ${
       className={`
         absolute top-3 right-3 z-20
         p-2 rounded-full
-        bg-white/95
+        bg-white/95 dark:bg-[#102238]/95
         backdrop-blur-md
         shadow-sm
-        border border-[#E2E8F0]
+        border border-[#E2E8F0] dark:border-white/10
         transition-all duration-200
         focus:outline-none
         focus-visible:ring-2
@@ -333,13 +333,13 @@ aria-label={`Open ${
   </div>
 
   {/* --- Content Body --- */}
-  <figcaption className="flex flex-col flex-1 p-5 bg-white">
+  <figcaption className="flex flex-col flex-1 p-5 bg-white dark:bg-[#102238]">
     <div className="mb-4">
       <h3
         className="
           text-sm
           font-bold
-          text-[#172033]
+          text-[#172033] dark:text-white
           leading-snug
           truncate
           pr-2
