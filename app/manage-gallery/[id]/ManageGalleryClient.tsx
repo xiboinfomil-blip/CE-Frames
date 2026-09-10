@@ -19,6 +19,7 @@ import GalleryLightbox, { type MediaItem as LightboxMediaItem } from '@/componen
 import {
   FolderOpen,
   GripVertical,
+  Trash2,
 } from 'lucide-react';
 
 // DnD Kit Imports
@@ -150,12 +151,16 @@ function SortableMediaCard({
   onRemove,
   onManualOrder,
   onPreview,
+  isSelected,
+  onToggleSelect,
 }: {
   item: MediaItem;
   index: number;
   onRemove: (id: string) => void;
   onManualOrder: (id: string) => void;
   onPreview: () => void;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
 }) {
   const {
     attributes,
@@ -224,6 +229,8 @@ function SortableMediaCard({
         onManualOrder={onManualOrder}
         onPreview={onPreview}
         priority={index < 6}
+        isSelected={isSelected}
+        onSelect={onToggleSelect}
       />
     </div>
   );
@@ -265,6 +272,7 @@ export default function ManageGalleryClient({
   const [isLoadingModal, setIsLoadingModal] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [availableLightboxIndex, setAvailableLightboxIndex] = useState(-1);
+  const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
 
   const lightboxSlides = localMediaItems.map((item) => ({
     type: item.media.type === 'video' ? 'video' : 'image',
@@ -920,6 +928,75 @@ export default function ManageGalleryClient({
   // Remove Media
   // ==========================================================
 
+  const handleToggleMediaSelect = useCallback((mediaId: string) => {
+    setSelectedMediaIds((current) =>
+      current.includes(mediaId)
+        ? current.filter((id) => id !== mediaId)
+        : [...current, mediaId]
+    );
+  }, []);
+
+  const handleSelectAllMedia = useCallback(() => {
+    setSelectedMediaIds((current) =>
+      current.length === localMediaItems.length
+        ? []
+        : localMediaItems.map((item) => item.mediaId)
+    );
+  }, [localMediaItems]);
+
+  const handleBulkRemoveMedia = useCallback(async () => {
+    if (selectedMediaIds.length === 0) return;
+
+    const result = await Swal.fire({
+      title: `Retirer ${selectedMediaIds.length} média(s) ?`,
+      text: 'Cette action retire les médias sélectionnés de l’album sans les supprimer de la médiathèque.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#EAF4FB',
+      confirmButtonText: 'Retirer',
+      cancelButtonText: 'Annuler',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
+      customClass: {
+        popup: 'rounded-2xl shadow-2xl border border-[#E2E8F0]',
+        title: 'font-semibold text-[#172033] dark:text-white',
+        htmlContainer: 'text-[#64748B] dark:text-white/70 font-medium',
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const responses = await Promise.all(
+        selectedMediaIds.map((mediaId) =>
+          fetch(`/api/gallery-media?galleryId=${gallery.id}&mediaId=${mediaId}`, { method: 'DELETE' })
+        )
+      );
+
+      const failed = responses.some((response) => !response.ok);
+      if (failed) {
+        throw new Error('Une ou plusieurs suppressions ont échoué.');
+      }
+
+      setLocalMediaItems((current) =>
+        current.filter((item) => !selectedMediaIds.includes(item.mediaId))
+      );
+      setSelectedMediaIds([]);
+      router.refresh();
+    } catch (error) {
+      console.error('Bulk remove media failed:', error);
+      await Swal.fire({
+        title: 'Retrait impossible',
+        text: error instanceof Error ? error.message : 'Une erreur est survenue.',
+        icon: 'error',
+        confirmButtonColor: '#004A87',
+        background: 'var(--page-background)',
+        color: 'var(--page-foreground)',
+      });
+    }
+  }, [gallery.id, router, selectedMediaIds]);
+
   const handleRemoveMedia =
     useCallback(
       async (mediaId: string) => {
@@ -987,6 +1064,7 @@ export default function ManageGalleryClient({
           }
 
           setLocalMediaItems((current) => current.filter((item) => item.mediaId !== mediaId));
+          setSelectedMediaIds((current) => current.filter((id) => id !== mediaId));
           router.refresh();
           return true;
         } catch (error) {
@@ -1187,6 +1265,38 @@ export default function ManageGalleryClient({
             w-full
           "
         >
+          {localMediaItems.length > 0 && (
+            <div className="mb-6 rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#FF8201]" />
+                  Actions groupées
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllMedia}
+                    className="rounded-xl border border-[#E2E8F0] bg-[#F5F7FA] px-3.5 py-2 text-sm font-semibold text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                  >
+                    {selectedMediaIds.length === localMediaItems.length ? 'Tout désélectionner' : 'Sélectionner tout'}
+                  </button>
+
+                  {selectedMediaIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleBulkRemoveMedia}
+                      className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-3.5 py-2 text-sm font-bold text-white transition hover:bg-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Retirer {selectedMediaIds.length}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <DndContext
             sensors={sensors}
             collisionDetection={
@@ -1211,13 +1321,11 @@ export default function ManageGalleryClient({
                   <SortableMediaCard
                     item={item}
                     index={index}
-                    onRemove={
-                      handleRemoveMedia
-                    }
-                    onManualOrder={
-                      handleManualOrder
-                    }
+                    onRemove={handleRemoveMedia}
+                    onManualOrder={handleManualOrder}
                     onPreview={() => setLightboxIndex(index)}
+                    isSelected={selectedMediaIds.includes(item.mediaId)}
+                    onToggleSelect={handleToggleMediaSelect}
                   />
                 )}
                 getKey={(

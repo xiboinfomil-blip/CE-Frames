@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import MediaViewport from '@/components/media-viewport';
 import { MEDIA_TYPES } from '@/db/schema';
 
@@ -10,6 +10,9 @@ import {
   FileImage,
   Trash2,
   ArrowUpDown,
+  GripVertical,
+  MoreVertical,
+  Check,
 } from 'lucide-react';
 
 interface MediaData {
@@ -28,6 +31,8 @@ interface MediaCardProps {
   onManualOrder?: (mediaId: string) => void;
   onPreview?: () => void;
   priority?: boolean;
+  isSelected?: boolean;
+  onSelect?: (mediaId: string) => void;
 }
 
 const MediaCard = memo(function MediaCard({
@@ -36,51 +41,84 @@ const MediaCard = memo(function MediaCard({
   onManualOrder,
   onPreview,
   priority = false,
+  isSelected = false,
+  onSelect,
 }: MediaCardProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
   const handleRemove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent | React.KeyboardEvent) => {
       e.stopPropagation();
+      setIsMenuOpen(false);
       onRemove?.(media.id);
     },
     [onRemove, media.id]
   );
 
   const handleManualOrderClick = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent | React.KeyboardEvent) => {
       e.stopPropagation();
+      setIsMenuOpen(false);
       onManualOrder?.(media.id);
     },
     [onManualOrder, media.id]
   );
+
+  const handleSelectClick = useCallback(
+    (e: React.MouseEvent | React.KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onSelect?.(media.id);
+    },
+    [media.id, onSelect]
+  );
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMenuOpen]);
 
   const getBadgeConfig = (type: string) => {
     switch (type) {
       case 'video':
         return {
           label: 'Vidéo',
-          icon: (
-            <Video className="w-3 h-3" />
-          ),
-          className:
-            'bg-[#00345F]/90 text-white border-[#004A87]/50',
+          icon: <Video className="w-3 h-3" />,
+          className: 'bg-[#00345F]/90 text-white border-[#004A87]/50',
         };
 
       case 'gif':
         return {
           label: 'GIF',
           icon: null,
-          className:
-            'bg-[#FFF1E5]/95 text-[#00345F] border-[#FF8201]/30',
+          className: 'bg-[#FFF1E5]/95 text-[#00345F] border-[#FF8201]/30',
         };
 
       default:
         return {
           label: 'Photo',
-          icon: (
-            <ImageIcon className="w-3 h-3" />
-          ),
-          className:
-            'bg-white/95 text-[#004A87] border-white/70',
+          icon: <ImageIcon className="w-3 h-3" />,
+          className: 'bg-white/95 text-[#004A87] border-white/70',
         };
     }
   };
@@ -93,343 +131,164 @@ const MediaCard = memo(function MediaCard({
       : null;
 
   const displayUrl =
-    media.fullResUrl &&
-    media.fullResUrl.trim() !== ''
+    media.fullResUrl && media.fullResUrl.trim() !== ''
       ? media.fullResUrl
-      : media.thumbnailUrl &&
-        media.thumbnailUrl.trim() !== ''
+      : media.thumbnailUrl && media.thumbnailUrl.trim() !== ''
       ? media.thumbnailUrl
       : null;
 
   return (
     <article
-      className="
-        group
-        relative
-        flex
-        flex-col
-        h-full
-        w-full
-        overflow-hidden
-        rounded-2xl
-        bg-white
-        dark:bg-[#102238]
-        border
-        border-[#E2E8F0]/80
-        dark:border-white/10
-        shadow-[0_2px_8px_rgba(0,52,95,0.05)]
-        hover:shadow-[0_16px_32px_rgba(0,52,95,0.12)]
-        transition-all
-        duration-500
-        ease-out
-        hover:-translate-y-1
-      "
+      className={[
+        'group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[#E2E8F0]/80 bg-white shadow-[0_2px_8px_rgba(0,52,95,0.05)] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(0,52,95,0.12)] dark:border-white/10 dark:bg-[#102238]',
+        isSelected ? 'ring-2 ring-[#FF8201] ring-offset-2 dark:ring-offset-[#0f172a]' : '',
+      ].join(' ')}
     >
-      {/* =====================================================
-          Media Viewport
-      ====================================================== */}
-      <div
-        className="
-          relative
-          w-full
-          aspect-4/3
-          bg-[#F5F7FA]
-          dark:bg-[#0E1C2D]
-          overflow-hidden
-        "
-      >
-        {displayUrl ? (
-          <div
-            className="
-              absolute
-              inset-0
-              w-full
-              h-full
-              transform
-              group-hover:scale-105
-              transition-transform
-              duration-700
-              ease-out
-            "
+      <div className="flex items-center justify-between gap-3 border-b border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 dark:border-white/10 dark:bg-[#0E1C2D]">
+        <button
+          type="button"
+          onClick={handleSelectClick}
+          className="flex items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5 text-left text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-[#102238] dark:text-white dark:hover:bg-white/5"
+          aria-label={isSelected ? 'Désélectionner le média' : 'Sélectionner le média'}
+        >
+          <span
+            className={`flex h-4 w-4 items-center justify-center rounded border ${
+              isSelected
+                ? 'border-[#004A87] bg-[#004A87] text-white'
+                : 'border-[#94A3B8] bg-transparent text-transparent dark:border-white/50'
+            }`}
           >
+            {isSelected && <Check className="h-3 w-3" />}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#64748B] dark:text-white/60">
+            {isSelected ? 'Sélectionné' : 'Sélectionner'}
+          </span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          {onManualOrder && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onManualOrder(media.id);
+              }}
+              className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-white/95 p-2 text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-[#102238]/95 dark:text-white dark:hover:bg-white/5"
+              aria-label="Changer l'ordre d'affichage"
+              title="Changer l'ordre"
+            >
+              <GripVertical className="h-4 w-4" />
+            </button>
+          )}
+
+          {(onManualOrder || onRemove) && (
+            <div ref={menuRef} className="relative">
+              <button
+                ref={menuButtonRef}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMenuOpen((current) => !current);
+                }}
+                className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white/95 px-2.5 py-2 text-left shadow-sm text-[#00345F] transition-all duration-200 hover:bg-[#EAF4FB] hover:text-[#004A87] dark:border-white/10 dark:bg-[#102238]/95 dark:text-white dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2"
+                aria-label="Plus d'options"
+                aria-haspopup="menu"
+                aria-expanded={isMenuOpen}
+                aria-controls="media-menu"
+              >
+                <MoreVertical className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Actions</span>
+              </button>
+
+              {isMenuOpen && (
+                <div
+                  id="media-menu"
+                  role="menu"
+                  className="absolute right-0 top-full z-50 mt-2 w-52 rounded-2xl border border-[#E2E8F0] bg-white py-2 shadow-xl dark:border-white/10 dark:bg-[#0E1C2D]"
+                >
+                  {onManualOrder && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleManualOrderClick}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-[#64748B] transition-colors hover:bg-[#EAF4FB] hover:text-[#004A87] focus:outline-none focus-visible:bg-[#EAF4FB] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#FF8201] dark:text-white/80 dark:hover:bg-white/[0.06]"
+                    >
+                      <ArrowUpDown className="w-4 h-4 text-[#004A87] dark:text-[#9BCBFF]" />
+                      Changer l&apos;ordre
+                    </button>
+                  )}
+
+                  {onManualOrder && onRemove && <div className="mx-3 my-1.5 h-px bg-[#E2E8F0] dark:bg-white/10" />}
+
+                  {onRemove && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleRemove}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          handleRemove(e);
+                        }
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-500 dark:hover:bg-red-950/30"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Retirer
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="relative w-full aspect-4/3 overflow-hidden bg-[#F5F7FA] dark:bg-[#0E1C2D]">
+        {displayUrl ? (
+          <div className="absolute inset-0 h-full w-full transform transition-transform duration-700 ease-out group-hover:scale-105">
             <MediaViewport
-              mediaType={
-                media.type as typeof MEDIA_TYPES[number]
-              }
+              mediaType={media.type as typeof MEDIA_TYPES[number]}
               fullResUrl={displayUrl}
               thumbnailUrl={media.thumbnailUrl}
               caption={media.title}
               originalFilename={null}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
               priority={priority}
               onClick={onPreview}
             />
           </div>
         ) : (
-          <div
-            className="
-              absolute
-              inset-0
-              flex
-              flex-col
-              items-center
-              justify-center
-              text-[#64748B]
-              bg-[#EAF4FB]
-            "
-          >
-            <FileImage
-              className="
-                w-10
-                h-10
-                opacity-60
-                mb-2
-                text-[#004A87]
-              "
-              strokeWidth={1.5}
-            />
-
-            <span
-              className="
-                text-xs
-                font-medium
-                uppercase
-                tracking-widest
-                text-[#64748B]
-              "
-            >
-              Aperçu indisponible
-            </span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#EAF4FB] text-[#64748B]">
+            <FileImage className="mb-2 h-10 w-10 opacity-60 text-[#004A87]" strokeWidth={1.5} />
+            <span className="text-xs font-medium uppercase tracking-widest text-[#64748B]">Aperçu indisponible</span>
           </div>
         )}
 
-        {/* ===================================================
-            Type Badge
-        ==================================================== */}
-        <div
-          className="
-            absolute
-            top-3
-            right-3
-            z-20
-          "
-        >
+        <div className="absolute right-3 top-3 z-20">
           <span
-            className={`
-              inline-flex
-              items-center
-              gap-1.5
-              rounded-full
-              border
-              px-2.5
-              py-1.5
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-wider
-              shadow-sm
-              backdrop-blur-md
-              ${badge.className}
-            `}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md ${badge.className}`}
           >
             {badge.icon}
             {badge.label}
           </span>
         </div>
-
-        {/* ===================================================
-            Action Buttons Overlay
-        ==================================================== */}
-        {(onManualOrder || onRemove) && (
-          <div
-            className="
-              absolute
-              inset-0
-              flex
-              items-center
-              justify-center
-              gap-3
-              opacity-0
-              group-hover:opacity-100
-              transition-opacity
-              duration-300
-              bg-[#00345F]/20
-              pointer-events-none
-              z-30
-            "
-          >
-            {onManualOrder && (
-              <button
-                onClick={handleManualOrderClick}
-                className="
-                  pointer-events-auto
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-white/95
-                  backdrop-blur-md
-                  text-[#004A87]
-                  shadow-lg
-                  border
-                  border-white/70
-                  transition-all
-                  duration-200
-                  hover:bg-[#EAF4FB]
-                  hover:text-[#00345F]
-                  hover:scale-110
-                  active:scale-95
-                  focus:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-[#FF8201]
-                  focus-visible:ring-offset-2
-                "
-                aria-label="Changer l'ordre d'affichage"
-                title="Changer l'ordre"
-              >
-                <ArrowUpDown
-                  className="h-4 w-4"
-                  strokeWidth={2}
-                />
-              </button>
-            )}
-
-            {onRemove && (
-              <button
-                onClick={handleRemove}
-                className="
-                  pointer-events-auto
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-white/95
-                  backdrop-blur-md
-                  text-red-600
-                  shadow-lg
-                  border
-                  border-white/70
-                  transition-all
-                  duration-200
-                  hover:bg-red-50
-                  hover:text-red-700
-                  hover:scale-110
-                  active:scale-95
-                  focus:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-red-500
-                  focus-visible:ring-offset-2
-                "
-                aria-label="Supprimer le média"
-                title="Supprimer"
-              >
-                <Trash2
-                  className="h-4 w-4"
-                  strokeWidth={2}
-                />
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* =====================================================
-          Content Body
-      ====================================================== */}
-      <div
-        className="
-          flex
-          flex-col
-          p-4
-          bg-white
-          shrink-0
-          grow
-        "
-      >
-        <h3
-          className="
-            truncate
-            text-sm
-            font-bold
-            text-[#172033]
-            leading-snug
-            group-hover:text-[#004A87]
-            transition-colors
-            mb-3
-            tracking-tight
-          "
-          title={
-            media.title || 'Sans titre'
-          }
-        >
+      <div className="flex grow shrink-0 flex-col bg-white p-4 dark:bg-[#102238]">
+        <h3 className="truncate text-sm font-bold leading-snug text-[#172033] group-hover:text-[#004A87] dark:text-white">
           {media.title || 'Sans titre'}
         </h3>
 
-        <div
-          className="
-            mt-auto
-            pt-3
-            border-t
-            border-[#E2E8F0]
-            flex
-            items-center
-            justify-between
-          "
-        >
-          {resolution ? (
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-                text-[10px]
-                font-mono
-                font-medium
-                text-[#64748B]
-                uppercase
-                tracking-wider
-              "
-            >
-              <span
-                className="
-                  w-1.5
-                  h-1.5
-                  rounded-full
-                  bg-[#004A87]
-                "
-              />
-
-              {resolution}
-            </div>
-          ) : (
-            <div />
-          )}
-
-          <span
-            className="
-              text-[10px]
-              font-mono
-              font-bold
-              text-[#64748B]
-              uppercase
-              tracking-widest
-              opacity-60
-            "
-          >
-            #{media.id
-              .slice(0, 6)
-              .toUpperCase()}
-          </span>
-        </div>
+        {resolution && (
+          <p className="mt-2 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#64748B] dark:text-white/70">
+            {resolution}
+          </p>
+        )}
       </div>
     </article>
   );
 });
-
-MediaCard.displayName = 'MediaCard';
 
 export default MediaCard;
