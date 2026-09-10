@@ -747,21 +747,6 @@ export default function ManageGalleryClient({
       [updateMainFilters]
     );
 
-  const handleMainPageChange =
-    useCallback(
-      (page: number) => {
-        updateMainFilters({
-          page,
-        });
-
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        });
-      },
-      [updateMainFilters]
-    );
-
   // ==========================================================
   // Modal Filters
   // ==========================================================
@@ -895,16 +880,6 @@ export default function ManageGalleryClient({
             | 'oldest'
             | 'name',
           page: 1,
-        });
-      },
-      [updateModalFilters]
-    );
-
-  const handleModalPageChange =
-    useCallback(
-      (page: number) => {
-        updateModalFilters({
-          page,
         });
       },
       [updateModalFilters]

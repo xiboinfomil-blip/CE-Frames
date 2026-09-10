@@ -93,7 +93,11 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                   <HiMagnifyingGlass className="w-4 h-4" />
                 </div>
 
+                <label htmlFor="media-search" className="sr-only">
+                  Rechercher des éléments
+                </label>
                 <input
+                  id="media-search"
                   type="text"
                   placeholder="Rechercher des éléments..."
                   value={searchValue || ''}

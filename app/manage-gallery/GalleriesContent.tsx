@@ -175,20 +175,6 @@ export default function GalleriesContent({
     [updateSearchParams]
   );
 
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      updateSearchParams({
-        page: newPage.toString(),
-      });
-
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    },
-    [updateSearchParams]
-  );
-
   const handleResetFilters = useCallback(() => {
     setSearchInput('');
 
@@ -250,20 +236,6 @@ export default function GalleriesContent({
 
   const currentSort =
     filters.sortBy || 'newest';
-
-  const displayPage =
-    pagination.currentPage || 1;
-
-  const displayTotalPages =
-    pagination.totalPages || 1;
-
-  const hasNext =
-    pagination.hasNext ??
-    (displayPage < displayTotalPages);
-
-  const hasPrevious =
-    pagination.hasPrevious ??
-    (displayPage > 1);
 
   return (
     <div

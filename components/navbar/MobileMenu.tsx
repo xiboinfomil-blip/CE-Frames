@@ -2,6 +2,7 @@
 
 import { motion, Variants } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { NAV_ITEMS, AUTH_ITEMS } from '../../config/navbar';
 import { HiArrowRightOnRectangle } from 'react-icons/hi2';
@@ -215,6 +216,49 @@ export default function MobileMenu({
   setIsMenuOpen,
 }: MobileMenuProps) {
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    previousActiveElement.current = document.activeElement as HTMLElement;
+    const menu = menuRef.current;
+    const focusableSelector = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    const focusFirstItem = () => {
+      menu?.querySelector<HTMLElement>(focusableSelector)?.focus();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab' || !menu) return;
+      const focusable = Array.from(menu.querySelectorAll<HTMLElement>(focusableSelector));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const timer = window.setTimeout(focusFirstItem, 0);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('keydown', handleKeyDown);
+      previousActiveElement.current?.focus();
+    };
+  }, [setIsMenuOpen]);
 
   const closeMenu = () =>
     setIsMenuOpen(false);
@@ -298,6 +342,7 @@ export default function MobileMenu({
       animate="open"
       exit="closed"
       id="mobile-menu"
+      ref={menuRef}
       className="
         fixed inset-x-4 top-16 z-50 mt-2
         lg:hidden

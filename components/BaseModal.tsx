@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark } from 'react-icons/hi2';
 
@@ -56,6 +56,8 @@ export default function BaseModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
+  const titleId = `modal-title-${useId()}`;
+  const subtitleId = `modal-subtitle-${useId()}`;
 
   // ============================================================
   // MOUNT / UNMOUNT
@@ -185,9 +187,9 @@ export default function BaseModal({
         "
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
+        aria-labelledby={titleId}
         aria-describedby={
-          subtitle ? 'modal-subtitle' : undefined
+          subtitle ? subtitleId : undefined
         }
       >
         {/* ================================================== */}
@@ -307,7 +309,7 @@ export default function BaseModal({
           >
             <div className="pr-8">
               <h2
-                id="modal-title"
+                id={titleId}
                 className="
                   text-xl
                   font-bold
@@ -325,7 +327,7 @@ export default function BaseModal({
 
               {subtitle && (
                 <p
-                  id="modal-subtitle"
+                  id={subtitleId}
                   className="
                     mt-1.5
                     text-sm

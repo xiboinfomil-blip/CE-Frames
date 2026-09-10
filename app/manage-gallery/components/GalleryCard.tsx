@@ -86,18 +86,7 @@ export const GalleryCard = memo(function GalleryCard({
       title:
         '<span class="text-xl font-semibold text-[#172033]">Supprimer cet album CE ?</span>',
 
-      html: `
-        <div class="text-left mt-2">
-          <p class="text-[#64748B] text-base leading-relaxed">
-            Vous êtes sur le point de supprimer définitivement
-            l'album
-            <strong class="text-[#172033] font-semibold">
-              ${gallery.title}
-            </strong>.
-            Cette action est irréversible.
-          </p>
-        </div>
-      `,
+      text: `Vous êtes sur le point de supprimer définitivement l'album « ${gallery.title} ». Cette action est irréversible.`,
 
       icon: 'warning',
 

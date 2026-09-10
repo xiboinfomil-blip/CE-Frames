@@ -1,7 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
+
+const ACCESS_COOKIE_PREFIX = 'gallery-access-';
+const ACCESS_DURATION_SECONDS = 60 * 60 * 8;
+
+function accessSignature(galleryId: string, expiresAt: number) {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error('NEXTAUTH_SECRET is not configured');
+
+  return createHmac('sha256', secret)
+    .update(`${galleryId}:${expiresAt}`)
+    .digest('hex');
+}
+
+function hasGalleryAccess(request: NextRequest, galleryId: string) {
+  const value = request.cookies.get(`${ACCESS_COOKIE_PREFIX}${galleryId}`)?.value;
+  if (!value) return false;
+
+  const [expiresAtValue, signature] = value.split('.');
+  const expiresAt = Number(expiresAtValue);
+  if (!Number.isSafeInteger(expiresAt) || expiresAt < Math.floor(Date.now() / 1000) || !signature) {
+    return false;
+  }
+
+  const expected = accessSignature(galleryId, expiresAt);
+  const actualBuffer = Buffer.from(signature, 'hex');
+  const expectedBuffer = Buffer.from(expected, 'hex');
+
+  return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
+}
+
+async function hasManagementAccess() {
+  const session = await getServerSession(authOptions);
+  return session?.user?.role === 'admin' || session?.user?.role === 'editor';
+}
 
 export async function GET(
   request: NextRequest,
@@ -15,12 +50,19 @@ export async function GET(
       return NextResponse.json({ error: 'Gallery not found' }, { status: 404 });
     }
 
-    // Optional: Check if private and user is not owner
+    if (gallery.visibility === 'password_protected' && !hasGalleryAccess(request, id)) {
+      return NextResponse.json({ error: 'Password required' }, { status: 401 });
+    }
+
     if (gallery.visibility === 'private') {
        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    return NextResponse.json({ gallery });
+    const safeGallery = Object.fromEntries(
+      Object.entries(gallery).filter(([key]) => key !== 'passwordHash')
+    );
+
+    return NextResponse.json({ gallery: safeGallery });
   } catch (error) {
     console.error('Error fetching gallery:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -40,13 +82,28 @@ export async function POST(
       return NextResponse.json({ error: 'Password required' }, { status: 400 });
     }
 
+    const gallery = await galleryHelpers.findById(id);
+    if (!gallery || gallery.visibility !== 'password_protected') {
+      return NextResponse.json({ error: 'Gallery is not password protected' }, { status: 400 });
+    }
+
     const result = await galleryHelpers.verifyGalleryPassword(id, password);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error || 'Invalid password' }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true });
+    const expiresAt = Math.floor(Date.now() / 1000) + ACCESS_DURATION_SECONDS;
+    const response = NextResponse.json({ success: true });
+    response.cookies.set(`${ACCESS_COOKIE_PREFIX}${id}`, `${expiresAt}.${accessSignature(id, expiresAt)}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: ACCESS_DURATION_SECONDS,
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Error verifying password:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -58,9 +115,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    if (!(await hasManagementAccess())) {
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 
     const { id } = await params;
@@ -108,9 +164,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    if (!(await hasManagementAccess())) {
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 
     const { id } = await params;

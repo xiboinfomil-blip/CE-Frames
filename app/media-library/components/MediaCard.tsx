@@ -92,7 +92,7 @@ e.stopPropagation();
 
   const result = await Swal.fire({
     title: 'Delete Frame Asset?',
-    html: `<span class="text-[#64748B] text-sm">You are about to permanently remove <strong class="text-[#172033]">${media.originalFilename || 'this asset'}</strong> from CE Frames.</span>`,
+    text: `You are about to permanently remove “${media.originalFilename || 'this asset'}” from CE Frames.`,
     icon: 'warning',
     showCancelButton: true,
 

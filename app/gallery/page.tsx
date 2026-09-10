@@ -70,17 +70,13 @@ async function GalleryContent({ searchParams }: { searchParams: Promise<SearchPa
     console.error('Erreur lors de la récupération des galeries CE:', err);
   }
 
-  const totalPages = Math.ceil(result.total / limit);
-
   return (
     <GalleryClient 
       key={`${params.search || ''}-${params.sort || 'newest'}-${params.filter || 'all'}-${currentPage}`}
       initialGalleries={result.items} 
       totalGalleries={result.total}
       currentPage={currentPage}
-      totalPages={totalPages}
       hasNext={result.hasMore}
-      hasPrevious={currentPage > 1}
       initialParams={{
         search: params.search || '',
         sort: params.sort || 'newest',

@@ -42,6 +42,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+    if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await request.json();
     // ✅ 1. Destructure password and other missing fields

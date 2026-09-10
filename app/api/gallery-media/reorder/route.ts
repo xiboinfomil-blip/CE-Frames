@@ -11,6 +11,9 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { galleryId, orderedMediaIds } = await request.json();
 

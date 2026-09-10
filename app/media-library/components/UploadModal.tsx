@@ -229,6 +229,7 @@ const lngId = useId();
 
 const [isDragging, setIsDragging] = useState(false);
 const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+const [removeMetadata, setRemoveMetadata] = useState(false);
 const [currentIndex, setCurrentIndex] = useState(0);
 const [isLoading, setIsLoading] = useState(false);
 const [isCheckingStorage, setIsCheckingStorage] =
@@ -261,6 +262,7 @@ setUploadProgress(0);
 setCurrentUploadIndex(0);
 setRejectedFiles([]);
 setIsDragging(false);
+setRemoveMetadata(false);
 
 
 }, []);
@@ -743,16 +745,17 @@ try {
         format: cloudinaryResult.format,
         fileSize: cloudinaryResult.bytes,
         title: item.caption,
-        locationName:
-          item.locationName.trim() || null,
-        coordinates:
-          item.coordinates.lat &&
-          item.coordinates.lng
-            ? `${item.coordinates.lng},${item.coordinates.lat}`
-            : null,
+        locationName: removeMetadata
+          ? null
+          : item.locationName.trim() || null,
         originalFilename: item.file.name,
         mimeType: item.file.type,
-        exifData: item.exifData || null,
+        exifData: removeMetadata ? null : item.exifData || null,
+        coordinates: removeMetadata
+          ? null
+          : item.coordinates.lat && item.coordinates.lng
+            ? `${item.coordinates.lng},${item.coordinates.lat}`
+            : null,
       }),
     });
 
@@ -817,6 +820,7 @@ try {
 
 }, [
 mediaItems,
+removeMetadata,
 storageUsage,
 getCloudinarySignature,
 router,
@@ -914,6 +918,23 @@ return ( <BaseModal
 storage={storageUsage?.storage || null}
 isLoading={isCheckingStorage}
 />
+
+    <p
+      id="media-privacy-notice"
+      className="text-sm leading-relaxed text-[#64748B] dark:text-white/60"
+    >
+      Uploaded files may retain captions, camera details, and location metadata. Review this information before publishing a gallery.
+    </p>
+
+    <label className="flex items-start gap-3 text-sm text-[#172033] dark:text-white">
+      <input
+        type="checkbox"
+        checked={removeMetadata}
+        onChange={(event) => setRemoveMetadata(event.target.checked)}
+        className="mt-1 h-4 w-4 accent-[#004A87]"
+      />
+      <span>Remove camera and location metadata before saving</span>
+    </label>
 
 
     {/* Rejected Files */}
@@ -1073,6 +1094,7 @@ isLoading={isCheckingStorage}
         role="button"
         tabIndex={0}
         aria-label="Click or drag files to upload"
+        aria-describedby="media-privacy-notice"
       >
         <input
           type="file"

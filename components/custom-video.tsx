@@ -64,7 +64,8 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
       if (
         !hoverPlay ||
         !internalRef.current ||
-        hasError
+        hasError ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
       ) {
         return;
       }

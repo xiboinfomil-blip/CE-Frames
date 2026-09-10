@@ -68,7 +68,7 @@ const getBadgeStyle = () => {
 const badge = getBadgeStyle();
 const displayMedia = gallery.randomMedia;
 
-return (
+  return (
   <motion.div
     variants={itemVariants}
     whileHover={{ y: -6 }}
@@ -79,6 +79,15 @@ return (
     }}
     className="group relative flex flex-col h-full cursor-pointer select-none"
     onClick={() => onClick(gallery)}
+    role="link"
+    tabIndex={0}
+    aria-label={`Ouvrir la galerie ${gallery.title}`}
+    onKeyDown={(event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onClick(gallery);
+      }
+    }}
   >
     <div className="relative flex flex-col h-full bg-white dark:bg-[#102238] rounded-2xl shadow-lg shadow-[#00345F]/10 border border-[#E2E8F0] dark:border-white/10 overflow-hidden transition-all duration-300 group-hover:border-[#004A87]/30 group-hover:shadow-xl group-hover:shadow-[#00345F]/15">
       <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F7FA] dark:bg-[#0E1C2D]">

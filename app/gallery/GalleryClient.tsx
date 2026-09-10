@@ -14,9 +14,7 @@ interface GalleryClientProps {
   initialGalleries: GallerySummary[];
   totalGalleries: number;
   currentPage: number;
-  totalPages: number;
   hasNext: boolean;
-  hasPrevious: boolean;
   initialParams: {
     search: string;
     sort: string;
@@ -31,9 +29,7 @@ export default function GalleryClient({
   initialGalleries, 
   totalGalleries,
   currentPage,
-  totalPages,
   hasNext,
-  hasPrevious,
   initialParams 
 }: GalleryClientProps) {
   const router = useRouter();
@@ -107,11 +103,6 @@ export default function GalleryClient({
   const handleFilterChange = (newFilter: string) => {
     setFilterType(newFilter as FilterOption);
     updateUrl({ filter: newFilter, page: '1' });
-  };
-
-  const handlePageChange = (page: number) => {
-    updateUrl({ page: page.toString() });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGalleryClick = (gallery: GallerySummary) => {

@@ -275,27 +275,6 @@ export default function CreateGalleryModal({
     executeFetch,
   ]);
 
-  const handlePageChangeSafe = useCallback(
-    (page: number) => {
-      const newFilters = {
-        ...mediaFilters,
-        page,
-      };
-
-      setMediaFilters(newFilters);
-
-      if (isMediaPickerOpen && isEditMode) {
-        executeFetch(newFilters);
-      }
-    },
-    [
-      mediaFilters,
-      isMediaPickerOpen,
-      isEditMode,
-      executeFetch,
-    ]
-  );
-
   const loadMoreMedia = useCallback(() => {
     if (!pagination.hasNext || isFetchingMedia) return;
     const nextFilters = {

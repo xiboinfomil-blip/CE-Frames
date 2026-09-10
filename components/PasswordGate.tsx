@@ -79,6 +79,8 @@ export default function PasswordGate({
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Saisissez le mot de passe de la galerie"
               disabled={isLoading}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? 'gallery-password-error' : undefined}
               autoComplete="current-password"
               className={`
                 w-full pl-4 pr-12 py-3.5
@@ -101,7 +103,6 @@ export default function PasswordGate({
             <button
               type="button"
               onClick={() => setIsVisible(!isVisible)}
-              tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-[#64748B] hover:text-[#004A87] transition-colors rounded-lg"
               aria-label={isVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
             >
@@ -117,7 +118,7 @@ export default function PasswordGate({
           {error && (
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
               <HiExclamationCircle className="w-5 h-5 shrink-0 text-red-500" />
-              <p className="text-xs font-medium">{error}</p>
+              <p id="gallery-password-error" role="alert" className="text-xs font-medium">{error}</p>
             </div>
           )}
 

@@ -9,6 +9,9 @@ export async function GET(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   const { searchParams } = new URL(req.url);
   const galleryId = searchParams.get('galleryId');
@@ -58,6 +61,9 @@ export async function POST(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   const { galleryId, mediaId } = await req.json();
 
@@ -74,6 +80,9 @@ export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);

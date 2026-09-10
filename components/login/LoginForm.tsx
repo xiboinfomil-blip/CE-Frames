@@ -123,6 +123,8 @@ export default function LoginForm() {
               opacity: 1,
               scale: 1,
             }}
+            role="alert"
+            aria-live="assertive"
             className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-3 shadow-lg shadow-red-900/5"
           >
             <HiExclamationCircle className="shrink-0 mt-0.5 w-4 h-4 text-red-500" />

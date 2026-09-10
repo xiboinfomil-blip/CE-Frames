@@ -194,7 +194,7 @@ export default function PhotoGrid({
                 key={index}
                 role="button"
                 tabIndex={0}
-                aria-label="Voir le média"
+                aria-label={`Voir ${media.caption || media.originalFilename || `le média ${index + 1}`}`}
                 onKeyDown={(e) => {
                   if (
                     e.key === 'Enter' ||
