@@ -264,6 +264,7 @@ export default function ManageGalleryClient({
   const [isLoadingMain, setIsLoadingMain] = useState(false);
   const [isLoadingModal, setIsLoadingModal] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [availableLightboxIndex, setAvailableLightboxIndex] = useState(-1);
 
   const lightboxSlides = localMediaItems.map((item) => ({
     type: item.media.type === 'video' ? 'video' : 'image',
@@ -275,6 +276,18 @@ export default function ManageGalleryClient({
     alt: item.media.originalFilename || item.media.title || 'Média',
     title: item.media.originalFilename || item.media.title || undefined,
     mediaId: item.media.id,
+  })) as LightboxMediaItem[];
+
+  const availableLightboxSlides = localAvailableMedia.map((item) => ({
+    type: item.type === 'video' ? 'video' : 'image',
+    src: item.type === 'video' ? undefined : item.fullResUrl,
+    sources: item.type === 'video' ? [{ src: item.fullResUrl, type: 'video/mp4' as const }] : undefined,
+    poster: item.type === 'video' ? item.thumbnailUrl : undefined,
+    width: 1200,
+    height: 800,
+    alt: item.title || 'Média',
+    title: item.title || undefined,
+    mediaId: item.id,
   })) as LightboxMediaItem[];
 
   const loadMoreMain = useCallback(async () => {
@@ -1351,6 +1364,10 @@ export default function ManageGalleryClient({
           onAddMedia={
             handleAddMediaToGallery
           }
+          onPreview={(media) => {
+            const previewIndex = localAvailableMedia.findIndex((item) => item.id === media.id);
+            if (previewIndex >= 0) setAvailableLightboxIndex(previewIndex);
+          }}
         />
 
         <GalleryLightbox
@@ -1371,6 +1388,13 @@ export default function ManageGalleryClient({
             }
             return removed;
           }}
+        />
+
+        <GalleryLightbox
+          key={`available-${availableLightboxIndex}`}
+          index={availableLightboxIndex}
+          slides={availableLightboxSlides}
+          onClose={() => setAvailableLightboxIndex(-1)}
         />
       </div>
     </div>
