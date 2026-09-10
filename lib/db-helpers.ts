@@ -77,8 +77,12 @@ export const userHelpers = {
       columns: {
         id: true,
         username: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
+        isCeMember: true,
+        photoUrl: true,
         createdAt: true,
       },
     });
@@ -91,25 +95,48 @@ export const userHelpers = {
       where: searchTerm
         ? or(
             ilike(users.username, `%${searchTerm}%`),
+            ilike(users.firstName, `%${searchTerm}%`),
+            ilike(users.lastName, `%${searchTerm}%`),
             ilike(users.email, `%${searchTerm}%`)
           )
         : undefined,
       columns: {
         id: true,
         username: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
+        isCeMember: true,
+        photoUrl: true,
         createdAt: true,
       },
       orderBy: [asc(users.username)],
     });
   },
 
+  findCeMembers: async () => {
+    return await db.query.users.findMany({
+      where: eq(users.isCeMember, true),
+      columns: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+      },
+      orderBy: [asc(users.lastName), asc(users.firstName), asc(users.username)],
+    });
+  },
+
   create: async (data: {
     username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     role: UserRole;
+    isCeMember: boolean;
+    photoUrl: string | null;
   }) => {
     const passwordHash = await bcrypt.hash(data.password, 12);
 
@@ -117,15 +144,23 @@ export const userHelpers = {
       .insert(users)
       .values({
         username: data.username,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         passwordHash,
         role: data.role,
+        isCeMember: data.isCeMember,
+        photoUrl: data.photoUrl,
       })
       .returning({
         id: users.id,
         username: users.username,
+        firstName: users.firstName,
+        lastName: users.lastName,
         email: users.email,
         role: users.role,
+        isCeMember: users.isCeMember,
+        photoUrl: users.photoUrl,
         createdAt: users.createdAt,
       });
   },
@@ -134,9 +169,13 @@ export const userHelpers = {
     id: string,
     data: Partial<{
       username: string;
+      firstName: string;
+      lastName: string;
       email: string;
       password: string;
       role: UserRole;
+      isCeMember: boolean;
+      photoUrl: string | null;
     }>
   ) => {
     if (!isValidUUID(id)) return [];
@@ -144,8 +183,12 @@ export const userHelpers = {
     const values: Partial<typeof users.$inferInsert> = {};
 
     if (data.username !== undefined) values.username = data.username;
+    if (data.firstName !== undefined) values.firstName = data.firstName;
+    if (data.lastName !== undefined) values.lastName = data.lastName;
     if (data.email !== undefined) values.email = data.email;
     if (data.role !== undefined) values.role = data.role;
+    if (data.isCeMember !== undefined) values.isCeMember = data.isCeMember;
+    if (data.photoUrl !== undefined) values.photoUrl = data.photoUrl;
     if (data.password) {
       values.passwordHash = await bcrypt.hash(data.password, 12);
     }
@@ -161,8 +204,12 @@ export const userHelpers = {
       .returning({
         id: users.id,
         username: users.username,
+        firstName: users.firstName,
+        lastName: users.lastName,
         email: users.email,
         role: users.role,
+        isCeMember: users.isCeMember,
+        photoUrl: users.photoUrl,
         createdAt: users.createdAt,
       });
   },

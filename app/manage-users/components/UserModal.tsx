@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { FormEvent, useState } from 'react';
-import { HiAtSymbol, HiKey, HiUser } from 'react-icons/hi2';
+import { HiAtSymbol, HiKey, HiPhoto, HiUser } from 'react-icons/hi2';
 
 import BaseModal from '@/components/BaseModal';
 import { CustomButton } from '@/components/ui/CustomButton';
@@ -11,8 +12,12 @@ import { USER_ROLES, type UserRole } from '@/db/schema';
 export interface ManagedUser {
   id: string;
   username: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string;
   role: UserRole;
+  isCeMember: boolean;
+  photoUrl: string | null;
   createdAt: Date | string;
 }
 
@@ -37,11 +42,39 @@ export default function UserModal({
 }: UserModalProps) {
   const isEditMode = Boolean(initialUser);
   const [username, setUsername] = useState(initialUser?.username || '');
+  const [firstName, setFirstName] = useState(initialUser?.firstName || '');
+  const [lastName, setLastName] = useState(initialUser?.lastName || '');
   const [email, setEmail] = useState(initialUser?.email || '');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>(initialUser?.role || 'editor');
+  const [isCeMember, setIsCeMember] = useState(initialUser?.isCeMember || false);
+  const [photoUrl] = useState(initialUser?.photoUrl || '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  const uploadPhoto = async (file: File) => {
+    if (!file.type.startsWith('image/')) throw new Error('La photo doit être une image.');
+    if (file.size > 5 * 1024 * 1024) throw new Error('La photo ne doit pas dépasser 5 Mo.');
+
+    const signatureResponse = await fetch('/api/sign-user-photo', { method: 'POST' });
+    const signatureData = await signatureResponse.json();
+    if (!signatureResponse.ok) throw new Error(signatureData.error || 'Préparation de la photo impossible.');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('signature', signatureData.signature);
+    formData.append('timestamp', String(signatureData.timestamp));
+    formData.append('api_key', signatureData.apiKey);
+    formData.append('folder', signatureData.folder);
+
+    const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    const uploadData = await uploadResponse.json();
+    if (!uploadResponse.ok) throw new Error(uploadData.error?.message || 'Envoi de la photo impossible.');
+    return uploadData.secure_url as string;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -49,6 +82,8 @@ export default function UserModal({
     setIsSaving(true);
 
     try {
+      const selectedPhoto = (event.currentTarget.elements.namedItem('user-photo') as HTMLInputElement)?.files?.[0];
+      const uploadedPhotoUrl = selectedPhoto ? await uploadPhoto(selectedPhoto) : photoUrl || null;
       const response = await fetch(
         initialUser ? `/api/users/${initialUser.id}` : '/api/users',
         {
@@ -56,9 +91,13 @@ export default function UserModal({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             username,
+            firstName,
+            lastName,
             email,
             password: password || undefined,
             role,
+            isCeMember,
+            photoUrl: uploadedPhotoUrl,
           }),
         }
       );
@@ -97,6 +136,24 @@ export default function UserModal({
       )}
     >
       <form id="user-form" onSubmit={handleSubmit} className="space-y-5">
+        <CustomTextfield
+          label="Prénom"
+          value={firstName}
+          onChange={(event) => setFirstName(event.target.value)}
+          placeholder="ex. Marie"
+          autoComplete="given-name"
+          leftIcon={<HiUser className="h-4 w-4" />}
+          required
+        />
+        <CustomTextfield
+          label="Nom"
+          value={lastName}
+          onChange={(event) => setLastName(event.target.value)}
+          placeholder="ex. Dupont"
+          autoComplete="family-name"
+          leftIcon={<HiUser className="h-4 w-4" />}
+          required
+        />
         <CustomTextfield
           label="Nom d’utilisateur"
           value={username}
@@ -142,6 +199,18 @@ export default function UserModal({
               </option>
             ))}
           </select>
+        </div>
+        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[#E2E8F0] px-4 py-3 text-sm font-medium dark:border-white/10">
+          <input type="checkbox" checked={isCeMember} onChange={(event) => setIsCeMember(event.target.checked)} className="h-4 w-4 accent-[#FF8201]" />
+          Afficher cette personne comme membre du CE sur la page À propos
+        </label>
+        <div className="space-y-2">
+          <label htmlFor="user-photo" className="pl-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#64748B]">Photo du membre du CE</label>
+          <div className="flex items-center gap-4">
+            {photoUrl ? <Image src={photoUrl} alt="Aperçu" width={64} height={64} className="h-16 w-16 rounded-full object-cover" /> : <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF4FB] text-[#004A87] dark:bg-white/10 dark:text-white"><HiPhoto className="h-6 w-6" /></div>}
+            <input id="user-photo" name="user-photo" type="file" accept="image/*" className="block w-full text-sm text-[#64748B] file:mr-3 file:rounded-lg file:border-0 file:bg-[#EAF4FB] file:px-3 file:py-2 file:font-semibold file:text-[#004A87]" />
+          </div>
+          <p className="text-xs text-[#64748B]">Une seule photo, 5 Mo maximum.</p>
         </div>
         {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-500/10 dark:text-red-300">{error}</p>}
       </form>

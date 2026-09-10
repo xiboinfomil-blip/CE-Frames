@@ -153,7 +153,8 @@ export default function UsersContent({ initialUsers, currentUserId }: UsersConte
                 {users.map((user) => (
                   <tr key={user.id} className="transition-colors hover:bg-[#F5F7FA]/80 dark:hover:bg-white/[0.03]">
                     <td className="px-5 py-4">
-                      <div className="font-semibold">{user.username}{user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}</div>
+                      <div className="font-semibold">{user.firstName} {user.lastName}{user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}</div>
+                      <div className="mt-1 text-xs text-[#64748B] dark:text-white/40">{user.username}</div>
                       <div className="mt-1 text-sm text-[#64748B] dark:text-white/50">{user.email}</div>
                     </td>
                     <td className="px-5 py-4">

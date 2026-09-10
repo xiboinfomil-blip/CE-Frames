@@ -37,12 +37,20 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const username = typeof body.username === 'string' ? body.username.trim() : '';
+    const firstName = typeof body.firstName === 'string' ? body.firstName.trim() : '';
+    const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const password = typeof body.password === 'string' ? body.password : '';
     const role = body.role || 'editor';
+    const isCeMember = body.isCeMember === true;
+    const photoUrl = typeof body.photoUrl === 'string' && body.photoUrl.trim() ? body.photoUrl.trim() : null;
 
     if (username.length < 2 || username.length > 50) {
       return NextResponse.json({ error: 'Le nom doit contenir entre 2 et 50 caractères.' }, { status: 400 });
+    }
+
+    if (firstName.length < 2 || firstName.length > 100 || lastName.length < 2 || lastName.length > 100) {
+      return NextResponse.json({ error: 'Le prénom et le nom doivent contenir entre 2 et 100 caractères.' }, { status: 400 });
     }
 
     if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -57,7 +65,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Rôle invalide.' }, { status: 400 });
     }
 
-    const [user] = await userHelpers.create({ username, email, password, role });
+    const [user] = await userHelpers.create({ username, firstName, lastName, email, password, role, isCeMember, photoUrl });
     return NextResponse.json({ user }, { status: 201 });
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {

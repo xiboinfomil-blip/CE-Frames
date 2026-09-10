@@ -8,6 +8,7 @@ import {
   date,
   integer,
   real,
+  boolean,
   jsonb,
   point,
   primaryKey,
@@ -48,9 +49,13 @@ export const userRoleEnum = pgEnum('user_role', [...USER_ROLES]);
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   username: varchar('username', { length: 50 }).unique().notNull(),
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
   email: varchar('email', { length: 255 }).unique().notNull(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   role: userRoleEnum('role').default('editor').notNull(),
+  isCeMember: boolean('is_ce_member').default(false).notNull(),
+  photoUrl: varchar('photo_url', { length: 500 }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

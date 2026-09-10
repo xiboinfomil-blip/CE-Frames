@@ -49,9 +49,13 @@ export async function PATCH(request: Request, context: RouteContext) {
     const body = await request.json();
     const updates: {
       username?: string;
+      firstName?: string;
+      lastName?: string;
       email?: string;
       password?: string;
       role?: UserRole;
+      isCeMember?: boolean;
+      photoUrl?: string | null;
     } = {};
 
     if (body.username !== undefined) {
@@ -60,6 +64,16 @@ export async function PATCH(request: Request, context: RouteContext) {
         return NextResponse.json({ error: 'Le nom doit contenir entre 2 et 50 caractères.' }, { status: 400 });
       }
       updates.username = username;
+    }
+
+    for (const field of ['firstName', 'lastName'] as const) {
+      if (body[field] !== undefined) {
+        const value = typeof body[field] === 'string' ? body[field].trim() : '';
+        if (value.length < 2 || value.length > 100) {
+          return NextResponse.json({ error: 'Le prénom et le nom doivent contenir entre 2 et 100 caractères.' }, { status: 400 });
+        }
+        updates[field] = value;
+      }
     }
 
     if (body.email !== undefined) {
@@ -82,6 +96,20 @@ export async function PATCH(request: Request, context: RouteContext) {
         return NextResponse.json({ error: 'Rôle invalide.' }, { status: 400 });
       }
       updates.role = body.role;
+    }
+
+    if (body.isCeMember !== undefined) {
+      if (typeof body.isCeMember !== 'boolean') {
+        return NextResponse.json({ error: 'Statut de membre invalide.' }, { status: 400 });
+      }
+      updates.isCeMember = body.isCeMember;
+    }
+
+    if (body.photoUrl !== undefined) {
+      if (body.photoUrl !== null && (typeof body.photoUrl !== 'string' || body.photoUrl.length > 500)) {
+        return NextResponse.json({ error: 'Photo invalide.' }, { status: 400 });
+      }
+      updates.photoUrl = body.photoUrl || null;
     }
 
     if (updates.role && updates.role !== 'admin' && !(await hasAnotherAdmin(id))) {
