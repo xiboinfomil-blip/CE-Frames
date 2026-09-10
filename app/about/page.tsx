@@ -168,8 +168,8 @@ export default function AboutPage() {
                     md:text-xl
                   "
                 >
-                  CE Frames est la galerie photo dédiée aux événements
-                  du Comité d&apos;Entreprise d&apos;Infomil Mauritius.
+                  CE Frames est la galerie photo interne du Comité
+                  d&apos;Entreprise d&apos;Infomil Mauritius.
                 </p>
 
                 <p
@@ -180,10 +180,9 @@ export default function AboutPage() {
                     dark:text-white/50
                   "
                 >
-                  Fêtes de fin d&apos;année, happy hours, petits-déjeuners,
-                  journées d&apos;équipe ou événements spéciaux — nous
-                  rassemblons les souvenirs qui font vivre ces moments
-                  ensemble.
+                  Les galeries rassemblent les photos des événements passés
+                  pour permettre aux collaborateurs de les retrouver,
+                  les consulter et les partager.
                 </p>
 
                 {/* Small brand detail */}
@@ -353,9 +352,8 @@ export default function AboutPage() {
                 "
               >
                 CE Frames a été pensé comme un espace simple pour
-                retrouver, découvrir et partager les photos prises
-                lors des événements organisés par le Comité
-                d&apos;Entreprise d&apos;Infomil Mauritius.
+                retrouver, découvrir et partager les photos des événements
+                du Comité d&apos;Entreprise d&apos;Infomil Mauritius.
               </p>
 
               <p
@@ -685,7 +683,7 @@ export default function AboutPage() {
                 text-[#FFB15C]
               "
             >
-              Nos événements
+              L&apos;archive du CE
             </p>
 
             <h2
@@ -695,7 +693,7 @@ export default function AboutPage() {
                 md:text-6xl
               "
             >
-              CHAQUE ÉVÉNEMENT
+              CHAQUE GALERIE
               <br />
 
               <span className="text-white/30">
@@ -710,8 +708,8 @@ export default function AboutPage() {
                 text-white/60
               "
             >
-              Des petits moments du quotidien aux grandes célébrations,
-              chaque événement mérite d&apos;être immortalisé.
+              Des moments du quotidien aux grandes célébrations,
+              chaque galerie conserve une trace de la vie collective.
             </p>
 
             <div

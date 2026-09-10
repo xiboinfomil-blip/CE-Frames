@@ -59,7 +59,7 @@ const CustomImage = ({
       ) : (
         <Image
           src={currentSrc}
-          alt={alt || 'Corporate event image'}
+          alt={alt || 'Photo d’un événement du CE'}
           fill
           className={`object-cover transition-opacity duration-500 ease-in-out ${
             isLoaded ? 'opacity-100' : 'opacity-0'

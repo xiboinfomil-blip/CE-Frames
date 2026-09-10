@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CE Frames",
-  description: "Photographie d'événements et galeries numériques pour les évènements du Comité d’Entreprise.",
+  description: "La galerie photo interne du Comité d’Entreprise d’Infomil Mauritius pour consulter et partager les souvenirs des événements passés.",
 };
 
 export default function RootLayout({

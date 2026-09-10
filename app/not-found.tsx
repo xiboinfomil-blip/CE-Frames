@@ -57,7 +57,7 @@ export default function NotFound() {
 
       {/* Footer Branding */}
       <footer className="absolute bottom-8 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] animate-fade-in" style={{ animationDelay: '500ms' }}>
-        CE Frames &copy; {new Date().getFullYear()} • Photographie d’événements
+        CE Frames &copy; {new Date().getFullYear()} • Galerie photo du CE
       </footer>
     </div>
   );

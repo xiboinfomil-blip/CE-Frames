@@ -7,7 +7,7 @@ export function useNavData() {
   // Note: The structure must include the `dataKey` ('imagesFor'), `loading`, and `error` 
   // to match what the Navbar's `getItemData` helper expects.
   const imageCategories = {
-    imagesFor: ['Team Events', 'Celebrations', 'Conferences', 'Family Days'],
+    imagesFor: ['Galeries récentes', 'Célébrations', 'Vie du CE'],
     loading: false,
     error: null,
   };

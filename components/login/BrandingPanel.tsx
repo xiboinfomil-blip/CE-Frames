@@ -48,7 +48,7 @@ export default function BrandingPanel() {
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00345F]/80 backdrop-blur-md border border-white/15 text-white text-[10px] font-bold uppercase tracking-[0.15em] mb-8 shadow-md shadow-[#00345F]/40">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF8201] animate-pulse" />
-            <span>CE Coverage Studio</span>
+            <span>Galerie interne du CE</span>
           </div>
 
           {/* Brand Heading */}
@@ -60,7 +60,7 @@ export default function BrandingPanel() {
           </h1>
 
           <p className="text-white/75 font-medium text-base sm:text-lg tracking-wide">
-            Comité d&apos;Entreprise Event Photography
+            Galerie photo du Comité d&apos;Entreprise
           </p>
         </motion.div>
 
@@ -79,8 +79,8 @@ export default function BrandingPanel() {
           <div className="h-px w-16 bg-gradient-to-r from-[#FF8201] via-[#FF8201]/40 to-transparent" />
 
           <p className="text-white/70 text-sm leading-relaxed max-w-xs font-normal">
-            Secure access for managing event galleries, CE collections,
-            and employee memories.
+            Accès sécurisé pour gérer les galeries, les collections du CE
+            et les souvenirs des collaborateurs.
           </p>
 
           <div className="flex items-center gap-3 text-white/50 text-[10px] font-bold uppercase tracking-[0.15em]">

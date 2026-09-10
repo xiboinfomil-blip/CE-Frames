@@ -23,7 +23,7 @@ export const EmptyState = memo(({ onCreateClick }: EmptyStateProps) => (
       </h3>
       
       <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed tracking-wide mb-10">
-        Partagez les événements, sorties et activités du CE en créant votre premier album.
+        Archivez et partagez les photos des activités du CE en créant votre premier album.
       </p>
       
       <CustomButton 

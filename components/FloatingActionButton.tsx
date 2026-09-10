@@ -15,7 +15,7 @@ interface FloatingActionButtonProps {
 
 const FloatingActionButton = memo(function FloatingActionButton({
   onClick,
-  label = 'Ajouter un événement',
+  label = 'Ajouter une galerie',
   icon = <HiPlus className="w-6 h-6 sm:w-7 sm:h-7" />,
   position = 'bottom-right',
   variant = 'circle',

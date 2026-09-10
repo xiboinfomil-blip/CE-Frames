@@ -447,7 +447,7 @@ export default function Home({
                 text-white/60
               "
             >
-              Les dernières galeries d’événements
+              Les dernières galeries du Comité d&apos;Entreprise
               apparaîtront ici dès leur publication.
             </p>
           </div>
@@ -522,7 +522,7 @@ export default function Home({
                       md:text-5xl
                     "
                   >
-                    DERNIERS ÉVÉNEMENTS
+                    GALERIES RÉCENTES
                   </h2>
                 </div>
 

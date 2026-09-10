@@ -6,7 +6,6 @@ import {
   FaInstagram,
   FaFacebook,
   FaTiktok,
-  FaEnvelope,
   FaLinkedin,
 } from 'react-icons/fa';
 
@@ -33,11 +32,6 @@ export default function Footer() {
       name: 'LinkedIn',
       href: 'https://www.linkedin.com/',
       icon: <FaLinkedin />,
-    },
-    {
-      name: 'Email',
-      href: 'mailto:contact@ceframes.com',
-      icon: <FaEnvelope />,
     },
   ];
 
@@ -134,8 +128,9 @@ export default function Footer() {
                 dark:text-white/50
               "
             >
-              Event moments captured for the Comité d&apos;Entreprise
-              of Infomil Mauritius.
+              La galerie photo interne du Comité d&apos;Entreprise
+              d&apos;Infomil Mauritius pour consulter et partager les
+              souvenirs des événements passés.
             </p>
 
             {/* Brand accent */}
