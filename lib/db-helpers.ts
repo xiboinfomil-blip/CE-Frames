@@ -19,6 +19,7 @@ import {
   media,
   galleries,
   galleryMedia,
+  type UserRole,
 } from '@/db/schema';
 
 import {
@@ -66,6 +67,113 @@ export const userHelpers = {
     return await db.query.users.findFirst({
       where: eq(users.email, email),
     });
+  },
+
+  findById: async (id: string) => {
+    if (!isValidUUID(id)) return undefined;
+
+    return await db.query.users.findFirst({
+      where: eq(users.id, id),
+      columns: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+  },
+
+  findAll: async (search?: string) => {
+    const searchTerm = search?.trim();
+
+    return await db.query.users.findMany({
+      where: searchTerm
+        ? or(
+            ilike(users.username, `%${searchTerm}%`),
+            ilike(users.email, `%${searchTerm}%`)
+          )
+        : undefined,
+      columns: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: [asc(users.username)],
+    });
+  },
+
+  create: async (data: {
+    username: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  }) => {
+    const passwordHash = await bcrypt.hash(data.password, 12);
+
+    return await db
+      .insert(users)
+      .values({
+        username: data.username,
+        email: data.email,
+        passwordHash,
+        role: data.role,
+      })
+      .returning({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+      });
+  },
+
+  update: async (
+    id: string,
+    data: Partial<{
+      username: string;
+      email: string;
+      password: string;
+      role: UserRole;
+    }>
+  ) => {
+    if (!isValidUUID(id)) return [];
+
+    const values: Partial<typeof users.$inferInsert> = {};
+
+    if (data.username !== undefined) values.username = data.username;
+    if (data.email !== undefined) values.email = data.email;
+    if (data.role !== undefined) values.role = data.role;
+    if (data.password) {
+      values.passwordHash = await bcrypt.hash(data.password, 12);
+    }
+
+    if (Object.keys(values).length === 0) {
+      return [];
+    }
+
+    return await db
+      .update(users)
+      .set(values)
+      .where(eq(users.id, id))
+      .returning({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+      });
+  },
+
+  delete: async (id: string) => {
+    if (!isValidUUID(id)) return [];
+
+    return await db
+      .delete(users)
+      .where(eq(users.id, id))
+      .returning({ id: users.id });
   },
 };
 
@@ -584,6 +692,7 @@ getLatestPublic: async (limit = 3) => {
     const enrichedItems =
       items.map((gallery) => {
         const randomMedia =
+          gallery.coverMedia ||
           mediaByGallery.get(
             gallery.id
           ) || null;
@@ -822,6 +931,7 @@ getLatestPublic: async (limit = 3) => {
     const enrichedItems =
       items.map((gallery) => {
         const randomMedia =
+          gallery.coverMedia ||
           mediaByGallery.get(
             gallery.id
           ) || null;

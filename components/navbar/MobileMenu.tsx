@@ -30,6 +30,7 @@ interface NavItem {
   mobile: boolean;
   mobileGroup?: 'main' | 'extra';
   auth?: 'authenticated' | 'guest' | 'any';
+  roles?: string[];
   activePaths?: string[];
   type?: 'link' | 'gallery' | 'category-list';
   mobileCategoryList?: CategoryListConfig;
@@ -37,6 +38,7 @@ interface NavItem {
 
 interface MobileMenuProps {
   authenticated: boolean;
+  role?: string;
   imagesFor: Category[] | null | undefined;
   loading: boolean;
   error: string | null | undefined;
@@ -205,6 +207,7 @@ const CategoryLink = ({
 
 export default function MobileMenu({
   authenticated,
+  role,
   imagesFor,
   loading,
   error,
@@ -236,6 +239,10 @@ export default function MobileMenu({
       item.auth === 'guest' &&
       authenticated
     ) {
+      return false;
+    }
+
+    if (item.roles && (!role || !item.roles.includes(role))) {
       return false;
     }
 

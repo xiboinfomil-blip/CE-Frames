@@ -11,6 +11,7 @@ export function useAuthCheck() {
 
   return { 
     isAuthenticated, 
-    isLoading 
+    isLoading,
+    role: session?.user?.role,
   };
 }

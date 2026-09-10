@@ -28,6 +28,7 @@ interface NavItem {
   mobile: boolean;
   mobileGroup?: 'main' | 'extra';
   auth?: 'authenticated' | 'guest' | 'any';
+  roles?: string[];
   activePaths?: string[];
   type: 'link' | 'gallery' | 'category-list';
   dataSource?: string;
@@ -174,7 +175,7 @@ const DesktopLink = ({
 };
 
 export default function Navbar() {
-  const { isAuthenticated, isLoading } = useAuthCheck();
+  const { isAuthenticated, isLoading, role } = useAuthCheck();
   const navData = useNavData() as NavData;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -268,6 +269,10 @@ export default function Navbar() {
         item.auth === 'guest' &&
         isAuthenticated
       ) {
+        return false;
+      }
+
+      if (item.roles && (!role || !item.roles.includes(role))) {
         return false;
       }
 
@@ -723,6 +728,7 @@ export default function Navbar() {
         {isMenuOpen && (
           <MobileMenu
             authenticated={isAuthenticated}
+            role={role}
             imagesFor={mobileData.categories}
             loading={mobileData.loading}
             error={mobileData.error}

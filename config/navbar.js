@@ -53,6 +53,18 @@ export const NAV_ITEMS = [
     type: 'link',
     icon: FaPhotoVideo,
   },
+  {
+    id: 'manage-users',
+    label: 'Gérer les utilisateurs',
+    href: '/manage-users',
+    desktop: true,
+    mobile: true,
+    mobileGroup: 'extra',
+    auth: 'authenticated',
+    roles: ['admin'],
+    type: 'link',
+    activePaths: ['/manage-users'],
+  },
 ];
 
 export const AUTH_ITEMS = {

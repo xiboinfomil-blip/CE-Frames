@@ -26,16 +26,19 @@ export const VISIBILITY_STATUSES = [
   'private'
 ] as const;
 export const LAYOUT_STYLES = ['column', 'row', 'masonry'] as const;
+export const USER_ROLES = ['admin', 'editor', 'viewer'] as const;
 
 // Derive TypeScript types from the constants
 export type MediaType = typeof MEDIA_TYPES[number];
 export type VisibilityStatus = typeof VISIBILITY_STATUSES[number];
 export type LayoutStyle = typeof LAYOUT_STYLES[number];
+export type UserRole = typeof USER_ROLES[number];
 
 // Derive Drizzle enums from the same constants
 export const mediaTypeEnum = pgEnum('media_type', [...MEDIA_TYPES]);
 export const visibilityEnum = pgEnum('visibility_status', [...VISIBILITY_STATUSES]);
 export const layoutStyleEnum = pgEnum('layout_style', [...LAYOUT_STYLES]);
+export const userRoleEnum = pgEnum('user_role', [...USER_ROLES]);
 
 // ==========================================
 // 2. TABLES
@@ -47,6 +50,7 @@ export const users = pgTable('users', {
   username: varchar('username', { length: 50 }).unique().notNull(),
   email: varchar('email', { length: 255 }).unique().notNull(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  role: userRoleEnum('role').default('editor').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
