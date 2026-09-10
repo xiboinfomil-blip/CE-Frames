@@ -229,7 +229,7 @@ const MediaViewport = memo(function MediaViewport({
               absolute
               inset-x-0
               bottom-0
-              p-3
+              p-3 pt-10
 
               bg-gradient-to-t
               from-[#00345F]/95
@@ -263,14 +263,17 @@ const MediaViewport = memo(function MediaViewport({
             {showFilename && originalFilename && (
               <p
                 className={`
-                  truncate
-                  text-white/70
+                  max-w-full
+                  break-words
+                  leading-snug
+                  text-white/75
                   ${
                     showTitle && caption
-                      ? 'mt-0.5 text-[10px]'
+                      ? 'mt-1 text-[11px]'
                       : 'text-xs font-medium'
                   }
                 `}
+                title={originalFilename}
               >
                 {originalFilename}
               </p>

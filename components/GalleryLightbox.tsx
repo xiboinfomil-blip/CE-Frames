@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 
 import Lightbox, { Slide } from 'yet-another-react-lightbox';
 
@@ -20,6 +21,7 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 export type MediaItem = Slide;
 
 type ExtendedSlide = MediaItem & {
+  mediaId?: string;
   src?: string;
   sources?: {
     src: string;
@@ -37,6 +39,7 @@ interface GalleryLightboxProps {
   index: number;
   slides: MediaItem[];
   onClose: () => void;
+  onDelete?: (slide: MediaItem) => Promise<boolean>;
 
   /**
    * Optional theme override:
@@ -55,8 +58,11 @@ export default function GalleryLightbox({
   index,
   slides,
   onClose,
+  onDelete,
   theme = 'dark',
 }: GalleryLightboxProps) {
+  const [currentIndex, setCurrentIndex] = useState(index);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // ---------------------------------------------------
   // Normalize mixed image / video slides
@@ -144,10 +150,12 @@ export default function GalleryLightbox({
   return (
     <>
       <Lightbox
-        index={index}
+        key={index}
+        index={currentIndex}
         slides={normalizedSlides}
         open={index >= 0}
         close={onClose}
+        on={{ view: ({ index: viewedIndex }) => setCurrentIndex(viewedIndex) }}
         plugins={[
           Zoom,
           Captions,
@@ -205,6 +213,24 @@ export default function GalleryLightbox({
           },
         }}
       />
+
+      {onDelete && normalizedSlides[currentIndex] && (
+        <button
+          type="button"
+          onClick={async () => {
+            setIsDeleting(true);
+            const deleted = await onDelete(normalizedSlides[currentIndex]);
+            setIsDeleting(false);
+            if (deleted) onClose();
+          }}
+          disabled={isDeleting}
+          className="fixed bottom-5 left-1/2 z-[10000] flex -translate-x-1/2 items-center gap-2 rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-xl transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
+          aria-label="Supprimer le média actuel"
+        >
+          <Trash2 className="h-4 w-4" />
+          {isDeleting ? 'Suppression…' : 'Supprimer'}
+        </button>
+      )}
 
       {/* ------------------------------------------------
           CE Frames YARL Theme

@@ -14,6 +14,7 @@ import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import CardGrid from '@/components/displayGrid';
 import { CustomButton } from '@/components/ui/CustomButton';
+import GalleryLightbox, { type MediaItem as LightboxMediaItem } from '@/components/GalleryLightbox';
 
 import {
   FolderOpen,
@@ -59,6 +60,7 @@ interface MediaItem {
     thumbnailUrl: string;
     fullResUrl: string;
     title?: string | null;
+    originalFilename?: string | null;
     type: string;
     width?: number | null;
     height?: number | null;
@@ -147,11 +149,13 @@ function SortableMediaCard({
   index,
   onRemove,
   onManualOrder,
+  onPreview,
 }: {
   item: MediaItem;
   index: number;
   onRemove: (id: string) => void;
   onManualOrder: (id: string) => void;
+  onPreview: () => void;
 }) {
   const {
     attributes,
@@ -218,6 +222,7 @@ function SortableMediaCard({
         media={item.media}
         onRemove={onRemove}
         onManualOrder={onManualOrder}
+        onPreview={onPreview}
         priority={index < 6}
       />
     </div>
@@ -258,6 +263,19 @@ export default function ManageGalleryClient({
   const [modalHasMore, setModalHasMore] = useState(modalPagination.hasNext);
   const [isLoadingMain, setIsLoadingMain] = useState(false);
   const [isLoadingModal, setIsLoadingModal] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+  const lightboxSlides = localMediaItems.map((item) => ({
+    type: item.media.type === 'video' ? 'video' : 'image',
+    src: item.media.type === 'video' ? undefined : item.media.fullResUrl,
+    sources: item.media.type === 'video' ? [{ src: item.media.fullResUrl, type: 'video/mp4' as const }] : undefined,
+    poster: item.media.type === 'video' ? item.media.thumbnailUrl : undefined,
+    width: item.media.width || 800,
+    height: item.media.height || 600,
+    alt: item.media.originalFilename || item.media.title || 'Média',
+    title: item.media.originalFilename || item.media.title || undefined,
+    mediaId: item.media.id,
+  })) as LightboxMediaItem[];
 
   const loadMoreMain = useCallback(async () => {
     if (isLoadingMain || !mainHasMore) return;
@@ -937,7 +955,7 @@ export default function ManageGalleryClient({
         if (
           !result.isConfirmed
         ) {
-          return;
+          return false;
         }
 
         try {
@@ -956,6 +974,7 @@ export default function ManageGalleryClient({
           }
 
           router.refresh();
+          return true;
         } catch (error) {
           console.error(
             'Échec du retrait du média',
@@ -979,6 +998,7 @@ export default function ManageGalleryClient({
                 'px-5 py-2.5 rounded-xl text-sm font-semibold',
             },
           });
+          return false;
         }
       },
       [gallery.id, router]
@@ -1160,6 +1180,7 @@ export default function ManageGalleryClient({
                     onManualOrder={
                       handleManualOrder
                     }
+                    onPreview={() => setLightboxIndex(index)}
                   />
                 )}
                 getKey={(
@@ -1329,6 +1350,16 @@ export default function ManageGalleryClient({
           onAddMedia={
             handleAddMediaToGallery
           }
+        />
+
+        <GalleryLightbox
+          index={lightboxIndex}
+          slides={lightboxSlides}
+          onClose={() => setLightboxIndex(-1)}
+          onDelete={async (slide) => {
+            const mediaId = (slide as LightboxMediaItem & { mediaId?: string }).mediaId;
+            return mediaId ? handleRemoveMedia(mediaId) : false;
+          }}
         />
       </div>
     </div>

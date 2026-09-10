@@ -43,6 +43,7 @@ export async function GET(req: Request) {
         thumbnailUrl: item.media.thumbnailUrl,
         fullResUrl: item.media.fullResUrl || '',
         title: item.media.originalFilename || item.media.caption || 'Sans titre',
+        originalFilename: item.media.originalFilename,
         type: item.media.type,
         width: item.media.width,
         height: item.media.height,

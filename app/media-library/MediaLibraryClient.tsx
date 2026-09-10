@@ -94,6 +94,7 @@ export default function MediaLibraryClient({
 
         return {
           type: isVideo ? 'video' : 'image',
+          mediaId: item.id,
           src: !isVideo ? item.fullResUrl : undefined,
           sources: isVideo
             ? [
@@ -220,7 +221,7 @@ export default function MediaLibraryClient({
         },
       });
 
-      if (!result.isConfirmed) return;
+      if (!result.isConfirmed) return false;
 
       setIsDeleting(id);
 
@@ -252,6 +253,7 @@ export default function MediaLibraryClient({
         });
 
         router.refresh();
+        return true;
       } catch (error) {
         console.error('Failed to delete media:', error);
 
@@ -270,6 +272,7 @@ export default function MediaLibraryClient({
               'font-semibold text-[#172033]',
           },
         });
+        return false;
       } finally {
         setIsDeleting(null);
       }
@@ -543,6 +546,10 @@ export default function MediaLibraryClient({
         index={lightboxIndex}
         slides={slides}
         onClose={handleCloseLightbox}
+        onDelete={async (slide) => {
+          const mediaId = (slide as MediaItem & { mediaId?: string }).mediaId;
+          return mediaId ? handleDelete(mediaId) : false;
+        }}
       />
     </div>
   );

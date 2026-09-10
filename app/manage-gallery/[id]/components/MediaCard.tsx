@@ -26,6 +26,7 @@ interface MediaCardProps {
   media: MediaData;
   onRemove?: (mediaId: string) => void;
   onManualOrder?: (mediaId: string) => void;
+  onPreview?: () => void;
   priority?: boolean;
 }
 
@@ -33,6 +34,7 @@ const MediaCard = memo(function MediaCard({
   media,
   onRemove,
   onManualOrder,
+  onPreview,
   priority = false,
 }: MediaCardProps) {
   const handleRemove = useCallback(
@@ -160,6 +162,7 @@ const MediaCard = memo(function MediaCard({
               originalFilename={null}
               className="w-full h-full object-cover"
               priority={priority}
+              onClick={onPreview}
             />
           </div>
         ) : (
