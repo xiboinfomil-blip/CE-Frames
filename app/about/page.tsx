@@ -6,6 +6,8 @@ export const metadata = {
   description: 'Découvrez les membres du Comité d’Entreprise.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function AboutPage() {
   const members = await userHelpers.findCeMembers();
   const ceProfile = await userHelpers.getCeProfile();
