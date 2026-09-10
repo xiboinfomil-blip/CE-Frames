@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+  if (session.user.role !== 'admin' && session.user.role !== 'president') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+  if (session.user.role !== 'admin' && session.user.role !== 'president') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -81,7 +81,7 @@ export async function DELETE(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+  if (session.user.role !== 'admin' && session.user.role !== 'president') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

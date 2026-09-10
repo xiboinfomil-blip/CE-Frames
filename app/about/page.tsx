@@ -8,6 +8,7 @@ export const metadata = {
 
 export default async function AboutPage() {
   const members = await userHelpers.findCeMembers();
+  const ceProfile = await userHelpers.getCeProfile();
 
   return (
     <main className="min-h-screen bg-[#F5F7FA] px-6 pb-20 pt-32 text-[#172033] dark:bg-[#0B1624] dark:text-white">
@@ -19,6 +20,10 @@ export default async function AboutPage() {
             Retrouvez les personnes qui font vivre le Comité d’Entreprise et portent les sujets qui comptent pour les collaborateurs.
           </p>
         </header>
+
+        {ceProfile?.groupPhotoUrl && (
+          <Image src={ceProfile.groupPhotoUrl} alt="Membres du Comité d’Entreprise" width={1200} height={500} className="mt-12 max-h-[28rem] w-full object-cover" priority />
+        )}
 
         {members.length > 0 ? (
           <section className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Membres du Comité d’Entreprise">

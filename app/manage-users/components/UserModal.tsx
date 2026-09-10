@@ -16,7 +16,6 @@ export interface ManagedUser {
   lastName: string | null;
   email: string;
   role: UserRole;
-  isCeMember: boolean;
   photoUrl: string | null;
   createdAt: Date | string;
 }
@@ -30,8 +29,8 @@ interface UserModalProps {
 
 const ROLE_LABELS: Record<UserRole, string> = {
   admin: 'Administrateur',
-  editor: 'Éditeur',
-  viewer: 'Lecteur',
+  president: 'Président(e)',
+  membre: 'Membre',
 };
 
 export default function UserModal({
@@ -46,8 +45,7 @@ export default function UserModal({
   const [lastName, setLastName] = useState(initialUser?.lastName || '');
   const [email, setEmail] = useState(initialUser?.email || '');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<UserRole>(initialUser?.role || 'editor');
-  const [isCeMember, setIsCeMember] = useState(initialUser?.isCeMember || false);
+  const [role, setRole] = useState<UserRole>(initialUser?.role || 'membre');
   const [photoUrl] = useState(initialUser?.photoUrl || '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -96,7 +94,6 @@ export default function UserModal({
             email,
             password: password || undefined,
             role,
-            isCeMember,
             photoUrl: uploadedPhotoUrl,
           }),
         }
@@ -200,10 +197,6 @@ export default function UserModal({
             ))}
           </select>
         </div>
-        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[#E2E8F0] px-4 py-3 text-sm font-medium dark:border-white/10">
-          <input type="checkbox" checked={isCeMember} onChange={(event) => setIsCeMember(event.target.checked)} className="h-4 w-4 accent-[#FF8201]" />
-          Afficher cette personne comme membre du CE sur la page À propos
-        </label>
         <div className="space-y-2">
           <label htmlFor="user-photo" className="pl-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#64748B]">Photo du membre du CE</label>
           <div className="flex items-center gap-4">

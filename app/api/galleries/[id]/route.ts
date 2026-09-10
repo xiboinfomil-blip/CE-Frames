@@ -35,7 +35,7 @@ function hasGalleryAccess(request: NextRequest, galleryId: string) {
 
 async function hasManagementAccess() {
   const session = await getServerSession(authOptions);
-  return session?.user?.role === 'admin' || session?.user?.role === 'editor';
+  return session?.user?.role === 'admin' || session?.user?.role === 'president';
 }
 
 export async function GET(

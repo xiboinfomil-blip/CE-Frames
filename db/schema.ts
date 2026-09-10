@@ -27,7 +27,7 @@ export const VISIBILITY_STATUSES = [
   'private'
 ] as const;
 export const LAYOUT_STYLES = ['column', 'row', 'masonry'] as const;
-export const USER_ROLES = ['admin', 'editor', 'viewer'] as const;
+export const USER_ROLES = ['admin', 'president', 'membre'] as const;
 
 // Derive TypeScript types from the constants
 export type MediaType = typeof MEDIA_TYPES[number];
@@ -53,10 +53,15 @@ export const users = pgTable('users', {
   lastName: varchar('last_name', { length: 100 }),
   email: varchar('email', { length: 255 }).unique().notNull(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
-  role: userRoleEnum('role').default('editor').notNull(),
+  role: userRoleEnum('role').default('membre').notNull(),
   isCeMember: boolean('is_ce_member').default(false).notNull(),
   photoUrl: varchar('photo_url', { length: 500 }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const ceProfile = pgTable('ce_profile', {
+  id: integer('id').primaryKey().default(1),
+  groupPhotoUrl: varchar('group_photo_url', { length: 500 }),
 });
 
 // MEDIA (Images & Videos)

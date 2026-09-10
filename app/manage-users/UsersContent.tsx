@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
@@ -9,6 +10,7 @@ import {
   HiPlus,
   HiTrash,
   HiUsers,
+  HiPhoto,
 } from 'react-icons/hi2';
 
 import { CustomButton } from '@/components/ui/CustomButton';
@@ -18,18 +20,19 @@ import UserModal, { ManagedUser } from './components/UserModal';
 interface UsersContentProps {
   initialUsers: ManagedUser[];
   currentUserId: string;
+  initialGroupPhotoUrl: string | null;
 }
 
 const ROLE_STYLES = {
   admin: 'bg-[#FFF1E5] text-[#C65300] dark:bg-[#FF8201]/15 dark:text-[#FFB15C]',
-  editor: 'bg-[#EAF4FB] text-[#004A87] dark:bg-[#004A87]/25 dark:text-[#9BCBFF]',
-  viewer: 'bg-[#F5F7FA] text-[#64748B] dark:bg-white/10 dark:text-white/60',
+  president: 'bg-[#EAF4FB] text-[#004A87] dark:bg-[#004A87]/25 dark:text-[#9BCBFF]',
+  membre: 'bg-[#F5F7FA] text-[#64748B] dark:bg-white/10 dark:text-white/60',
 };
 
 const ROLE_LABELS = {
   admin: 'Administrateur',
-  editor: 'Éditeur',
-  viewer: 'Lecteur',
+  president: 'Président(e)',
+  membre: 'Membre',
 };
 
 function formatDate(value: Date | string) {
@@ -38,13 +41,48 @@ function formatDate(value: Date | string) {
   }).format(new Date(value));
 }
 
-export default function UsersContent({ initialUsers, currentUserId }: UsersContentProps) {
+export default function UsersContent({ initialUsers, currentUserId, initialGroupPhotoUrl }: UsersContentProps) {
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<ManagedUser | null>(null);
+  const [groupPhotoUrl, setGroupPhotoUrl] = useState<string | null>(initialGroupPhotoUrl);
+  const [isUploadingGroupPhoto, setIsUploadingGroupPhoto] = useState(false);
+
+  const uploadGroupPhoto = async (file: File) => {
+    if (!file.type.startsWith('image/')) throw new Error('La photo doit être une image.');
+    if (file.size > 10 * 1024 * 1024) throw new Error('La photo ne doit pas dépasser 10 Mo.');
+    const signatureResponse = await fetch('/api/sign-user-photo', { method: 'POST' });
+    const signatureData = await signatureResponse.json();
+    if (!signatureResponse.ok) throw new Error(signatureData.error || 'Préparation impossible.');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('signature', signatureData.signature);
+    formData.append('timestamp', String(signatureData.timestamp));
+    formData.append('api_key', signatureData.apiKey);
+    formData.append('folder', signatureData.folder);
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`, { method: 'POST', body: formData });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Envoi impossible.');
+    return data.secure_url as string;
+  };
+
+  const handleGroupPhoto = async (file: File) => {
+    setIsUploadingGroupPhoto(true);
+    try {
+      const url = await uploadGroupPhoto(file);
+      const response = await fetch('/api/ce-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ groupPhotoUrl: url }) });
+      if (!response.ok) throw new Error('Enregistrement impossible.');
+      setGroupPhotoUrl(url);
+      router.refresh();
+    } catch (error) {
+      await Swal.fire({ title: 'Photo impossible', text: error instanceof Error ? error.message : 'Une erreur est survenue.', icon: 'error', confirmButtonColor: '#004A87' });
+    } finally {
+      setIsUploadingGroupPhoto(false);
+    }
+  };
 
   const loadUsers = async (term = search) => {
     setIsLoading(true);
@@ -183,6 +221,21 @@ export default function UsersContent({ initialUsers, currentUserId }: UsersConte
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="mt-6 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl shadow-[#00345F]/5 dark:border-white/10 dark:bg-[#102238]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold">Photo de groupe du CE</h2>
+              <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Elle sera affichée en haut de la page À propos.</p>
+            </div>
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] dark:bg-white/10 dark:text-white">
+              <HiPhoto className="h-5 w-5" />
+              {isUploadingGroupPhoto ? 'Envoi…' : 'Choisir une photo'}
+              <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto} onChange={(event) => { const file = event.target.files?.[0]; if (file) handleGroupPhoto(file); }} />
+            </label>
+          </div>
+          {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
         </section>
       </div>
 

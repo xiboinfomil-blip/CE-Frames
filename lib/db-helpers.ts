@@ -16,6 +16,7 @@ import bcrypt from 'bcryptjs';
 
 import {
   users,
+  ceProfile,
   media,
   galleries,
   galleryMedia,
@@ -117,7 +118,7 @@ export const userHelpers = {
 
   findCeMembers: async () => {
     return await db.query.users.findMany({
-      where: eq(users.isCeMember, true),
+      where: or(eq(users.role, 'president'), eq(users.role, 'membre')),
       columns: {
         id: true,
         firstName: true,
@@ -126,6 +127,20 @@ export const userHelpers = {
       },
       orderBy: [asc(users.lastName), asc(users.firstName), asc(users.username)],
     });
+  },
+
+  getCeProfile: async () => {
+    return await db.query.ceProfile.findFirst({
+      columns: { groupPhotoUrl: true },
+    });
+  },
+
+  updateCeProfile: async (groupPhotoUrl: string | null) => {
+    return await db
+      .insert(ceProfile)
+      .values({ id: 1, groupPhotoUrl })
+      .onConflictDoUpdate({ target: ceProfile.id, set: { groupPhotoUrl } })
+      .returning({ groupPhotoUrl: ceProfile.groupPhotoUrl });
   },
 
   create: async (data: {

@@ -24,5 +24,7 @@ export default async function ManageUsersPage() {
 
   const users = await userHelpers.findAll();
 
-  return <UsersContent initialUsers={users} currentUserId={currentUser.id} />;
+  const ceProfile = await userHelpers.getCeProfile();
+
+  return <UsersContent initialUsers={users} currentUserId={currentUser.id} initialGroupPhotoUrl={ceProfile?.groupPhotoUrl || null} />;
 }

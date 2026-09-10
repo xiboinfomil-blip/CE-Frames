@@ -41,8 +41,7 @@ export async function POST(request: Request) {
     const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const password = typeof body.password === 'string' ? body.password : '';
-    const role = body.role || 'editor';
-    const isCeMember = body.isCeMember === true;
+    const role = body.role || 'membre';
     const photoUrl = typeof body.photoUrl === 'string' && body.photoUrl.trim() ? body.photoUrl.trim() : null;
 
     if (username.length < 2 || username.length > 50) {
@@ -65,7 +64,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Rôle invalide.' }, { status: 400 });
     }
 
-    const [user] = await userHelpers.create({ username, firstName, lastName, email, password, role, isCeMember, photoUrl });
+    const [user] = await userHelpers.create({ username, firstName, lastName, email, password, role, isCeMember: role !== 'admin', photoUrl });
     return NextResponse.json({ user }, { status: 201 });
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+    if (session.user.role !== 'admin' && session.user.role !== 'president') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

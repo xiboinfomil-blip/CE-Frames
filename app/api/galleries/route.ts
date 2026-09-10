@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    if (session.user.role !== 'admin' && session.user.role !== 'editor') {
+    if (session.user.role !== 'admin' && session.user.role !== 'president') {
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 

@@ -98,19 +98,14 @@ export async function PATCH(request: Request, context: RouteContext) {
       updates.role = body.role;
     }
 
-    if (body.isCeMember !== undefined) {
-      if (typeof body.isCeMember !== 'boolean') {
-        return NextResponse.json({ error: 'Statut de membre invalide.' }, { status: 400 });
-      }
-      updates.isCeMember = body.isCeMember;
-    }
-
     if (body.photoUrl !== undefined) {
       if (body.photoUrl !== null && (typeof body.photoUrl !== 'string' || body.photoUrl.length > 500)) {
         return NextResponse.json({ error: 'Photo invalide.' }, { status: 400 });
       }
       updates.photoUrl = body.photoUrl || null;
     }
+
+    if (updates.role) updates.isCeMember = updates.role !== 'admin';
 
     if (updates.role && updates.role !== 'admin' && !(await hasAnotherAdmin(id))) {
       return NextResponse.json({ error: 'Il doit rester au moins un administrateur.' }, { status: 400 });
