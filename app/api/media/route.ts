@@ -6,6 +6,41 @@ import { db } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { media } from '@/db/schema';
 
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const limit = 20;
+  const search = searchParams.get('search') || undefined;
+  const type = searchParams.get('type');
+  const filter = type && type !== 'all' ? type : undefined;
+  const sortParam = searchParams.get('sortBy');
+  const sortBy = sortParam === 'oldest' || sortParam === 'name'
+    ? sortParam
+    : 'newest';
+
+  const result = await mediaHelpers.findAll({
+    limit,
+    offset: (page - 1) * limit,
+    search,
+    filter,
+    sortBy,
+  });
+
+  return NextResponse.json({
+    items: result.items,
+    pagination: {
+      total: result.total,
+      currentPage: page,
+      hasNext: result.hasMore,
+    },
+  });
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {

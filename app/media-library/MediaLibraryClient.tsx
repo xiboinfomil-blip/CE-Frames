@@ -121,7 +121,7 @@ export default function MediaLibraryClient({
         sortBy: filters.sortBy || 'newest',
       });
       if (filters.type) params.set('type', filters.type);
-      const response = await fetch(`/api/media/available?${params}`);
+      const response = await fetch(`/api/media?${params}`);
       if (!response.ok) throw new Error('Failed to load more media');
       const data = await response.json();
       setMedia((current) => [...current, ...data.items]);
@@ -180,20 +180,6 @@ export default function MediaLibraryClient({
   const handleSort = useCallback(
     (sortBy: string) => {
       updateSearchParams({ sortBy });
-    },
-    [updateSearchParams]
-  );
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      updateSearchParams({
-        page: newPage.toString(),
-      });
-
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
     },
     [updateSearchParams]
   );
