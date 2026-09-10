@@ -1,7 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Lightbox, { Slide } from 'yet-another-react-lightbox';
 
@@ -105,6 +104,24 @@ export default function GalleryLightbox({
       return slide;
     });
   }, [slides]);
+
+  useEffect(() => {
+    if (!onDelete || index < 0 || !normalizedSlides[currentIndex]) return;
+
+    const handleKeyDown = async (event: KeyboardEvent) => {
+      if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+      if (isDeleting) return;
+
+      event.preventDefault();
+      setIsDeleting(true);
+      const deleted = await onDelete(normalizedSlides[currentIndex]);
+      setIsDeleting(false);
+      if (deleted) onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, index, isDeleting, normalizedSlides, onClose, onDelete]);
 
   if (
     index < 0 ||
@@ -214,23 +231,6 @@ export default function GalleryLightbox({
         }}
       />
 
-      {onDelete && normalizedSlides[currentIndex] && (
-        <button
-          type="button"
-          onClick={async () => {
-            setIsDeleting(true);
-            const deleted = await onDelete(normalizedSlides[currentIndex]);
-            setIsDeleting(false);
-            if (deleted) onClose();
-          }}
-          disabled={isDeleting}
-          className="fixed bottom-5 left-1/2 z-[10000] flex -translate-x-1/2 items-center gap-2 rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-xl transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
-          aria-label="Supprimer le média actuel"
-        >
-          <Trash2 className="h-4 w-4" />
-          {isDeleting ? 'Suppression…' : 'Supprimer'}
-        </button>
-      )}
 
       {/* ------------------------------------------------
           CE Frames YARL Theme
@@ -332,8 +332,6 @@ export default function GalleryLightbox({
 
           color: ${colors.buttonHover} !important;
 
-          transform: scale(1.05);
-
           box-shadow:
             0 4px 14px rgba(0, 52, 95, 0.10);
         }
@@ -380,6 +378,8 @@ export default function GalleryLightbox({
           backdrop-filter: blur(10px);
 
           -webkit-backdrop-filter: blur(10px);
+
+          transform: none !important;
         }
 
         .yarl__button[aria-label='Previous']:hover,

@@ -86,6 +86,8 @@ const MediaViewport = memo(function MediaViewport({
       className={`
         group
         relative
+        flex
+        flex-col
         w-full
         h-full
         overflow-hidden
@@ -114,32 +116,33 @@ const MediaViewport = memo(function MediaViewport({
         ${className}
       `}
     >
-      {/* Event Media Preview */}
-      {mediaType === 'video' ? (
-        <CustomVideo
-          src={currentSrc}
-          poster={thumbnailUrl || undefined}
-          hoverPlay={true}
-          onError={() =>
-            setErrorSource(fullResUrl)
-          }
-        />
-      ) : (
-        <CustomImage
-          src={currentSrc}
-          fallbackSrc={thumbnailUrl}
-          alt={
-            caption ||
-            originalFilename ||
-            'Media asset'
-          }
-          priority={priority}
-          sizes={sizes}
-          onError={() =>
-            setErrorSource(fullResUrl)
-          }
-        />
-      )}
+      <div className="relative min-h-0 w-full flex-1 overflow-hidden">
+        {/* Event Media Preview */}
+        {mediaType === 'video' ? (
+          <CustomVideo
+            src={currentSrc}
+            poster={thumbnailUrl || undefined}
+            hoverPlay={true}
+            onError={() =>
+              setErrorSource(fullResUrl)
+            }
+          />
+        ) : (
+          <CustomImage
+            src={currentSrc}
+            fallbackSrc={thumbnailUrl}
+            alt={
+              caption ||
+              originalFilename ||
+              'Media asset'
+            }
+            priority={priority}
+            sizes={sizes}
+            onError={() =>
+              setErrorSource(fullResUrl)
+            }
+          />
+        )}
 
       {/* ---------------------------------------------
           Hover Interaction Overlay
@@ -218,30 +221,24 @@ const MediaViewport = memo(function MediaViewport({
         </div>
       )}
 
+        </div>
+
       {/* ---------------------------------------------
-          Caption / Filename Overlay
+          Caption / Filename
           --------------------------------------------- */}
 
       {(showTitle || showFilename) &&
         (caption || originalFilename) && (
           <figcaption
             className="
-              absolute
-              inset-x-0
-              bottom-0
-              p-3 pt-10
-
-              bg-gradient-to-t
-              from-[#00345F]/95
-              via-[#00345F]/60
-              to-transparent
-
-              opacity-0
-              group-hover:opacity-100
-
-              transition-opacity
-              duration-300
-
+              shrink-0
+              border-t
+              border-[#E2E8F0]
+              bg-white
+              px-3
+              py-2.5
+              dark:border-white/10
+              dark:bg-[#102238]
               pointer-events-none
             "
           >
@@ -251,7 +248,8 @@ const MediaViewport = memo(function MediaViewport({
                 className="
                   text-xs
                   font-medium
-                  text-white
+                  text-[#172033]
+                  dark:text-white
                   truncate
                 "
               >
@@ -266,7 +264,8 @@ const MediaViewport = memo(function MediaViewport({
                   max-w-full
                   break-words
                   leading-snug
-                  text-white/75
+                  text-[#64748B]
+                  dark:text-white/75
                   ${
                     showTitle && caption
                       ? 'mt-1 text-[11px]'
