@@ -191,6 +191,7 @@ async function GalleriesPageContent({ searchParams }: PageProps) {
 
   return (
     <GalleriesContent 
+      key={`${params.search || ''}-${params.sortBy || 'newest'}-${params.visibility || 'all'}-${currentPage}`}
       initialGalleries={transformedGalleries} 
       pagination={{ 
         total: response.total, 

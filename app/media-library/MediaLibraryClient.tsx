@@ -14,7 +14,7 @@ import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination';
+import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import type { MediaItem } from '@/components/GalleryLightbox';
 import CardGrid from '@/components/displayGrid';
@@ -78,11 +78,15 @@ export default function MediaLibraryClient({
   const [searchInput, setSearchInput] = useState(() => filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [media, setMedia] = useState(initialMedia);
+  const [nextPage, setNextPage] = useState(pagination.currentPage + 1);
+  const [hasMore, setHasMore] = useState(pagination.hasNext);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Transform media array to lightbox slide format
   const slides = useMemo(
     (): MediaItem[] =>
-      initialMedia.map((item) => {
+      media.map((item) => {
         const isVideo = item.type === 'video';
 
         return {
@@ -104,8 +108,31 @@ export default function MediaLibraryClient({
           description: item.caption || undefined,
         } as MediaItem;
       }),
-    [initialMedia]
+    [media]
   );
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(nextPage),
+        search: filters.search,
+        sortBy: filters.sortBy || 'newest',
+      });
+      if (filters.type) params.set('type', filters.type);
+      const response = await fetch(`/api/media/available?${params}`);
+      if (!response.ok) throw new Error('Failed to load more media');
+      const data = await response.json();
+      setMedia((current) => [...current, ...data.items]);
+      setHasMore(data.pagination?.hasNext ?? false);
+      setNextPage((page) => page + 1);
+    } catch (error) {
+      console.error('Failed to load more media:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [filters.search, filters.sortBy, filters.type, hasMore, isLoadingMore, nextPage]);
 
   const updateSearchParams = useCallback(
     (params: Record<string, string | undefined>) => {
@@ -277,11 +304,11 @@ export default function MediaLibraryClient({
 
   const handleOpenLightbox = useCallback(
     (index: number) => {
-      if (index >= 0 && index < initialMedia.length) {
+      if (index >= 0 && index < media.length) {
         setLightboxIndex(index);
       }
     },
-    [initialMedia.length]
+    [media.length]
   );
 
   const handleCloseLightbox = useCallback(
@@ -376,7 +403,7 @@ export default function MediaLibraryClient({
           </div>
 
           <CardGrid
-            items={initialMedia}
+            items={media}
             ariaLabel="Éléments de la médiathèque"
             emptyState={mediaEmptyState}
             renderItem={(item, index) => (
@@ -394,18 +421,13 @@ export default function MediaLibraryClient({
             )}
           />
 
-          {initialMedia.length > 0 &&
-            pagination.totalPages > 1 && (
-              <div className="mt-12 flex justify-center">
-                <Pagination
-                  currentPage={pagination.currentPage}
-                  totalPages={pagination.totalPages}
-                  hasNext={pagination.hasNext}
-                  hasPrevious={pagination.hasPrevious}
-                  onPageChange={handlePageChange}
-                />
-              </div>
-            )}
+          {media.length > 0 && (
+            <InfiniteScroll
+              hasMore={hasMore}
+              isLoading={isLoadingMore}
+              onLoadMore={loadMore}
+            />
+          )}
         </main>
 
         <FloatingActionButton

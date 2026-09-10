@@ -5,6 +5,33 @@ import { galleryHelpers } from '@/lib/db-helpers';
 import { slugify } from '@/lib/utils';
 import bcrypt from 'bcryptjs'; // ✅ Import bcryptjs
 
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const limit = 12;
+  const search = searchParams.get('search') || undefined;
+  const sortParam = searchParams.get('sort') || searchParams.get('sortBy');
+  const sort = sortParam === 'oldest'
+    ? 'oldest'
+    : sortParam === 'name'
+      ? 'title'
+      : 'newest';
+  const filter = searchParams.get('filter') || searchParams.get('visibility') || undefined;
+  const isPublic = searchParams.get('public') === 'true';
+  const result = isPublic
+    ? await galleryHelpers.findPublic({ limit, offset: (page - 1) * limit, search, sortBy: sort, filter })
+    : await galleryHelpers.findAll({ limit, offset: (page - 1) * limit, search, sortBy: sort === 'title' ? 'name' : sort, filter });
+
+  return NextResponse.json({
+    items: result.items,
+    pagination: {
+      total: result.total,
+      currentPage: page,
+      hasNext: result.hasMore,
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

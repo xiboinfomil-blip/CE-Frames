@@ -13,7 +13,7 @@ import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination';
+import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
 
 import { VISIBILITY_STATUSES } from '@/db/schema';
@@ -89,6 +89,33 @@ export default function GalleriesContent({
     useState<GallerySummary | null>(null);
   const [searchInput, setSearchInput] =
     useState(filters.search);
+  const [galleries, setGalleries] = useState(initialGalleries);
+  const [nextPage, setNextPage] = useState((pagination.currentPage || 1) + 1);
+  const [hasMore, setHasMore] = useState(pagination.hasNext ?? false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(nextPage),
+        search: filters.search,
+        sortBy: filters.sortBy || 'newest',
+        visibility: filters.visibility || '',
+      });
+      const response = await fetch(`/api/galleries?${params}`);
+      if (!response.ok) throw new Error('Failed to load more galleries');
+      const data = await response.json();
+      setGalleries((current) => [...current, ...data.items]);
+      setHasMore(data.pagination?.hasNext ?? false);
+      setNextPage((page) => page + 1);
+    } catch (error) {
+      console.error('Failed to load more galleries:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [filters.search, filters.sortBy, filters.visibility, hasMore, isLoadingMore, nextPage]);
 
   const updateSearchParams = useCallback(
     (params: Record<string, string | undefined>) => {
@@ -453,30 +480,17 @@ export default function GalleriesContent({
               "
             >
               <GalleryGrid
-                galleries={initialGalleries}
+                galleries={galleries}
                 onEdit={handleOpenEditModal}
                 onDelete={handleDelete}
               />
 
-              {/* Pagination */}
-              {displayTotalPages > 1 && (
-                <div
-                  className="
-                    flex
-                    justify-center
-                    pt-4
-                    pb-8
-                  "
-                >
-                  <Pagination
-                    currentPage={displayPage}
-                    totalPages={displayTotalPages}
-                    hasNext={hasNext}
-                    hasPrevious={hasPrevious}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              )}
+              <InfiniteScroll
+                hasMore={hasMore}
+                isLoading={isLoadingMore}
+                onLoadMore={loadMore}
+                className="h-24"
+              />
             </div>
           )}
         </main>

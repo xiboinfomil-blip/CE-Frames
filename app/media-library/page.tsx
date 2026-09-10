@@ -75,6 +75,7 @@ async function MediaLibraryData({ params }: { params: SearchParams }) {
 
   return (
     <MediaLibraryClient 
+      key={`${search}-${type || 'all'}-${sortBy}-${page}`}
       initialMedia={safeMedia}
       pagination={{
         currentPage: page,

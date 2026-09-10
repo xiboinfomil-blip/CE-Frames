@@ -136,6 +136,7 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
 
   return (
     <ManageGalleryClient 
+      key={`${id}-${filters.page || '1'}-${filters.modalPage || '1'}-${filters.search || ''}-${filters.gallerySearch || ''}-${filters.type || 'all'}-${filters.sortBy || 'position'}`}
       gallery={galleryResult}
       galleryMediaItems={formattedGalleryMedia}
       availableMedia={availableMedia}

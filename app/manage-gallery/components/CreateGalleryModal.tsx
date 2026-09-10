@@ -14,7 +14,7 @@ import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination';
+import InfiniteScroll from '@/components/InfiniteScroll';
 import MediaViewport from '@/components/media-viewport';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
@@ -154,7 +154,7 @@ export default function CreateGalleryModal({
   const initialGalleryId = initialData?.id;
 
   const executeFetch = useCallback(
-    async (filters: typeof mediaFilters) => {
+    async (filters: typeof mediaFilters, append = false) => {
       if (!initialGalleryId) return;
 
       setIsFetchingMedia(true);
@@ -175,7 +175,9 @@ export default function CreateGalleryModal({
         if (res.ok) {
           const data = await res.json();
 
-          setAvailableMedia(data.items || []);
+          setAvailableMedia((current) =>
+            append ? [...current, ...(data.items || [])] : (data.items || [])
+          );
           setPagination(data.pagination);
         }
       } catch (err) {
@@ -290,6 +292,16 @@ export default function CreateGalleryModal({
       executeFetch,
     ]
   );
+
+  const loadMoreMedia = useCallback(() => {
+    if (!pagination.hasNext || isFetchingMedia) return;
+    const nextFilters = {
+      ...mediaFilters,
+      page: pagination.currentPage + 1,
+    };
+    setMediaFilters(nextFilters);
+    executeFetch(nextFilters, true);
+  }, [executeFetch, isFetchingMedia, mediaFilters, pagination.currentPage, pagination.hasNext]);
 
   const handleSelectCover = useCallback(
     (mediaId: string) => {
@@ -1069,13 +1081,11 @@ export default function CreateGalleryModal({
                   })}
                 </div>
 
-                <Pagination
-                  currentPage={pagination.currentPage}
-                  totalPages={pagination.totalPages}
-                  hasNext={pagination.hasNext}
-                  hasPrevious={pagination.hasPrevious}
-                  onPageChange={handlePageChangeSafe}
-                  className="mt-8"
+                <InfiniteScroll
+                  hasMore={pagination.hasNext}
+                  isLoading={isFetchingMedia}
+                  onLoadMore={loadMoreMedia}
+                  className="mt-8 h-16"
                 />
               </>
             )}

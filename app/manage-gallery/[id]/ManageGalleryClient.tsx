@@ -10,7 +10,7 @@ import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination';
+import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import CardGrid from '@/components/displayGrid';
 import { CustomButton } from '@/components/ui/CustomButton';
@@ -250,6 +250,62 @@ export default function ManageGalleryClient({
     useState(() => initialFilters.search);
   const [localMediaItems, setLocalMediaItems] =
     useState(() => galleryMediaItems);
+  const [localAvailableMedia, setLocalAvailableMedia] =
+    useState(() => availableMedia);
+  const [mainNextPage, setMainNextPage] = useState(mainPagination.currentPage + 1);
+  const [modalNextPage, setModalNextPage] = useState(modalPagination.currentPage + 1);
+  const [mainHasMore, setMainHasMore] = useState(mainPagination.hasNext);
+  const [modalHasMore, setModalHasMore] = useState(modalPagination.hasNext);
+  const [isLoadingMain, setIsLoadingMain] = useState(false);
+  const [isLoadingModal, setIsLoadingModal] = useState(false);
+
+  const loadMoreMain = useCallback(async () => {
+    if (isLoadingMain || !mainHasMore) return;
+    setIsLoadingMain(true);
+    try {
+      const params = new URLSearchParams({
+        galleryId: gallery.id,
+        page: String(mainNextPage),
+        gallerySearch: initialFilters.gallerySearch,
+        sortBy: initialFilters.sortBy,
+        type: initialFilters.type,
+      });
+      const response = await fetch(`/api/gallery-media?${params}`);
+      if (!response.ok) throw new Error('Failed to load gallery media');
+      const data = await response.json();
+      setLocalMediaItems((current) => [...current, ...data.items]);
+      setMainHasMore(data.pagination?.hasNext ?? false);
+      setMainNextPage((page) => page + 1);
+    } catch (error) {
+      console.error('Failed to load gallery media:', error);
+    } finally {
+      setIsLoadingMain(false);
+    }
+  }, [gallery.id, initialFilters, isLoadingMain, mainHasMore, mainNextPage]);
+
+  const loadMoreModal = useCallback(async () => {
+    if (isLoadingModal || !modalHasMore) return;
+    setIsLoadingModal(true);
+    try {
+      const params = new URLSearchParams({
+        galleryId: gallery.id,
+        page: String(modalNextPage),
+        search: initialFilters.search,
+        type: initialFilters.type,
+        sortBy: initialFilters.sortBy === 'position' ? 'newest' : initialFilters.sortBy,
+      });
+      const response = await fetch(`/api/gallery-media/available?${params}`);
+      if (!response.ok) throw new Error('Failed to load available media');
+      const data = await response.json();
+      setLocalAvailableMedia((current) => [...current, ...data.items]);
+      setModalHasMore(data.pagination?.hasNext ?? false);
+      setModalNextPage((page) => page + 1);
+    } catch (error) {
+      console.error('Failed to load available media:', error);
+    } finally {
+      setIsLoadingModal(false);
+    }
+  }, [gallery.id, initialFilters, isLoadingModal, modalHasMore, modalNextPage]);
 
   // ==========================================================
   // Shared Reorder Logic
@@ -1244,28 +1300,12 @@ export default function ManageGalleryClient({
             </SortableContext>
           </DndContext>
 
-          {/* Pagination */}
-          {mainPagination.totalPages >
-            1 && (
-            <Pagination
-              currentPage={
-                mainPagination.currentPage
-              }
-              totalPages={
-                mainPagination.totalPages
-              }
-              hasNext={
-                mainPagination.hasNext
-              }
-              hasPrevious={
-                mainPagination.hasPrevious
-              }
-              onPageChange={
-                handleMainPageChange
-              }
-              className="mt-12"
-            />
-          )}
+          <InfiniteScroll
+            hasMore={mainHasMore}
+            isLoading={isLoadingMain}
+            onLoadMore={loadMoreMain}
+            className="mt-12 h-16"
+          />
         </main>
 
         {/* ===================================================
@@ -1287,9 +1327,7 @@ export default function ManageGalleryClient({
             handleCloseModal
           }
           galleryId={gallery.id}
-          availableMedia={
-            availableMedia
-          }
+          availableMedia={localAvailableMedia}
           modalPagination={
             modalPagination
           }
@@ -1318,9 +1356,7 @@ export default function ManageGalleryClient({
           onSortChange={
             handleModalSortChange
           }
-          onPageChange={
-            handleModalPageChange
-          }
+          onLoadMore={loadMoreModal}
           onAddMedia={
             handleAddMediaToGallery
           }

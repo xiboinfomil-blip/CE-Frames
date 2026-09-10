@@ -74,6 +74,7 @@ async function GalleryContent({ searchParams }: { searchParams: Promise<SearchPa
 
   return (
     <GalleryClient 
+      key={`${params.search || ''}-${params.sort || 'newest'}-${params.filter || 'all'}-${currentPage}`}
       initialGalleries={result.items} 
       totalGalleries={result.total}
       currentPage={currentPage}

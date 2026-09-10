@@ -8,7 +8,7 @@ import MediaLibraryHeader, {
   FilterOption,
   SortOption,
 } from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination';
+import InfiniteScroll from '@/components/InfiniteScroll';
 import BaseModal from '@/components/BaseModal';
 import { CustomButton } from '@/components/ui/CustomButton';
 
@@ -55,7 +55,7 @@ interface AddMediaModalProps {
   onSortChange: (
     sortBy: 'newest' | 'oldest' | 'name'
   ) => void;
-  onPageChange: (page: number) => void;
+  onLoadMore: () => void;
   onAddMedia: (
     mediaId: string
   ) => Promise<boolean>;
@@ -354,7 +354,7 @@ export default function AddMediaModal({
   onSearchSubmit,
   onFilterChange,
   onSortChange,
-  onPageChange,
+  onLoadMore,
   onAddMedia,
   onPreview,
 }: AddMediaModalProps) {
@@ -827,34 +827,12 @@ export default function AddMediaModal({
                 )}
               </div>
 
-              {modalPagination.totalPages >
-                1 && (
-                <div
-                  className="
-                    mt-10
-                    flex
-                    justify-center
-                  "
-                >
-                  <Pagination
-                    currentPage={
-                      modalPagination.currentPage
-                    }
-                    totalPages={
-                      modalPagination.totalPages
-                    }
-                    hasNext={
-                      modalPagination.hasNext
-                    }
-                    hasPrevious={
-                      modalPagination.hasPrevious
-                    }
-                    onPageChange={
-                      onPageChange
-                    }
-                  />
-                </div>
-              )}
+              <InfiniteScroll
+                hasMore={modalPagination.hasNext}
+                isLoading={isAdding}
+                onLoadMore={onLoadMore}
+                className="mt-10 h-16"
+              />
             </div>
           )}
         </div>

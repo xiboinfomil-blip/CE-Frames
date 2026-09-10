@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { GallerySummary } from '@/types/types'; 
 import MediaLibraryHeader from '@/components/SearchSortFilter';
-import Pagination from '@/components/Pagination'; 
+import InfiniteScroll from '@/components/InfiniteScroll';
 import CardGrid from '@/components/displayGrid'; 
 import MediaViewport from '@/components/media-viewport';
 import EmptyState from '@/components/gallery/EmptyState';
@@ -45,6 +45,34 @@ export default function GalleryClient({
   const [searchQuery, setSearchQuery] = useState(initialParams.search);
   const [sortBy, setSortBy] = useState<SortOption>(initialParams.sort as SortOption);
   const [filterType, setFilterType] = useState<FilterOption>(initialParams.filter as FilterOption);
+  const [galleries, setGalleries] = useState(initialGalleries);
+  const [nextPage, setNextPage] = useState(currentPage + 1);
+  const [hasMore, setHasMore] = useState(hasNext);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const params = new URLSearchParams({
+        public: 'true',
+        page: String(nextPage),
+        sort: sortBy,
+        filter: filterType,
+        search: searchQuery,
+      });
+      const response = await fetch(`/api/galleries?${params}`);
+      if (!response.ok) throw new Error('Failed to load more galleries');
+      const data = await response.json();
+      setGalleries((current) => [...current, ...data.items]);
+      setHasMore(data.pagination?.hasNext ?? false);
+      setNextPage((page) => page + 1);
+    } catch (error) {
+      console.error('Failed to load more galleries:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [filterType, hasMore, isLoadingMore, nextPage, searchQuery, sortBy]);
 
   const updateUrl = useCallback((params: Record<string, string>) => {
     startTransition(() => {
@@ -90,7 +118,7 @@ export default function GalleryClient({
     router.push(`/gallery/${gallery.id}`);
   };
 
-  const displayedGalleries = initialGalleries;
+  const displayedGalleries = galleries;
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-zinc-900 selection:text-white font-sans antialiased">
@@ -226,18 +254,12 @@ export default function GalleryClient({
         />
       </main>
 
-      {/* Pagination Footer */}
-      {(hasNext || hasPrevious) && (
-        <div className="w-full border-t border-zinc-100 dark:border-zinc-800 py-12 bg-white dark:bg-zinc-950">
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasNext={hasNext}
-            hasPrevious={hasPrevious}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      )}
+      <InfiniteScroll
+        hasMore={hasMore}
+        isLoading={isLoadingMore}
+        onLoadMore={loadMore}
+        className="h-24 border-t border-zinc-100 dark:border-zinc-800"
+      />
     </div>
   );
 }
