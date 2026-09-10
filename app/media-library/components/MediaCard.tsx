@@ -11,6 +11,7 @@ HiMapPin,
 HiTrash,
 HiArrowPath,
 HiCamera,
+HiPencil,
 } from 'react-icons/hi2';
 
 export interface MediaSchema {
@@ -33,6 +34,7 @@ uploadedAt: string | Date;
 interface MediaCardProps {
 media: MediaSchema;
 onDelete: (id: string) => void;
+onEdit: () => void;
 onOpenLightbox: () => void;
 isDeleting?: boolean;
 priority?: boolean;
@@ -56,6 +58,7 @@ return String(value);
 const MediaCard = memo(function MediaCard({
 media,
 onDelete,
+onEdit,
 onOpenLightbox,
 isDeleting = false,
 priority = false,
@@ -261,6 +264,19 @@ aria-label={`Open ${
     </div>
 
     {/* Delete Button */}
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onEdit();
+      }}
+      className="absolute top-3 right-14 z-20 p-2 rounded-full bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md shadow-sm border border-[#E2E8F0] dark:border-white/10 text-[#64748B] transition-all duration-200 hover:text-[#004A87] hover:bg-[#EAF4FB] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-1"
+      aria-label={`Modifier les informations de ${media.originalFilename || 'cet élément'}`}
+      title="Modifier les informations"
+    >
+      <HiPencil className="w-4 h-4" />
+    </button>
+
     <button
       type="button"
       onClick={handleDeleteClick}

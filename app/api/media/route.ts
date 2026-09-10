@@ -105,6 +105,42 @@ export async function POST(req: Request) {
   }
 }
 
+export async function PATCH(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id, caption, locationName } = await req.json();
+
+    if (!id) {
+      return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    }
+
+    const mediaItem = await db.query.media.findFirst({
+      where: eq(media.id, id),
+    });
+
+    if (!mediaItem) {
+      return NextResponse.json({ error: 'Media not found' }, { status: 404 });
+    }
+
+    const updatedMedia = await mediaHelpers.update(id, {
+      caption: typeof caption === 'string' ? caption.trim() || null : mediaItem.caption,
+      locationName:
+        typeof locationName === 'string'
+          ? locationName.trim() || null
+          : mediaItem.locationName,
+    });
+
+    return NextResponse.json(updatedMedia[0]);
+  } catch (error) {
+    console.error('Media update error:', error);
+    return NextResponse.json({ error: 'Failed to update media metadata' }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {

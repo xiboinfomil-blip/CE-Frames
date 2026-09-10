@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 import MediaCard, { MediaSchema } from '@/app/media-library/components/MediaCard';
+import EditMediaModal from '@/app/media-library/components/EditMediaModal';
 const UploadModal = dynamic(
   () => import('@/app/media-library/components/UploadModal'),
   { ssr: false, loading: () => null }
@@ -77,6 +78,7 @@ export default function MediaLibraryClient({
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(() => filters.search || '');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [editingMedia, setEditingMedia] = useState<MediaSchema | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [media, setMedia] = useState(initialMedia);
   const [nextPage, setNextPage] = useState(pagination.currentPage + 1);
@@ -302,6 +304,14 @@ export default function MediaLibraryClient({
     []
   );
 
+  const handleMediaSaved = useCallback((updatedMedia: Pick<MediaSchema, 'id' | 'caption' | 'locationName'>) => {
+    setMedia((current) =>
+      current.map((item) =>
+        item.id === updatedMedia.id ? { ...item, ...updatedMedia } : item
+      )
+    );
+  }, []);
+
   const currentFilter = filters.type || 'all';
   const currentSort = filters.sortBy || 'newest';
 
@@ -395,6 +405,7 @@ export default function MediaLibraryClient({
                 key={item.id}
                 media={item}
                 onDelete={handleDelete}
+                onEdit={() => setEditingMedia(item)}
                 onOpenLightbox={() =>
                   handleOpenLightbox(index)
                 }
@@ -422,6 +433,12 @@ export default function MediaLibraryClient({
         <UploadModal
           isOpen={isUploadOpen}
           onClose={handleCloseUpload}
+        />
+
+        <EditMediaModal
+          media={editingMedia}
+          onClose={() => setEditingMedia(null)}
+          onSaved={handleMediaSaved}
         />
       </div>
 
