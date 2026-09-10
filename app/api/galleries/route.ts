@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     // ✅ 1. Destructure password and other missing fields
-    const { title, description, visibility, password, coverMediaId, layoutStyle } = body;
+    const { title, description, eventDate, visibility, password, coverMediaId, layoutStyle } = body;
 
     if (!title || !title.trim()) {
       return NextResponse.json(
@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
     const [newGallery] = await galleryHelpers.create({
       title: title.trim(),
       description: description?.trim() || null,
+      eventDate: eventDate || null,
       slug,
       visibility: visibility || 'public',
       passwordHash: hashedPassword, 

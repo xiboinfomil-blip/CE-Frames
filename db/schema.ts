@@ -5,6 +5,7 @@ import {
   varchar,
   text,
   timestamp,
+  date,
   integer,
   real,
   jsonb,
@@ -80,6 +81,7 @@ export const galleries = pgTable('galleries', {
   title: varchar('title', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 255 }).unique().notNull(),
   description: text('description'),
+  eventDate: date('event_date', { mode: 'string' }),
   
   visibility: visibilityEnum('visibility').default('public').notNull(),
   passwordHash: varchar('password_hash', { length: 255 }), // For password_protected

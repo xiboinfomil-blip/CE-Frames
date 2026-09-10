@@ -1,0 +1,1 @@
+ALTER TABLE "galleries" ADD COLUMN "event_date" date;

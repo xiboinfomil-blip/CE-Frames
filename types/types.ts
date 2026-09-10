@@ -29,6 +29,7 @@ export interface GallerySummary {
   title: string;
   slug: string;
   description?: string | null;
+  eventDate?: string | null;
   visibility: VisibilityStatus;
   layoutStyle: LayoutStyle;
   coverMediaId?: string | null;

@@ -238,7 +238,7 @@ export default function GalleryClient({
                   <div className="flex items-center gap-3 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                     <time className="text-xs text-zinc-400 font-medium flex items-center gap-1.5 uppercase tracking-wide">
                       <Calendar className="w-3.5 h-3.5" />
-                      {new Date(gallery.createdAt).toLocaleDateString('fr-FR', { 
+                      {new Date(gallery.eventDate || gallery.createdAt).toLocaleDateString('fr-FR', {
                         day: 'numeric',
                         month: 'short', 
                         year: 'numeric' 

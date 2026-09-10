@@ -7,7 +7,7 @@ interface GalleryHeaderProps {
 
 export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
   // Formatage de la date en français (ex: 8 sept. 2026)
-  const formattedDate = new Date(gallery.createdAt).toLocaleDateString('fr-FR', {
+  const formattedDate = new Date(gallery.eventDate || gallery.createdAt).toLocaleDateString('fr-FR', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

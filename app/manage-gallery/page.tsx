@@ -26,6 +26,7 @@ interface EnrichedGallery {
   title: string;
   slug: string;
   description: string | null;
+  eventDate: string | null;
   visibility: typeof VISIBILITY_STATUSES[number];
   layoutStyle: LayoutStyle;
   coverMediaId: string | number | null;
@@ -129,6 +130,7 @@ function mapToGallerySummary(gallery: EnrichedGallery): GallerySummary {
     title: String(gallery.title),
     slug: String(gallery.slug),
     description: gallery.description ? String(gallery.description) : null,
+    eventDate: gallery.eventDate ? String(gallery.eventDate) : null,
     visibility: gallery.visibility,
     layoutStyle: gallery.layoutStyle,
     coverMediaId: gallery.coverMediaId ? String(gallery.coverMediaId) : null,

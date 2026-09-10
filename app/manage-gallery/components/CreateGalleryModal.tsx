@@ -35,6 +35,7 @@ interface GalleryData {
   id?: string;
   title: string;
   description?: string | null;
+  eventDate?: string | null;
   visibility: typeof VISIBILITY_STATUSES[number];
   password?: string;
   coverMediaId?: string | null;
@@ -82,6 +83,7 @@ const SORT_OPTIONS: SortOption[] = [
 const DEFAULT_FORM_DATA: GalleryData = {
   title: '',
   description: '',
+  eventDate: '',
   visibility: 'public',
   password: '',
   coverMediaId: '',
@@ -117,6 +119,7 @@ export default function CreateGalleryModal({
         id: data.id,
         title: data.title || '',
         description: data.description ?? '',
+        eventDate: data.eventDate ?? '',
         visibility: data.visibility || 'public',
         password: '',
         coverMediaId: data.coverMediaId || '',
@@ -348,6 +351,7 @@ export default function CreateGalleryModal({
         body: JSON.stringify({
           title: formData.title,
           description: formData.description || null,
+          eventDate: formData.eventDate || null,
           visibility: formData.visibility,
           password: passwordToSend,
           coverMediaId: formData.coverMediaId || null,
@@ -488,6 +492,14 @@ export default function CreateGalleryModal({
               required
               maxLength={255}
               placeholder="ex: Arbre de Noël 2026, Voyage au Japon, Billetterie..."
+            />
+
+            <CustomTextfield
+              name="eventDate"
+              type="date"
+              label="Date de l'événement"
+              value={formData.eventDate || ''}
+              onChange={handleChange}
             />
 
             {/* Description */}

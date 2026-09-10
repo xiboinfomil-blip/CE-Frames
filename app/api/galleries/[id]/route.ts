@@ -65,7 +65,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, description, visibility, password, coverMediaId, layoutStyle } = body;
+    const { title, description, eventDate, visibility, password, coverMediaId, layoutStyle } = body;
 
     // ✅ Robust Password Hash Logic
     let passwordHash: string | null | undefined = undefined;
@@ -86,6 +86,7 @@ export async function PUT(
     const updatedGallery = await galleryHelpers.update(id, {
       title,
       description,
+      eventDate: eventDate || null,
       visibility,
       passwordHash,
       coverMediaId,
