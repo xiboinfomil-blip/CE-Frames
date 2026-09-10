@@ -45,7 +45,7 @@ interface GalleryData {
 interface MediaOption {
   id: string;
   thumbnailUrl: string;
-  fullResUrl?: string;
+  fullResUrl?: string | null;
   title?: string | null;
   type: typeof MEDIA_TYPES[number];
   originalFilename?: string | null;

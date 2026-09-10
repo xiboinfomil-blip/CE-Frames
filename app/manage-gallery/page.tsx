@@ -29,6 +29,14 @@ interface EnrichedGallery {
   visibility: typeof VISIBILITY_STATUSES[number];
   layoutStyle: LayoutStyle;
   coverMediaId: string | number | null;
+  coverMedia?: {
+    id: string | number;
+    type: MediaType;
+    thumbnailUrl: string;
+    fullResUrl: string | null;
+    caption: string | null;
+    originalFilename: string | null;
+  } | null;
   createdAt: Date | string;
   updatedAt?: Date | string | null; 
   _count?: {
@@ -124,6 +132,16 @@ function mapToGallerySummary(gallery: EnrichedGallery): GallerySummary {
     visibility: gallery.visibility,
     layoutStyle: gallery.layoutStyle,
     coverMediaId: gallery.coverMediaId ? String(gallery.coverMediaId) : null,
+    coverMedia: gallery.coverMedia ? {
+      id: String(gallery.coverMedia.id),
+      thumbnailUrl: String(gallery.coverMedia.thumbnailUrl || ''),
+      fullResUrl: gallery.coverMedia.fullResUrl
+        ? String(gallery.coverMedia.fullResUrl)
+        : null,
+      type: gallery.coverMedia.type,
+      originalFilename: gallery.coverMedia.originalFilename || null,
+      caption: gallery.coverMedia.caption || null,
+    } : null,
     createdAt: gallery.createdAt instanceof Date 
       ? gallery.createdAt 
       : new Date(String(gallery.createdAt)),

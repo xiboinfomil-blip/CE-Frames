@@ -136,7 +136,7 @@ export const GalleryCard = memo(function GalleryCard({
   };
 
   const getMediaInfo = () => {
-    const media = gallery.randomMedia;
+    const media = gallery.coverMedia || gallery.randomMedia;
 
     if (!media) {
       return {

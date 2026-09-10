@@ -32,6 +32,14 @@ export interface GallerySummary {
   visibility: VisibilityStatus;
   layoutStyle: LayoutStyle;
   coverMediaId?: string | null;
+  coverMedia?: {
+    id: string;
+    thumbnailUrl: string;
+    fullResUrl?: string | null;
+    type: MediaType;
+    originalFilename?: string | null;
+    caption?: string | null;
+  } | null;
   createdAt: Date;
   updatedAt?: Date; 
   
