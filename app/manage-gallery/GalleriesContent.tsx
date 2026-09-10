@@ -322,8 +322,6 @@ export default function GalleriesContent({
               onSortChange={handleSort}
               sorts={SORT_OPTIONS}
               totalItems={pagination.total}
-              currentPage={displayPage}
-              totalPages={displayTotalPages}
             />
           </div>
         </header>

@@ -943,8 +943,6 @@ export default function CreateGalleryModal({
               onSortChange={handleSortChangeSafe}
               sorts={SORT_OPTIONS}
               totalItems={pagination.total}
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
             />
           </div>
 

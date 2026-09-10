@@ -1136,12 +1136,6 @@ export default function ManageGalleryClient({
               totalItems={
                 mainPagination.total
               }
-              currentPage={
-                mainPagination.currentPage
-              }
-              totalPages={
-                mainPagination.totalPages
-              }
             />
           </div>
         </header>

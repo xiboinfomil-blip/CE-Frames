@@ -30,8 +30,6 @@ interface MediaLibraryHeaderProps {
   onSortChange?: (value: string) => void;
   sorts?: SortOption[];
   totalItems: number;
-  currentPage?: number;
-  totalPages?: number;
   showCount?: boolean;
 }
 
@@ -46,8 +44,6 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
   onSortChange,
   sorts = [],
   totalItems,
-  currentPage = 1,
-  totalPages = 1,
   showCount = true,
 }: MediaLibraryHeaderProps) {
   const handleKeyDown = useCallback(
@@ -222,19 +218,6 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                   Éléments
                 </span>
 
-                {totalPages > 1 && (
-                  <>
-                    <div className="w-px h-3 bg-[#E2E8F0]" />
-
-                    <span className="text-xs font-medium text-[#64748B] tabular-nums">
-                      {currentPage}
-                      <span className="text-[#94A3B8] mx-0.5">
-                        /
-                      </span>
-                      {totalPages}
-                    </span>
-                  </>
-                )}
               </div>
             )}
           </div>

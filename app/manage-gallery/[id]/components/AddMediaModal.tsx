@@ -639,12 +639,6 @@ export default function AddMediaModal({
             totalItems={
               modalPagination.total
             }
-            currentPage={
-              modalPagination.currentPage
-            }
-            totalPages={
-              modalPagination.totalPages
-            }
           />
         </div>
 

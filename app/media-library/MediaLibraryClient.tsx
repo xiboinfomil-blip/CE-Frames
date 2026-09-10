@@ -374,8 +374,6 @@ export default function MediaLibraryClient({
             onSortChange={handleSort}
             sorts={SORT_OPTIONS}
             totalItems={pagination.totalItems}
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
           />
         </header>
 

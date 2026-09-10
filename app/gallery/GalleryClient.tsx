@@ -149,8 +149,6 @@ export default function GalleryClient({
             ]}
             
             totalItems={totalGalleries}
-            currentPage={currentPage}
-            totalPages={totalPages}
           />
         </div>
       </header>
