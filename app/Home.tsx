@@ -124,8 +124,6 @@ export default function Home({
                 }
                 priority
                 sizes="100vw"
-                showTitle={false}
-                showFilename={false}
                 showMagnifyingGlass={false}
                 className="
                   absolute
@@ -632,8 +630,6 @@ export default function Home({
                             (max-width: 1280px) 33vw,
                             500px
                           "
-                          showTitle={false}
-                          showFilename={false}
                           showMagnifyingGlass={false}
                           className="
                             absolute

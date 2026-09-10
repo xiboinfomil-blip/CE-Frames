@@ -187,8 +187,6 @@ export default function GalleryClient({
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900 shadow-sm group-hover:shadow-md transition-shadow duration-500">
                   <MediaViewport
                   showMagnifyingGlass={false}
-                  showFilename={false}
-                  showTitle={false}
                     mediaType={displayMedia.type}
                     fullResUrl={displayMedia.fullResUrl || displayMedia.thumbnailUrl}
                     thumbnailUrl={displayMedia.thumbnailUrl}

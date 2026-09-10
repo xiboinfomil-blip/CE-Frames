@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useMemo, KeyboardEvent } from 'react';
+import { memo, useMemo, useState, KeyboardEvent } from 'react';
 import { MEDIA_TYPES } from '@/db/schema';
 import CustomImage from './custom-image';
 import CustomVideo from './custom-video';
@@ -20,9 +20,7 @@ interface MediaViewportProps {
   sizes?: string;
   onClick?: () => void;
 
-  // Display controls
-  showTitle?: boolean;
-  showFilename?: boolean;
+  // Display control
   showMagnifyingGlass?: boolean;
 }
 
@@ -37,9 +35,6 @@ const MediaViewport = memo(function MediaViewport({
   sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
   onClick,
 
-  // Defaults preserve the current behavior
-  showTitle = true,
-  showFilename = true,
   showMagnifyingGlass = true,
 }: MediaViewportProps) {
   const [errorSource, setErrorSource] =
@@ -87,13 +82,13 @@ const MediaViewport = memo(function MediaViewport({
         group
         relative
         flex
-        flex-col
         w-full
         h-full
         overflow-hidden
         rounded-2xl
 
         bg-white dark:bg-[#102238]
+
         border
         border-[#E2E8F0] dark:border-white/10
 
@@ -109,15 +104,16 @@ const MediaViewport = memo(function MediaViewport({
         focus-visible:ring-2
         focus-visible:ring-[#FF8201]
         focus-visible:ring-offset-2
-        focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#102238]
+        focus-visible:ring-offset-white
+        dark:focus-visible:ring-offset-[#102238]
 
         ${isInteractive ? 'cursor-pointer' : ''}
 
         ${className}
       `}
     >
-      <div className="relative min-h-0 w-full flex-1 overflow-hidden">
-        {/* Event Media Preview */}
+      <div className="relative min-h-0 w-full h-full overflow-hidden">
+        {/* Media Preview */}
         {mediaType === 'video' ? (
           <CustomVideo
             src={currentSrc}
@@ -144,141 +140,83 @@ const MediaViewport = memo(function MediaViewport({
           />
         )}
 
-      {/* ---------------------------------------------
-          Hover Interaction Overlay
-          --------------------------------------------- */}
-
-      {showMagnifyingGlass && (
-        <div
-          className="
-            absolute
-            inset-0
-
-            bg-[#00345F]/20
-
-            opacity-0
-            group-hover:opacity-100
-
-            transition-opacity
-            duration-300
-
-            pointer-events-none
-
-            flex
-            items-center
-            justify-center
-          "
-        >
+        {/* Hover Interaction Overlay */}
+        {showMagnifyingGlass && (
           <div
             className="
-              w-12
-              h-12
+              absolute
+              inset-0
 
-              rounded-full
+              bg-[#00345F]/20
 
-              bg-white/95 dark:bg-[#102238]/95
-              backdrop-blur-md
+              opacity-0
+              group-hover:opacity-100
 
-              border
-              border-[#E2E8F0] dark:border-white/10
+              transition-opacity
+              duration-300
 
-              text-[#004A87]
+              pointer-events-none
 
               flex
               items-center
               justify-center
-
-              shadow-2xl
-              shadow-[#00345F]/20
-
-              transform
-              scale-90
-              group-hover:scale-100
-
-              transition-transform
-              duration-300
             "
           >
-            {mediaType === 'video' ? (
-              <HiPlay
-                className="
-                  w-6
-                  h-6
-                  ml-0.5
-                  text-[#FF8201]
-                "
-              />
-            ) : (
-              <HiMagnifyingGlassPlus
-                className="
-                  w-5
-                  h-5
-                  text-[#004A87]
-                "
-              />
-            )}
+            <div
+              className="
+                w-12
+                h-12
+
+                rounded-full
+
+                bg-white/95
+                dark:bg-[#102238]/95
+
+                backdrop-blur-md
+
+                border
+                border-[#E2E8F0]
+                dark:border-white/10
+
+                text-[#004A87]
+
+                flex
+                items-center
+                justify-center
+
+                shadow-2xl
+                shadow-[#00345F]/20
+
+                transform
+                scale-90
+                group-hover:scale-100
+
+                transition-transform
+                duration-300
+              "
+            >
+              {mediaType === 'video' ? (
+                <HiPlay
+                  className="
+                    w-6
+                    h-6
+                    ml-0.5
+                    text-[#FF8201]
+                  "
+                />
+              ) : (
+                <HiMagnifyingGlassPlus
+                  className="
+                    w-5
+                    h-5
+                    text-[#004A87]
+                  "
+                />
+              )}
+            </div>
           </div>
-        </div>
-      )}
-
-        </div>
-
-      {/* ---------------------------------------------
-          Caption / Filename
-          --------------------------------------------- */}
-
-      {(showTitle || showFilename) &&
-        (caption || originalFilename) && (
-          <figcaption
-            className="
-              shrink-0
-              border-t
-              border-[#E2E8F0]
-              bg-white
-              px-3
-              py-2.5
-              dark:border-white/10
-              dark:bg-[#102238]
-              pointer-events-none
-            "
-          >
-            {/* Caption / Title */}
-            {showTitle && caption && (
-              <p
-                className="
-                  text-xs
-                  font-medium
-                  text-[#172033]
-                  dark:text-white
-                  truncate
-                "
-              >
-                {caption}
-              </p>
-            )}
-
-            {/* Original Filename */}
-            {showFilename && originalFilename && (
-              <p
-                className={`
-                  max-w-full
-                  break-words
-                  leading-snug
-                  text-[#64748B]
-                  dark:text-white/75
-                  ${
-                    showTitle && caption
-                      ? 'mt-1 text-[11px]'
-                      : 'text-xs font-medium'
-                  }
-                `}
-                title={originalFilename}
-              >
-                {originalFilename}
-              </p>
-            )}
-          </figcaption>
         )}
+      </div>
     </figure>
   );
 });

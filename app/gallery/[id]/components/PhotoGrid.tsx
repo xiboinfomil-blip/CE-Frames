@@ -270,13 +270,10 @@ export default function PhotoGrid({
                     }
 
                     /*
-                     * No title
                      * No filename
                      * No magnifying glass
                      * No hover text
                      */
-                    showTitle={false}
-                    showFilename={false}
 
                     className="
                       h-full
