@@ -228,67 +228,75 @@ aria-label={`Open ${
       )}
     </div>
 
-    {/* Delete Button */}
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation();
-        onEdit();
-      }}
-      className="absolute top-3 right-14 z-20 p-2 rounded-full bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md shadow-sm border border-[#E2E8F0] dark:border-white/10 text-[#64748B] transition-all duration-200 hover:text-[#004A87] hover:bg-[#EAF4FB] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-1"
-      aria-label={`Modifier les informations de ${media.originalFilename || 'cet élément'}`}
-      title="Modifier les informations"
-    >
-      <HiPencil className="w-4 h-4" />
-    </button>
-
-    <button
-      type="button"
-      onClick={handleDeleteClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleDeleteClick(e);
-        }
-      }}
-      disabled={isDeleting}
-      className={`
+    {/* Action rail */}
+    <div
+      className="
         absolute top-3 right-3 z-20
-        p-2 rounded-full
-        bg-white/95 dark:bg-[#102238]/95
-        backdrop-blur-md
-        shadow-sm
-        border border-[#E2E8F0] dark:border-white/10
+        flex flex-col gap-2
+        opacity-0 group-hover:opacity-100 group-focus-within:opacity-100
         transition-all duration-200
-        focus:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-[#FF8201]
-        focus-visible:ring-offset-1
-        cursor-pointer
-
-        ${
-          isDeleting
-            ? 'cursor-not-allowed opacity-60'
-            : `
-              text-[#64748B]
-              hover:text-red-600
-              hover:bg-red-50
-              hover:border-red-200
-              opacity-0
-              group-hover:opacity-100
-              group-focus-within:opacity-100
-            `
-        }
-      `}
-      aria-label={`Delete ${
-        media.originalFilename || 'media asset'
-      }`}
+      "
     >
-      {isDeleting ? (
-        <HiArrowPath className="animate-spin h-4 w-4 text-[#FF8201]" />
-      ) : (
-        <HiTrash className="w-4 h-4" />
-      )}
-    </button>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onEdit();
+        }}
+        className="
+          flex items-center gap-2
+          rounded-xl border border-[#E2E8F0]
+          bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md
+          px-2.5 py-2 text-left shadow-md
+          text-[#00345F] dark:text-white
+          transition-all duration-200
+          hover:bg-[#EAF4FB] hover:text-[#004A87]
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-1
+        "
+        aria-label={`Modifier les informations de ${media.originalFilename || 'cet élément'}`}
+        title="Modifier les informations"
+      >
+        <HiPencil className="w-4 h-4" />
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]">Modifier</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={handleDeleteClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleDeleteClick(e);
+          }
+        }}
+        disabled={isDeleting}
+        className={`
+          flex items-center gap-2
+          rounded-xl border
+          px-2.5 py-2 shadow-md
+          transition-all duration-200
+          focus:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-[#FF8201]
+          focus-visible:ring-offset-1
+
+          ${
+            isDeleting
+              ? 'cursor-not-allowed opacity-60 border-[#E2E8F0] bg-white/95 text-[#64748B]'
+              : 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700'
+          }
+        `}
+        aria-label={`Supprimer ${media.originalFilename || 'cet élément'}`}
+      >
+        {isDeleting ? (
+          <HiArrowPath className="animate-spin h-4 w-4 text-[#FF8201]" />
+        ) : (
+          <HiTrash className="w-4 h-4" />
+        )}
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]">
+          {isDeleting ? 'Suppression' : 'Supprimer'}
+        </span>
+      </button>
+    </div>
 
     {/* Duration Badge */}
     {media.type === 'video' && media.durationSeconds && (

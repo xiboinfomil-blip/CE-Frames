@@ -15,10 +15,10 @@ interface FloatingActionButtonProps {
 
 const FloatingActionButton = memo(function FloatingActionButton({
   onClick,
-  label = 'Ajouter une galerie',
-  icon = <HiPlus className="w-6 h-6 sm:w-7 sm:h-7" />,
+  label = 'Ajouter',
+  icon = <HiPlus className="w-5 h-5 sm:w-5 sm:h-5" />,
   position = 'bottom-right',
-  variant = 'circle',
+  variant = 'extended',
   colorScheme = 'orange',
   className = '',
 }: FloatingActionButtonProps) {
@@ -66,7 +66,7 @@ const FloatingActionButton = memo(function FloatingActionButton({
 
         ${
           variant === 'extended'
-            ? 'h-14 px-5 rounded-2xl gap-3'
+            ? 'h-14 px-5 rounded-2xl gap-3 shadow-2xl shadow-[#FF8201]/20'
             : 'w-14 h-14 sm:w-16 sm:h-16 rounded-full'
         }
 
@@ -106,6 +106,9 @@ const FloatingActionButton = memo(function FloatingActionButton({
         className="
           relative
           z-10
+          flex
+          items-center
+          justify-center
           transform
           transition-transform
           duration-300

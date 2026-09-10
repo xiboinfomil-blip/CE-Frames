@@ -480,7 +480,7 @@ export default function GalleriesContent({
         >
           <FloatingActionButton
             onClick={handleOpenCreateModal}
-            label="Nouvel album"
+            label="Créer un album"
             aria-label="Créer un nouvel album photo CE"
           />
         </div>

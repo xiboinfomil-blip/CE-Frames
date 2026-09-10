@@ -474,24 +474,34 @@ export default function MediaLibraryClient({
           </div>
 
           {media.length > 0 && (
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
-              <button
-                type="button"
-                onClick={handleSelectAll}
-                className="text-sm font-semibold text-[#004A87] hover:text-[#FF8201]"
-              >
-                {selectedIds.size === media.length ? 'Tout désélectionner' : 'Tout sélectionner'}
-              </button>
-              {selectedIds.size > 0 && (
-                <button
-                  type="button"
-                  onClick={handleBulkDelete}
-                  disabled={isDeleting === 'bulk'}
-                  className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isDeleting === 'bulk' ? 'Suppression...' : `Supprimer ${selectedIds.size}`}
-                </button>
-              )}
+            <div className="mb-6 rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#FF8201]" />
+                  Actions en masse
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSelectAll}
+                    className="rounded-xl border border-[#E2E8F0] bg-[#F5F7FA] px-3.5 py-2 text-sm font-semibold text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                  >
+                    {selectedIds.size === media.length ? 'Tout désélectionner' : 'Sélectionner tout'}
+                  </button>
+
+                  {selectedIds.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleBulkDelete}
+                      disabled={isDeleting === 'bulk'}
+                      className="rounded-xl bg-red-600 px-3.5 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isDeleting === 'bulk' ? 'Suppression...' : `Supprimer ${selectedIds.size} élément${selectedIds.size > 1 ? 's' : ''}`}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

@@ -226,16 +226,22 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
         <section className="mt-6 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl shadow-[#00345F]/5 dark:border-white/10 dark:bg-[#102238]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold">Photo de groupe du CE</h2>
-              <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Elle sera affichée en haut de la page À propos.</p>
+              <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
+                <HiPhoto className="h-4 w-4 text-[#FF8201]" />
+                Photo de groupe
+              </div>
+              <h2 className="text-lg font-bold">Image du CE</h2>
+              <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Cette image apparaîtra en haut de la page À propos.</p>
             </div>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] dark:bg-white/10 dark:text-white">
+
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
               <HiPhoto className="h-5 w-5" />
-              {isUploadingGroupPhoto ? 'Envoi…' : 'Choisir une photo'}
+              {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
               <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto} onChange={(event) => { const file = event.target.files?.[0]; if (file) handleGroupPhoto(file); }} />
             </label>
           </div>
-          {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
+
+          {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FA] dark:border-white/10"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
         </section>
       </div>
 

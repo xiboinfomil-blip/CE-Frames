@@ -127,8 +127,9 @@ const displayMedia = gallery.randomMedia;
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md p-3.5 rounded-full border border-white dark:border-white/10 text-[#004A87] dark:text-[#FFB15C] shadow-xl transform scale-95 group-hover:scale-100 transition-transform duration-300">
-            <HiArrowRight className="w-5 h-5" />
+          <div className="flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white/95 px-4 py-2.5 text-sm font-bold uppercase tracking-[0.16em] text-[#00345F] shadow-xl backdrop-blur-md transform scale-95 transition-transform duration-300 group-hover:scale-100 dark:border-white/10 dark:bg-[#102238]/95 dark:text-[#FFB15C]">
+            <HiArrowRight className="w-4 h-4" />
+            Voir
           </div>
         </div>
       </div>

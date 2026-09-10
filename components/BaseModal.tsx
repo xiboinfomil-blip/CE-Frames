@@ -66,8 +66,12 @@ export default function BaseModal({
   useEffect(() => {
     if (isOpen) {
       hasBeenOpened.current = true;
-      setIsClosing(false);
-      return;
+
+      const frame = requestAnimationFrame(() => {
+        setIsClosing(false);
+      });
+
+      return () => cancelAnimationFrame(frame);
     }
 
     if (!hasBeenOpened.current) return;

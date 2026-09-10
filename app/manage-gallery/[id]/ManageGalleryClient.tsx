@@ -1342,7 +1342,7 @@ export default function ManageGalleryClient({
           onClick={() =>
             setIsAddModalOpen(true)
           }
-          label="Ajouter un média"
+          label="Ajouter des médias"
         />
 
         {/* ===================================================

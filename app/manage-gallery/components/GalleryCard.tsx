@@ -183,9 +183,9 @@ export const GalleryCard = memo(function GalleryCard({
         h-full
       "
     >
-      {/* --- Kebab Menu --- */}
+      {/* --- Action rail --- */}
       <div
-        className="absolute top-4 right-4 z-30"
+        className="absolute top-4 right-4 z-30 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
         ref={menuRef}
       >
         <button
@@ -205,32 +205,22 @@ export const GalleryCard = memo(function GalleryCard({
             }
           }}
           className="
-            p-2.5
-            bg-white/90
-            dark:bg-[#102238]/90
-            backdrop-blur-md
-            border
-            border-white/70
-            dark:border-white/10
-            rounded-full
-            shadow-sm
-            hover:bg-white
-            dark:hover:bg-[#00345F]/60
-            hover:shadow-md
-            text-[#00345F]
-            transition-all
-            duration-200
-            focus:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-[#FF8201]
-            focus-visible:ring-offset-2
+            flex items-center gap-2
+            rounded-xl border border-[#E2E8F0]
+            bg-white/95 dark:bg-[#102238]/95 backdrop-blur-md
+            px-2.5 py-2 text-left shadow-md
+            text-[#00345F] dark:text-white
+            transition-all duration-200
+            hover:bg-[#EAF4FB] hover:text-[#004A87]
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] focus-visible:ring-offset-2
           "
           aria-label="Plus d'options"
           aria-haspopup="menu"
           aria-expanded={isMenuOpen}
           aria-controls="gallery-menu"
         >
-          <MoreVertical className="w-5 h-5" />
+          <MoreVertical className="w-4 h-4" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Actions</span>
         </button>
 
         {isMenuOpen && (
@@ -238,11 +228,7 @@ export const GalleryCard = memo(function GalleryCard({
             id="gallery-menu"
             role="menu"
             className="
-              absolute
-              right-0
-              top-full
-              mt-2
-              w-56
+              w-52
               bg-white
               dark:bg-[#0E1C2D]
               rounded-2xl
