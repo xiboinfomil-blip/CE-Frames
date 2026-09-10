@@ -1049,6 +1049,29 @@ export default function ManageGalleryClient({
             );
           }
 
+          const addedMedia = localAvailableMedia.find((item) => item.id === mediaId);
+          if (addedMedia) {
+            setLocalAvailableMedia((current) => current.filter((item) => item.id !== mediaId));
+            setLocalMediaItems((current) => [
+              ...current,
+              {
+                id: addedMedia.id,
+                mediaId: addedMedia.id,
+                position: current.length,
+                media: {
+                  id: addedMedia.id,
+                  thumbnailUrl: addedMedia.thumbnailUrl,
+                  fullResUrl: addedMedia.fullResUrl,
+                  title: addedMedia.title,
+                  originalFilename: addedMedia.title,
+                  type: addedMedia.type,
+                  width: null,
+                  height: null,
+                },
+              },
+            ]);
+          }
+
           router.refresh();
 
           return true;
@@ -1061,7 +1084,7 @@ export default function ManageGalleryClient({
           return false;
         }
       },
-      [gallery.id, router]
+      [gallery.id, localAvailableMedia, router]
     );
 
   // ==========================================================
@@ -1361,6 +1384,7 @@ export default function ManageGalleryClient({
             handleModalSortChange
           }
           onLoadMore={loadMoreModal}
+          isLoadingMore={isLoadingModal}
           onAddMedia={
             handleAddMediaToGallery
           }

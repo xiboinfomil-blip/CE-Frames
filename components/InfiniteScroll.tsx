@@ -7,6 +7,8 @@ interface InfiniteScrollProps {
   isLoading: boolean;
   onLoadMore: () => void;
   className?: string;
+  root?: Element | null;
+  rootSelector?: string;
 }
 
 export default function InfiniteScroll({
@@ -14,12 +16,15 @@ export default function InfiniteScroll({
   isLoading,
   onLoadMore,
   className = 'h-16',
+  root = null,
+  rootSelector,
 }: InfiniteScrollProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore) return;
+    const observerRoot = root || (rootSelector ? document.querySelector(rootSelector) : null);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -27,12 +32,12 @@ export default function InfiniteScroll({
           onLoadMore();
         }
       },
-      { rootMargin: '400px' }
+      { root: observerRoot, rootMargin: '400px' }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, isLoading, onLoadMore]);
+  }, [hasMore, isLoading, onLoadMore, root, rootSelector]);
 
   if (!hasMore) return null;
 

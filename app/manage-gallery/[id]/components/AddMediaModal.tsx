@@ -56,6 +56,7 @@ interface AddMediaModalProps {
     sortBy: 'newest' | 'oldest' | 'name'
   ) => void;
   onLoadMore: () => void;
+  isLoadingMore?: boolean;
   onAddMedia: (
     mediaId: string
   ) => Promise<boolean>;
@@ -355,6 +356,7 @@ export default function AddMediaModal({
   onFilterChange,
   onSortChange,
   onLoadMore,
+  isLoadingMore = false,
   onAddMedia,
   onPreview,
 }: AddMediaModalProps) {
@@ -823,8 +825,9 @@ export default function AddMediaModal({
 
               <InfiniteScroll
                 hasMore={modalPagination.hasNext}
-                isLoading={isAdding}
+                isLoading={isAdding || isLoadingMore}
                 onLoadMore={onLoadMore}
+                rootSelector=".modal-scroll"
                 className="mt-10 h-16"
               />
             </div>
