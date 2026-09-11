@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/Footer"; // ✅ Import extracted footer
 import { Providers } from "@/components/providers";
+import PageTransition from "@/components/PageTransition";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +39,7 @@ export default function RootLayout({
           
           {/* ✅ flex-1 forces main to expand and push footer to bottom */}
           <main className="flex-1 pt-20">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </main>
           
           {/* ✅ Footer sits outside main, naturally pushed to bottom */}
