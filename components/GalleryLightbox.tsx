@@ -281,21 +281,6 @@ export default function GalleryLightbox({
           } !important;
         }
 
-        .yarl__slide:has(.yarl__slide_image)::after,
-        .yarl__slide:has(video)::after {
-          content: '';
-          position: absolute;
-          z-index: 2;
-          right: clamp(20px, 4vw, 64px);
-          bottom: clamp(20px, 4vw, 64px);
-          width: min(18vw, 128px);
-          aspect-ratio: 3 / 1;
-          pointer-events: none;
-          background: url('/Logo name.png') center / contain no-repeat;
-          opacity: 0.55;
-          mix-blend-mode: multiply;
-        }
-
         /* ---------------------------------------------
            Captions
            --------------------------------------------- */

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import PhotoAlbum from 'react-photo-album';
 import 'react-photo-album/styles.css';
 import MediaViewport from '@/components/media-viewport';
@@ -302,20 +301,6 @@ export default function PhotoGrid({
                     "
                   />
 
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute bottom-3 right-3 z-20 w-[22%] max-w-[96px]"
-                  >
-                    <Image
-                      src="/Logo name.png"
-                      alt=""
-                      width={512}
-                      height={170}
-                      unoptimized
-                      draggable={false}
-                      className="h-auto w-full opacity-55 mix-blend-multiply"
-                    />
-                  </div>
                 </div>
 
                 {/* -----------------------------------------
