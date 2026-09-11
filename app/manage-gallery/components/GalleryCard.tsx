@@ -14,7 +14,6 @@ import {
   Image as ImageIcon,
   Play,
   MoreHorizontal,
-  Check,
   ArrowUpRight,
 } from 'lucide-react';
 
@@ -396,6 +395,23 @@ export const GalleryCard = memo(function GalleryCard({
           )}
         </Link>
 
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onToggleSelect?.();
+          }}
+          aria-pressed={isSelected}
+          className={`mb-4 w-full rounded-xl border px-3 py-2 text-left text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] ${
+            isSelected
+              ? 'border-[#004A87] bg-[#004A87] text-white'
+              : 'border-[#E2E8F0] bg-[#F5F7FA] text-[#004A87] hover:border-[#004A87] hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/10'
+          }`}
+        >
+          {isSelected ? 'Sélectionné' : 'Sélectionner'}
+        </button>
+
         {/* ====================================================
             TOP CONTROLS
             ==================================================== */}
@@ -412,71 +428,6 @@ export const GalleryCard = memo(function GalleryCard({
             justify-between
           "
         >
-          {/* Selection */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleSelect?.();
-            }}
-            aria-label={
-              isSelected
-                ? 'Désélectionner la galerie'
-                : 'Sélectionner la galerie'
-            }
-            aria-pressed={isSelected}
-            className={`
-              group/select
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              rounded-xl
-              border
-              shadow-lg
-              backdrop-blur-xl
-              transition-all
-              duration-200
-              focus:outline-none
-              focus-visible:ring-2
-              focus-visible:ring-[#FF8201]
-
-              ${
-                isSelected
-                  ? `
-                    border-[#004A87]
-                    bg-[#004A87]
-                    text-white
-                  `
-                  : `
-                    border-white/70
-                    bg-white/90
-                    text-transparent
-                    hover:bg-white
-                    dark:border-white/20
-                    dark:bg-[#102238]/80
-                    dark:hover:bg-[#102238]
-                  `
-              }
-            `}
-          >
-            <Check
-              className={`
-                h-4
-                w-4
-                transition-transform
-                duration-200
-                ${
-                  isSelected
-                    ? 'scale-100'
-                    : 'scale-75 group-hover/select:scale-90'
-                }
-              `}
-            />
-          </button>
-
           {/* Right controls */}
           <div className="flex items-center gap-2">
             {/* Visibility */}

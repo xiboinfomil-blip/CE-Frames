@@ -13,7 +13,6 @@ import BaseModal from '@/components/BaseModal';
 import { CustomButton } from '@/components/ui/CustomButton';
 
 import {
-  HiCheck,
   HiPlus,
   HiPhoto,
 } from 'react-icons/hi2';
@@ -204,64 +203,6 @@ const MediaCard = memo(function MediaCard({
           />
         </div>
 
-        {/* ===================================================
-            Animated Selection Badge
-        ==================================================== */}
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-          className={`
-            absolute
-            top-3
-            right-3
-            z-20
-            flex
-            h-6
-            w-6
-            items-center
-            justify-center
-            rounded-full
-            border
-            shadow-sm
-            transition-all
-            duration-300
-            ease-out
-            cursor-pointer
-
-            focus:outline-none
-
-            ${
-              isSelected
-                ? `
-                  bg-[#004A87]
-                  border-[#004A87]
-                  text-white
-                  scale-100
-                  shadow-[0_2px_8px_rgba(0,74,135,0.25)]
-                `
-                : `
-                  bg-white/95
-                  border-white
-                  text-transparent
-                  scale-90
-                  hover:scale-100
-                  hover:border-[#FF8201]
-                  hover:bg-[#FFF1E5]
-                `
-            }
-          `}
-          role="checkbox"
-          aria-checked={isSelected}
-          aria-label={
-            isSelected
-              ? 'Désélectionner ce média'
-              : 'Sélectionner ce média'
-          }
-        >
-          <HiCheck className="h-3.5 w-3.5" />
-        </div>
       </div>
 
       {/* =====================================================

@@ -22,7 +22,6 @@ import {
 
 import {
   MoreHorizontal,
-  Check,
 } from 'lucide-react';
 
 export interface MediaSchema {
@@ -216,6 +215,15 @@ const MediaCard = memo(function MediaCard({
         onDelete,
       ]
     );
+  
+  const handleSelectClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onSelect(media.id);
+    },
+    [media.id, onSelect]
+  );
 
   /*
    * ----------------------------------------------------------
@@ -368,71 +376,6 @@ const MediaCard = memo(function MediaCard({
             justify-between
           "
         >
-          {/* Selection */}
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onSelect(media.id);
-            }}
-            aria-label={
-              isSelected
-                ? 'Désélectionner le média'
-                : 'Sélectionner le média'
-            }
-            aria-pressed={isSelected}
-            className={`
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              rounded-xl
-              border
-              shadow-lg
-              backdrop-blur-xl
-              transition-all
-              duration-200
-              focus:outline-none
-              focus-visible:ring-2
-              focus-visible:ring-[#FF8201]
-
-              ${
-                isSelected
-                  ? `
-                    border-[#004A87]
-                    bg-[#004A87]
-                    text-white
-                  `
-                  : `
-                    border-white/70
-                    bg-white/90
-                    text-transparent
-                    hover:bg-white
-                    dark:border-white/20
-                    dark:bg-[#102238]/85
-                    dark:hover:bg-[#102238]
-                  `
-              }
-            `}
-          >
-            <Check
-              className={`
-                h-4
-                w-4
-                transition-transform
-                duration-200
-                ${
-                  isSelected
-                    ? 'scale-100'
-                    : 'scale-75'
-                }
-              `}
-            />
-          </button>
-
           {/* Right controls */}
 
           <div className="flex items-center gap-2">
@@ -782,6 +725,19 @@ const MediaCard = memo(function MediaCard({
           md:p-5
         "
       >
+        <button
+          type="button"
+          onClick={handleSelectClick}
+          aria-pressed={isSelected}
+          className={`mb-4 w-full rounded-xl border px-3 py-2 text-left text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] ${
+            isSelected
+              ? 'border-[#004A87] bg-[#004A87] text-white'
+              : 'border-[#E2E8F0] bg-[#F5F7FA] text-[#004A87] hover:border-[#004A87] hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/10'
+          }`}
+        >
+          {isSelected ? 'Sélectionné' : 'Sélectionner'}
+        </button>
+
         {/* ----------------------------------------------------
             Title
             ---------------------------------------------------- */}

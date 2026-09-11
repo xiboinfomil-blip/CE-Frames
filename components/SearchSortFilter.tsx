@@ -33,6 +33,7 @@ interface MediaLibraryHeaderProps {
   sorts?: SortOption[];
   totalItems: number;
   showCount?: boolean;
+  actions?: React.ReactNode;
 }
 
 const MediaLibraryHeader = memo(function MediaLibraryHeader({
@@ -47,6 +48,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
   sorts = [],
   totalItems,
   showCount = true,
+  actions,
 }: MediaLibraryHeaderProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -81,7 +83,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
 
   return (
     <header className="sticky top-4 z-40 px-4 md:px-6 pointer-events-none mb-8">
-      <div className="container mx-auto max-w-[1800px] pointer-events-auto">
+      <div className="container mx-auto max-w-[1800px] pointer-events-auto flex items-start gap-3">
 
         {/* Floating Control Deck */}
         <div className="bg-white/95 dark:bg-[#102238]/95 backdrop-blur-xl border border-[#E2E8F0] dark:border-white/10 shadow-2xl shadow-[#00345F]/10 rounded-2xl p-3 md:p-4 flex flex-col gap-3.5 transition-all duration-300">
@@ -259,6 +261,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
             </div>
           )}
         </div>
+        {actions}
       </div>
 
       <style jsx global>{`

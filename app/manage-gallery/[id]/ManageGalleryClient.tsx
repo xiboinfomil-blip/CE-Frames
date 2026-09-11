@@ -12,6 +12,7 @@ import MediaLibraryHeader, {
 } from '@/components/SearchSortFilter';
 import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
+import BulkActionsMenu from '@/components/BulkActionsMenu';
 import CardGrid from '@/components/displayGrid';
 import { CustomButton } from '@/components/ui/CustomButton';
 import GalleryLightbox, { type MediaItem as LightboxMediaItem } from '@/components/GalleryLightbox';
@@ -19,7 +20,6 @@ import GalleryLightbox, { type MediaItem as LightboxMediaItem } from '@/componen
 import {
   FolderOpen,
   GripVertical,
-  Trash2,
 } from 'lucide-react';
 
 // DnD Kit Imports
@@ -1245,6 +1245,16 @@ export default function ManageGalleryClient({
               totalItems={
                 mainPagination.total
               }
+              actions={
+                <BulkActionsMenu
+                  selectedCount={selectedMediaIds.length}
+                  totalCount={localMediaItems.length}
+                  onSelectAll={handleSelectAllMedia}
+                  onBulkAction={handleBulkRemoveMedia}
+                  actionLabel="Retirer"
+                  selectedLabel="sélectionnés"
+                />
+              }
             />
           </div>
         </header>
@@ -1264,38 +1274,6 @@ export default function ManageGalleryClient({
             w-full
           "
         >
-          {localMediaItems.length > 0 && (
-            <div className="mb-6 rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[#FF8201]" />
-                  Actions groupées
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSelectAllMedia}
-                    className="rounded-xl border border-[#E2E8F0] bg-[#F5F7FA] px-3.5 py-2 text-sm font-semibold text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
-                  >
-                    {selectedMediaIds.length === localMediaItems.length ? 'Tout désélectionner' : 'Sélectionner tout'}
-                  </button>
-
-                  {selectedMediaIds.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={handleBulkRemoveMedia}
-                      className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-3.5 py-2 text-sm font-bold text-white transition hover:bg-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Retirer {selectedMediaIds.length}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
           <DndContext
             sensors={sensors}
             collisionDetection={

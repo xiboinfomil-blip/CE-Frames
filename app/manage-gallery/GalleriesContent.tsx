@@ -16,10 +16,11 @@ import MediaLibraryHeader, {
 } from '@/components/SearchSortFilter';
 import InfiniteScroll from '@/components/InfiniteScroll';
 import FloatingActionButton from '@/components/FloatingActionButton';
+import BulkActionsMenu from '@/components/BulkActionsMenu';
 
 import { VISIBILITY_STATUSES } from '@/db/schema';
 import { GallerySummary } from '@/types/types';
-import { Images, Trash2 } from 'lucide-react';
+import { Images } from 'lucide-react';
 
 interface GalleriesContentProps {
   initialGalleries: GallerySummary[];
@@ -370,6 +371,16 @@ export default function GalleriesContent({
               onSortChange={handleSort}
               sorts={SORT_OPTIONS}
               totalItems={pagination.total}
+              actions={
+                <BulkActionsMenu
+                  selectedCount={selectedGalleryIds.length}
+                  totalCount={galleries.length}
+                  onSelectAll={handleSelectAll}
+                  onBulkAction={handleBulkDelete}
+                  actionLabel="Supprimer"
+                  selectedLabel="sélectionnées"
+                />
+              }
             />
           </div>
         </header>
@@ -525,38 +536,6 @@ export default function GalleriesContent({
                 duration-500
               "
             >
-              {galleries.length > 0 && (
-                <div className="rounded-2xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-sm dark:border-white/10 dark:bg-[#102238]">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
-                      <span className="inline-block h-2 w-2 rounded-full bg-[#FF8201]" />
-                      Actions groupées
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleSelectAll}
-                        className="rounded-xl border border-[#E2E8F0] bg-[#F5F7FA] px-3.5 py-2 text-sm font-semibold text-[#00345F] transition hover:bg-[#EAF4FB] dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
-                      >
-                        {selectedGalleryIds.length === galleries.length ? 'Tout désélectionner' : 'Sélectionner tout'}
-                      </button>
-
-                      {selectedGalleryIds.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={handleBulkDelete}
-                          className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-3.5 py-2 text-sm font-bold text-white transition hover:bg-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Supprimer {selectedGalleryIds.length}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <GalleryGrid
                 galleries={galleries}
                 onEdit={handleOpenEditModal}
