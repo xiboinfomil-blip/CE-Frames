@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 const MEDIA_TOKEN_TTL_SECONDS = 5 * 60;
 
 export function getGallerySecuritySecret() {
-  const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
   if (secret) return secret;
 
   // Keep the gallery available if deployment configuration is incomplete.
