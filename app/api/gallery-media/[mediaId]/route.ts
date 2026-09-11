@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { getServerSession } from 'next-auth/next';
+import { join } from 'node:path';
+import sharp from 'sharp';
 
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
@@ -10,6 +13,32 @@ import {
 } from '@/lib/gallery-media-proxy';
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
+const watermarkPath = join(process.cwd(), 'public', 'Logo name.png');
+
+async function watermarkImage(input: Buffer, contentType: string) {
+  const image = sharp(input);
+  const metadata = await image.metadata();
+  const imageWidth = metadata.width || 1200;
+  const watermarkWidth = Math.max(96, Math.min(320, Math.round(imageWidth * 0.18)));
+  const watermark = await sharp(await readFile(watermarkPath))
+    .resize({ width: watermarkWidth, withoutEnlargement: true })
+    .png()
+    .toBuffer();
+
+  const composited = image.composite([
+    { input: watermark, gravity: 'southeast', blend: 'over' },
+  ]);
+
+  if (contentType.includes('jpeg') || contentType.includes('jpg')) {
+    return { body: await composited.jpeg({ quality: 88, mozjpeg: true }).toBuffer(), contentType: 'image/jpeg' };
+  }
+
+  if (contentType.includes('webp')) {
+    return { body: await composited.webp({ quality: 88 }).toBuffer(), contentType: 'image/webp' };
+  }
+
+  return { body: await composited.png({ compressionLevel: 9 }).toBuffer(), contentType: 'image/png' };
+}
 
 function hasGalleryAccess(request: NextRequest, galleryId: string) {
   const value = request.cookies.get(`${ACCESS_COOKIE_PREFIX}${galleryId}`)?.value;
@@ -87,9 +116,17 @@ export async function GET(
       return new NextResponse('Media unavailable', { status: upstream.status });
     }
 
+    const upstreamContentType = upstream.headers.get('content-type') || '';
+    const shouldWatermark = upstreamContentType.startsWith('image/') && !range;
+    const watermarked = shouldWatermark
+      ? await watermarkImage(Buffer.from(await upstream.arrayBuffer()), upstreamContentType)
+      : null;
+    const responseBody = watermarked?.body || upstream.body;
     const headers = new Headers();
-    const contentType = upstream.headers.get('content-type');
-    const contentLength = upstream.headers.get('content-length');
+    const contentType = watermarked?.contentType || upstreamContentType;
+    const contentLength = shouldWatermark
+      ? String(watermarked?.body.byteLength || '')
+      : upstream.headers.get('content-length');
     const contentRange = upstream.headers.get('content-range');
     if (contentType) headers.set('content-type', contentType);
     if (contentLength) headers.set('content-length', contentLength);
@@ -99,7 +136,7 @@ export async function GET(
     headers.set('x-content-type-options', 'nosniff');
     headers.set('content-disposition', 'inline');
 
-    return new NextResponse(upstream.body, {
+    return new NextResponse(responseBody, {
       status: upstream.status,
       headers,
     });
