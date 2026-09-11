@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowRight,
   Camera,
   Images,
   Aperture,
+  Users,
 } from 'lucide-react';
 
 import MediaViewport from '@/components/media-viewport';
@@ -16,8 +18,21 @@ import { LatestPublicGallery } from '@/lib/db-helpers';
 // PROPS
 // ============================================================
 
+interface CeMember {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  photoUrl: string | null;
+}
+
+interface CeProfile {
+  groupPhotoUrl: string | null;
+}
+
 interface HomeProps {
   latestGalleries: LatestPublicGallery[];
+  ceMembers?: CeMember[];
+  ceProfile?: CeProfile;
 }
 
 // ============================================================
@@ -62,6 +77,8 @@ const FadeIn = ({
 
 export default function Home({
   latestGalleries,
+  ceMembers = [],
+  ceProfile,
 }: HomeProps) {
   const heroGallery = latestGalleries?.[0];
 
@@ -873,6 +890,369 @@ export default function Home({
           </div>
         </section>
       )}
+
+      {/* ================================================== */}
+      {/* CE MEMBERS SECTION */}
+      {/* ================================================== */}
+
+      <section
+        className="
+          border-y
+          border-[#E2E8F0]
+          bg-gradient-to-b
+          from-white
+          to-[#F5F7FA]
+          py-24
+
+          dark:border-white/8
+          dark:from-[#091522]
+          dark:to-[#0E1C2D]/60
+
+          md:py-32
+        "
+      >
+        <div
+          className="
+            container
+            mx-auto
+            max-w-[1600px]
+            px-6
+
+            md:px-12
+          "
+        >
+          {/* ============================================ */}
+          {/* HEADER */}
+          {/* ============================================ */}
+
+          <FadeIn>
+            <div
+              className="
+                mb-16
+                flex
+                flex-col
+                items-start
+                justify-between
+                gap-8
+
+                md:flex-row
+                md:items-end
+              "
+            >
+              <div>
+                <span
+                  className="
+                    mb-2
+                    block
+                    text-xs
+                    font-bold
+                    uppercase
+                    tracking-[0.15em]
+                    text-[#FF8201]
+                  "
+                >
+                  À propos
+                </span>
+
+                <h2
+                  className="
+                    text-3xl
+                    font-black
+                    tracking-tight
+                    text-[#172033]
+
+                    dark:text-white
+
+                    md:text-5xl
+                  "
+                >
+                  LES MEMBRES DU CE
+                </h2>
+
+                <p
+                  className="
+                    mt-4
+                    max-w-2xl
+                    text-lg
+                    leading-relaxed
+                    text-[#64748B]
+
+                    dark:text-white/60
+                  "
+                >
+                  Retrouvez les personnes qui font vivre le Comité d&apos;Entreprise et portent les sujets qui comptent pour les collaborateurs.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* ============================================ */}
+          {/* GROUP PHOTO */}
+          {/* ============================================ */}
+
+          {ceProfile?.groupPhotoUrl && (
+            <FadeIn delay={100} className="mb-16">
+              <div
+                className="
+                  relative
+                  overflow-hidden
+                  rounded-3xl
+                  bg-[#00345F]
+                  shadow-lg
+
+                  dark:shadow-black/40
+                "
+              >
+                <Image
+                  src={ceProfile.groupPhotoUrl}
+                  alt="Membres du Comité d'Entreprise"
+                  width={1200}
+                  height={500}
+                  className="
+                    h-auto
+                    w-full
+                    max-h-[28rem]
+                    object-cover
+                  "
+                  priority
+                />
+              </div>
+            </FadeIn>
+          )}
+
+          {/* ============================================ */}
+          {/* MEMBERS GRID */}
+          {/* ============================================ */}
+
+          {ceMembers && ceMembers.length > 0 ? (
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-6
+
+                sm:grid-cols-2
+                lg:grid-cols-3
+                xl:grid-cols-4
+              "
+            >
+              {ceMembers.map((member, index) => {
+                const name = [member.firstName, member.lastName]
+                  .filter(Boolean)
+                  .join(' ') || 'Membre du CE';
+
+                return (
+                  <FadeIn
+                    key={member.id}
+                    delay={150 + index * 50}
+                    className="h-full"
+                  >
+                    <div
+                      className="
+                        group
+                        relative
+                        flex
+                        h-full
+                        flex-col
+                        overflow-hidden
+                        rounded-2xl
+                        border
+                        border-[#E2E8F0]
+                        bg-white
+                        shadow-sm
+                        transition-all
+                        duration-300
+
+                        hover:-translate-y-1
+                        hover:border-[#FF8201]/30
+                        hover:shadow-lg
+                        hover:shadow-[#FF8201]/10
+
+                        dark:border-white/10
+                        dark:bg-[#102238]
+                        dark:shadow-black/20
+                      "
+                    >
+                      {/* ================================== */}
+                      {/* PHOTO */}
+                      {/* ================================== */}
+
+                      <div
+                        className="
+                          relative
+                          overflow-hidden
+                          bg-[#EAF4FB]
+
+                          dark:bg-[#00345F]
+                        "
+                      >
+                        {member.photoUrl ? (
+                          <Image
+                            src={member.photoUrl}
+                            alt={name}
+                            width={480}
+                            height={480}
+                            className="
+                              aspect-square
+                              w-full
+                              object-cover
+                              transition-transform
+                              duration-500
+
+                              group-hover:scale-110
+                            "
+                          />
+                        ) : (
+                          <div
+                            className="
+                              flex
+                              aspect-square
+                              w-full
+                              items-center
+                              justify-center
+                              bg-linear-to-br
+                              from-[#EAF4FB]
+                              to-[#D4E5F4]
+                              text-5xl
+                              font-black
+                              text-[#004A87]
+                              transition-all
+                              duration-300
+
+                              group-hover:from-[#D4E5F4]
+                              group-hover:to-[#B8D8ED]
+
+                              dark:from-[#00345F]
+                              dark:to-[#002D4F]
+                              dark:text-white
+                            "
+                          >
+                            {(
+                              member.firstName?.[0] ||
+                              member.lastName?.[0] ||
+                              'C'
+                            ).toUpperCase()}
+                          </div>
+                        )}
+
+                        {/* Orange accent bar */}
+                        <div
+                          className="
+                            absolute
+                            left-0
+                            top-0
+                            h-1
+                            w-0
+                            bg-[#FF8201]
+                            transition-all
+                            duration-500
+
+                            group-hover:w-full
+                          "
+                        />
+                      </div>
+
+                      {/* ================================== */}
+                      {/* CONTENT */}
+                      {/* ================================== */}
+
+                      <div className="flex flex-1 flex-col p-6">
+                        <div
+                          className="
+                            mb-2
+                            flex
+                            items-center
+                            gap-1.5
+                            text-[#FF8201]
+                          "
+                        >
+                          <Users className="h-4 w-4" />
+
+                          <span
+                            className="
+                              text-[10px]
+                              font-bold
+                              uppercase
+                              tracking-[0.15em]
+                            "
+                          >
+                            CE
+                          </span>
+                        </div>
+
+                        <h3
+                          className="
+                            mb-2
+                            text-lg
+                            font-black
+                            leading-tight
+                            text-[#172033]
+
+                            dark:text-white
+                          "
+                        >
+                          {name}
+                        </h3>
+
+                        <p
+                          className="
+                            text-sm
+                            font-medium
+                            text-[#64748B]
+
+                            dark:text-white/50
+                          "
+                        >
+                          Membre du Comité d&apos;Entreprise
+                        </p>
+                      </div>
+                    </div>
+                  </FadeIn>
+                );
+              })}
+            </div>
+          ) : (
+            <FadeIn>
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-dashed
+                  border-[#CBD5E1]
+                  bg-[#F5F7FA]
+                  p-12
+                  text-center
+
+                  dark:border-white/20
+                  dark:bg-[#102238]
+                "
+              >
+                <Users
+                  className="
+                    mx-auto
+                    mb-4
+                    h-12
+                    w-12
+                    text-[#CBD5E1]
+
+                    dark:text-white/20
+                  "
+                />
+
+                <p
+                  className="
+                    text-[#64748B]
+
+                    dark:text-white/60
+                  "
+                >
+                  Les membres du Comité d&apos;Entreprise seront bientôt présentés ici.
+                </p>
+              </div>
+            </FadeIn>
+          )}
+        </div>
+      </section>
     </main>
   );
 }

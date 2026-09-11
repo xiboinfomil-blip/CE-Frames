@@ -12,16 +12,6 @@ export const NAV_ITEMS = [
     type: 'link',
   },
   {
-    id: 'about',
-    label: 'À propos',
-    href: '/about',
-    desktop: true,
-    mobile: true,
-    mobileGroup: 'main',
-    auth: 'any',
-    type: 'link',
-  },
-  {
     id: 'gallery',
     label: 'Galerie',
     href: '/gallery',
