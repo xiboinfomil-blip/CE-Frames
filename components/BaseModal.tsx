@@ -453,8 +453,8 @@ export default function BaseModal({
                 group
                 ml-auto
                 flex
-                h-8
-                w-8
+                h-11
+                w-11
                 shrink-0
                 items-center
                 justify-center

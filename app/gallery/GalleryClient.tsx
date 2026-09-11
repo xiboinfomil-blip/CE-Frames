@@ -185,9 +185,18 @@ export default function GalleryClient({
 
             // --- Standard Card State ---
             return (
-              <article 
+              <article
+                role="button"
+                tabIndex={0}
                 onClick={() => handleGalleryClick(gallery)}
-                className="group flex flex-col h-full cursor-pointer focus:outline-none"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleGalleryClick(gallery);
+                  }
+                }}
+                aria-label={`Voir la galerie ${gallery.title}`}
+                className="group flex flex-col h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-4 dark:focus-visible:ring-zinc-100"
               >
                 {/* Image Container */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900 shadow-sm group-hover:shadow-md transition-shadow duration-500">

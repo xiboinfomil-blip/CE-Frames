@@ -138,7 +138,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                       {searchValue ? (
                         <button
                           onClick={handleClear}
-                          className="p-1.5 rounded-lg text-[#64748B] hover:text-[#00345F] hover:bg-[#EAF4FB] transition-all"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-[#64748B] hover:bg-[#EAF4FB] hover:text-[#00345F] transition-all"
                           aria-label="Effacer la recherche"
                         >
                           <HiXMark className="w-4 h-4" />
@@ -146,7 +146,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                       ) : (
                         <button
                           onClick={onSearchSubmit}
-                          className="p-1.5 rounded-lg text-[#94A3B8] hover:text-[#004A87] opacity-0 group-hover:opacity-100 transition-all"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-[#94A3B8] hover:bg-[#EAF4FB] hover:text-[#004A87] transition-all"
                           aria-label="Valider la recherche"
                         >
                           <HiMagnifyingGlass className="w-4 h-4" />
@@ -194,7 +194,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
 
             <div className="flex items-center gap-3 justify-between md:justify-end">
               {hasSort && (
-                <div className="flex min-w-[170px] flex-col gap-1">
+                <div className="flex min-w-0 flex-1 flex-col gap-1 sm:min-w-[170px] sm:flex-none">
                   <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">
                     Trier
                   </span>
@@ -219,7 +219,7 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                     </select>
 
                     <div
-                      className={`flex items-center justify-between gap-2 h-11 w-full min-w-[170px] px-3.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
+                        className={`flex items-center justify-between gap-2 h-11 w-full px-3.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
                         isDefaultSort
                           ? 'bg-[#F5F7FA] dark:bg-[#0E1C2D] border-[#E2E8F0] dark:border-white/10 text-[#64748B] dark:text-white/60 hover:bg-[#EAF4FB] dark:hover:bg-[#00345F]/50'
                           : 'bg-[#FFF1E5] border-[#FF8201]/30 text-[#00345F] shadow-sm'

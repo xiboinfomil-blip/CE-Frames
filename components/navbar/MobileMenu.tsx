@@ -336,7 +336,14 @@ export default function MobileMenu({
   // ==========================================================
 
   return (
-    <motion.div
+    <>
+      <button
+        type="button"
+        aria-label="Fermer le menu"
+        onClick={() => setIsMenuOpen(false)}
+        className="fixed inset-0 z-40 bg-[#00345F]/20 backdrop-blur-[2px] lg:hidden"
+      />
+      <motion.div
       variants={menuVariants}
       initial="closed"
       animate="open"
@@ -1041,6 +1048,7 @@ export default function MobileMenu({
           )}
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }

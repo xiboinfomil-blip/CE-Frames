@@ -177,8 +177,40 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
             </CustomButton>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px] text-left">
+          <div className="md:hidden">
+            {users.length > 0 ? (
+              <ul className="divide-y divide-[#E2E8F0] dark:divide-white/10">
+                {users.map((user) => (
+                  <li key={user.id} className="flex items-start justify-between gap-4 p-5">
+                    <div className="min-w-0">
+                      <div className="font-semibold break-words">
+                        {user.firstName} {user.lastName}
+                        {user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}
+                      </div>
+                      <div className="mt-1 break-all text-xs text-[#64748B] dark:text-white/40">{user.email}</div>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${ROLE_STYLES[user.role]}`}>{ROLE_LABELS[user.role]}</span>
+                        <span className="text-xs text-[#64748B] dark:text-white/45">{formatDate(user.createdAt)}</span>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <button type="button" onClick={() => openEdit(user)} className="flex h-11 w-11 items-center justify-center rounded-lg text-[#004A87] transition hover:bg-[#EAF4FB] dark:text-[#9BCBFF] dark:hover:bg-white/10" aria-label={`Modifier ${user.username}`} title="Modifier">
+                        <HiPencilSquare className="h-5 w-5" />
+                      </button>
+                      <button type="button" onClick={() => handleDelete(user)} disabled={user.id === currentUserId} className="flex h-11 w-11 items-center justify-center rounded-lg text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-30 dark:text-red-300 dark:hover:bg-red-500/10" aria-label={`Supprimer ${user.username}`} title={user.id === currentUserId ? 'Votre compte ne peut pas être supprimé' : 'Supprimer'}>
+                        <HiTrash className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="px-5 py-16 text-center text-sm text-[#64748B] dark:text-white/50">Aucun utilisateur trouvé.</p>
+            )}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full text-left">
               <thead className="bg-[#F5F7FA] text-[11px] uppercase tracking-[0.12em] text-[#64748B] dark:bg-white/[0.03] dark:text-white/45">
                 <tr>
                   <th className="px-5 py-4 font-bold">Utilisateur</th>

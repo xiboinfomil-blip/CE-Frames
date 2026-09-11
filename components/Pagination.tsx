@@ -123,8 +123,8 @@ const Pagination = memo(function Pagination({
             items-center
             justify-center
 
-            w-9
-            h-9
+            w-11
+            h-11
             sm:w-10
             sm:h-10
 
@@ -180,8 +180,8 @@ const Pagination = memo(function Pagination({
               <span
                 key={`ellipsis-${index}`}
                 className="
-                  w-7
-                  h-9
+                  w-8
+                  h-11
                   sm:w-9
                   sm:h-10
 
@@ -216,8 +216,8 @@ const Pagination = memo(function Pagination({
                 className={`
                   relative
 
-                  w-9
-                  h-9
+                  w-11
+                  h-11
                   sm:w-10
                   sm:h-10
 
@@ -294,8 +294,8 @@ const Pagination = memo(function Pagination({
             items-center
             justify-center
 
-            w-9
-            h-9
+            w-11
+            h-11
             sm:w-10
             sm:h-10
 
