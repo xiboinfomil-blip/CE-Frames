@@ -3,7 +3,6 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { getServerSession } from 'next-auth/next';
 import { join } from 'node:path';
-import sharp from 'sharp';
 
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
@@ -14,8 +13,10 @@ import {
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
 const watermarkPath = join(process.cwd(), 'public', 'Logo name.png');
+export const runtime = 'nodejs';
 
 async function watermarkImage(input: Buffer, contentType: string) {
+  const { default: sharp } = await import('sharp');
   const image = sharp(input);
   const metadata = await image.metadata();
   const imageWidth = metadata.width || 1200;
@@ -118,10 +119,20 @@ export async function GET(
 
     const upstreamContentType = upstream.headers.get('content-type') || '';
     const shouldWatermark = upstreamContentType.startsWith('image/') && !range;
-    const watermarked = shouldWatermark
-      ? await watermarkImage(Buffer.from(await upstream.arrayBuffer()), upstreamContentType)
-      : null;
-    const responseBody = watermarked?.body || upstream.body;
+    let watermarked: { body: Buffer; contentType: string } | null = null;
+    if (shouldWatermark) {
+      try {
+        watermarked = await watermarkImage(
+          Buffer.from(await upstream.arrayBuffer()),
+          upstreamContentType
+        );
+      } catch (error) {
+        console.error('Gallery watermark processing failed:', error);
+      }
+    }
+    const responseBody = watermarked?.body
+      ? new Uint8Array(watermarked.body)
+      : upstream.body;
     const headers = new Headers();
     const contentType = watermarked?.contentType || upstreamContentType;
     const contentLength = shouldWatermark
