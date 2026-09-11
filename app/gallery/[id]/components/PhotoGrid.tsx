@@ -304,7 +304,7 @@ export default function PhotoGrid({
 
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                    className="pointer-events-none absolute bottom-3 right-3 z-20 w-[22%] max-w-[96px]"
                   >
                     <Image
                       src="/Logo name.png"
@@ -312,7 +312,7 @@ export default function PhotoGrid({
                       width={512}
                       height={170}
                       draggable={false}
-                      className="w-[58%] max-w-[240px] opacity-35 mix-blend-multiply"
+                      className="h-auto w-full opacity-55 mix-blend-multiply"
                     />
                   </div>
                 </div>

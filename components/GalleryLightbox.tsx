@@ -286,14 +286,13 @@ export default function GalleryLightbox({
           content: '';
           position: absolute;
           z-index: 2;
-          top: 50%;
-          left: 50%;
-          width: min(42vw, 280px);
+          right: clamp(20px, 4vw, 64px);
+          bottom: clamp(20px, 4vw, 64px);
+          width: min(18vw, 128px);
           aspect-ratio: 3 / 1;
-          transform: translate(-50%, -50%);
           pointer-events: none;
           background: url('/Logo name.png') center / contain no-repeat;
-          opacity: 0.28;
+          opacity: 0.55;
           mix-blend-mode: multiply;
         }
 
