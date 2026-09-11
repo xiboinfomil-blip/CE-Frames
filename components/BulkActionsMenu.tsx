@@ -36,18 +36,19 @@ export default function BulkActionsMenu({
   }, []);
 
   return (
-    <div ref={menuRef} className="relative shrink-0">
+    <div ref={menuRef} className="relative shrink-0 self-center">
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#00345F] shadow-sm transition hover:border-[#FF8201]/50 hover:bg-[#FFF8F2] dark:border-white/10 dark:bg-[#102238] dark:text-white dark:hover:bg-white/10"
+        aria-label="Ouvrir les actions groupées"
+        title="Actions groupées"
+        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E8F0] bg-white text-[#00345F] shadow-sm transition hover:border-[#FF8201]/50 hover:bg-[#FFF8F2] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] dark:border-white/10 dark:bg-[#102238] dark:text-white dark:hover:bg-white/10"
       >
         <MoreHorizontal className="h-4 w-4" />
-        <span>Actions</span>
         {selectedCount > 0 && (
-          <span className="rounded-full bg-[#004A87] px-1.5 py-0.5 text-[10px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-[#004A87] px-1 py-0.5 text-[9px] font-bold leading-none text-white">
             {selectedCount}
           </span>
         )}
