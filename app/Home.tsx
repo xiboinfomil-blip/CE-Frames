@@ -314,7 +314,7 @@ export default function Home({
 
             <FadeIn delay={300}>
               <Link
-                href={`/gallery/${heroGallery.slug}`}
+                href={`/gallery/${heroGallery.id}`}
                 className="
                   group
                   inline-flex
@@ -583,7 +583,7 @@ export default function Home({
                     className="h-full"
                   >
                     <Link
-                      href={`/gallery/${gallery.slug}`}
+                      href={`/gallery/${gallery.id}`}
                       className="
                         group
                         relative

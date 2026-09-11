@@ -112,7 +112,7 @@ export default function GalleryClient({
   };
 
   const handleGalleryClick = (gallery: GallerySummary) => {
-    router.push(`/gallery/${gallery.slug}`);
+    router.push(`/gallery/${gallery.id}`);
   };
 
   const displayedGalleries = galleries;
