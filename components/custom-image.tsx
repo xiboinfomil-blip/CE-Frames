@@ -49,7 +49,12 @@ const CustomImage = ({
       style={aspectRatio ? { aspectRatio } : undefined}
     >
       {!isLoaded && !fallbackFailed && (
-        <div className="absolute inset-0 z-0 animate-pulse bg-slate-200 dark:bg-slate-800" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-200/70 dark:bg-slate-800/70">
+          <span
+            className="h-8 w-8 animate-spin rounded-full border-2 border-[#004A87]/20 border-t-[#FF8201]"
+            aria-label="Chargement de l’image"
+          />
+        </div>
       )}
 
       {fallbackFailed ? (

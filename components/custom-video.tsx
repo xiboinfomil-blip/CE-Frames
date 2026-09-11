@@ -146,12 +146,19 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
             className="
               absolute
               inset-0
-              z-0
-              animate-pulse
-              bg-[#EAF4FB]
-              dark:bg-[#00345F]/40
+              z-20
+              flex
+              items-center
+              justify-center
+              bg-[#EAF4FB]/80
+              dark:bg-[#00345F]/60
             "
-          />
+          >
+            <span
+              className="h-8 w-8 animate-spin rounded-full border-2 border-[#004A87]/20 border-t-[#FF8201]"
+              aria-label="Chargement de la vidéo"
+            />
+          </div>
         )}
 
         {/* 1. POSTER THUMBNAIL LAYER */}

@@ -94,20 +94,29 @@ export default function GalleryClient({
   };
 
   // Transformation des données pour la grille
-  const photos =
-    gallery?.items.map((item) => ({
-      src:
-        item.media.fullResUrl ||
-        item.media.thumbnailUrl ||
-        '',
-      width: item.media.width || 1080,
-      height: item.media.height || 720,
-      alt:
-        item.media.caption ||
-        item.media.originalFilename ||
-        'Média CE',
-      mediaItem: item.media,
-    })) || [];
+  const photos = gallery?.items.map((item) => {
+    const media = item.media;
+    const fullResUrl = media.fullResUrl || media.thumbnailUrl || '';
+    const thumbnailUrl = media.thumbnailUrl || fullResUrl;
+    const basePhoto = {
+      src: fullResUrl,
+      width: media.width || 1080,
+      height: media.height || 720,
+      alt: media.caption || media.originalFilename || 'Média CE',
+      mediaItem: media,
+    };
+
+    if (media.type === 'video') {
+      return {
+        ...basePhoto,
+        type: 'video' as const,
+        sources: [{ src: fullResUrl, type: 'video/mp4' }],
+        poster: thumbnailUrl,
+      };
+    }
+
+    return basePhoto;
+  }) || [];
 
   if (isLocked) {
     return (
