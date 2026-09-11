@@ -3,16 +3,16 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
-import { protectGalleryMedia } from '@/lib/gallery-media-proxy';
+import {
+  getGallerySecuritySecret,
+  protectGalleryMedia,
+} from '@/lib/gallery-media-proxy';
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
 const ACCESS_DURATION_SECONDS = 60 * 60 * 8;
 
 function accessSignature(galleryId: string, expiresAt: number) {
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error('NEXTAUTH_SECRET is not configured');
-
-  return createHmac('sha256', secret)
+  return createHmac('sha256', getGallerySecuritySecret())
     .update(`${galleryId}:${expiresAt}`)
     .digest('hex');
 }

@@ -4,7 +4,10 @@ import { getServerSession } from 'next-auth/next';
 
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
-import { verifyGalleryMediaToken } from '@/lib/gallery-media-proxy';
+import {
+  getGallerySecuritySecret,
+  verifyGalleryMediaToken,
+} from '@/lib/gallery-media-proxy';
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
 
@@ -18,8 +21,12 @@ function hasGalleryAccess(request: NextRequest, galleryId: string) {
     return false;
   }
 
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) return false;
+  let secret: string;
+  try {
+    secret = getGallerySecuritySecret();
+  } catch {
+    return false;
+  }
 
   const expected = createHmac('sha256', secret)
     .update(`${galleryId}:${expiresAt}`)
@@ -42,12 +49,13 @@ function isSameSiteRequest(request: NextRequest) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ mediaId: string }> }
+  { params }: { params: Promise<{ mediaId: string; galleryId?: string; token?: string; type?: string }> }
 ) {
   try {
-    const { mediaId } = await params;
-    const galleryId = request.nextUrl.searchParams.get('galleryId');
-    const token = request.nextUrl.searchParams.get('token');
+    const routeParams = await params;
+    const mediaId = routeParams.mediaId;
+    const galleryId = routeParams.galleryId || request.nextUrl.searchParams.get('galleryId');
+    const token = routeParams.token || request.nextUrl.searchParams.get('token');
 
     if (!galleryId || !verifyGalleryMediaToken(galleryId, mediaId, token) || !isSameSiteRequest(request)) {
       return new NextResponse('Forbidden', { status: 403 });

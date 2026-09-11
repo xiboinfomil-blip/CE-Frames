@@ -2,14 +2,19 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const MEDIA_TOKEN_TTL_SECONDS = 5 * 60;
 
-function getSecret() {
+export function getGallerySecuritySecret() {
   const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error('NEXTAUTH_SECRET is not configured');
-  return secret;
+  if (secret) return secret;
+
+  if (process.env.NODE_ENV !== 'production') {
+    return 'ce-frames-local-development-secret';
+  }
+
+  throw new Error('NEXTAUTH_SECRET is not configured');
 }
 
 function signatureFor(galleryId: string, mediaId: string, expiresAt: number) {
-  return createHmac('sha256', getSecret())
+  return createHmac('sha256', getGallerySecuritySecret())
     .update(`${galleryId}:${mediaId}:${expiresAt}`)
     .digest('hex');
 }
@@ -41,8 +46,7 @@ export function verifyGalleryMediaToken(
 
 export function galleryMediaUrl(galleryId: string, mediaId: string, type: 'image' | 'video' | 'gif') {
   const token = createGalleryMediaToken(galleryId, mediaId);
-  const params = new URLSearchParams({ token, type });
-  return `/api/gallery-media/${mediaId}?galleryId=${encodeURIComponent(galleryId)}&${params}`;
+  return `/api/gallery-media/${mediaId}/${galleryId}/${token}/${type}`;
 }
 
 export function protectGalleryMedia<T extends {
