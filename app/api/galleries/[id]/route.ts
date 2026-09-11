@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
+import { protectGalleryMedia } from '@/lib/gallery-media-proxy';
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
 const ACCESS_DURATION_SECONDS = 60 * 60 * 8;
@@ -61,6 +62,11 @@ export async function GET(
     const safeGallery = Object.fromEntries(
       Object.entries(gallery).filter(([key]) => key !== 'passwordHash')
     );
+
+    safeGallery.items = gallery.items.map((item) => ({
+      ...item,
+      media: item.media ? protectGalleryMedia(item.media, gallery.id) : item.media,
+    }));
 
     return NextResponse.json({ gallery: safeGallery });
   } catch (error) {

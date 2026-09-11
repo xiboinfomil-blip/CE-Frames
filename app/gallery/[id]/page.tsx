@@ -6,6 +6,7 @@ import { galleryHelpers } from '@/lib/db-helpers';
 import { GalleryDetail } from '@/types/types';
 import { Suspense } from 'react';
 import Skeleton from '@/components/Skeleton';
+import { protectGalleryMedia } from '@/lib/gallery-media-proxy';
 
 export const revalidate = 300;
 
@@ -49,9 +50,15 @@ async function GalleryContent({ params }: PageProps) {
   }
 
   // 2. Masquage des médias pour les galeries protégées par mot de passe (sécurité payload)
-  const safeGallery: GalleryDetail = gallery.visibility === 'password_protected' 
-    ? { ...gallery, items: [] } 
-    : (gallery as GalleryDetail);
+  const safeGallery = (gallery.visibility === 'password_protected'
+    ? { ...gallery, items: [] }
+    : {
+        ...gallery,
+        items: gallery.items.map((item) => ({
+          ...item,
+          media: item.media ? protectGalleryMedia(item.media, gallery.id) : item.media,
+        })),
+      }) as unknown as GalleryDetail;
 
   return (
     <GalleryClient 
