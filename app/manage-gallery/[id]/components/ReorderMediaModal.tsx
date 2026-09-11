@@ -7,7 +7,7 @@ import { MEDIA_TYPES } from '@/db/schema';
 import { DndContext, DragEndEvent, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Loader2 } from 'lucide-react';
+import { GripVertical, Info, Loader2 } from 'lucide-react';
 
 interface ReorderItem {
   id: string;
@@ -36,18 +36,18 @@ function SortableRow({ item, index }: { item: ReorderItem; index: number }) {
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-3 rounded-xl border bg-white p-2 dark:bg-[#102238] ${isDragging ? 'z-10 border-[#FF8201] shadow-lg' : 'border-[#E2E8F0] dark:border-white/10'}`}
+      className={`flex min-w-0 items-center gap-2 rounded-xl border bg-white p-2 dark:bg-[#102238] sm:gap-3 ${isDragging ? 'z-10 border-[#FF8201] shadow-lg' : 'border-[#E2E8F0] dark:border-white/10'}`}
     >
       <button
         type="button"
         {...attributes}
         {...listeners}
         aria-label={`Réordonner ${item.media.title || item.media.originalFilename || 'le média'}`}
-        className="touch-none rounded-lg p-2 text-[#64748B] hover:bg-[#EAF4FB] hover:text-[#004A87] dark:hover:bg-white/10"
+        className="flex h-10 w-10 shrink-0 touch-none items-center justify-center rounded-lg text-[#64748B] hover:bg-[#EAF4FB] hover:text-[#004A87] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201] dark:hover:bg-white/10"
       >
         <GripVertical className="h-5 w-5" />
       </button>
-      <span className="w-8 text-center text-xs font-bold text-[#64748B]">{index + 1}</span>
+      <span className="w-6 shrink-0 text-center text-xs font-bold text-[#64748B] sm:w-8">{index + 1}</span>
       <MediaViewport
         mediaType={item.media.type as typeof MEDIA_TYPES[number]}
         fullResUrl={item.media.fullResUrl}
@@ -55,11 +55,16 @@ function SortableRow({ item, index }: { item: ReorderItem; index: number }) {
         caption={item.media.title}
         originalFilename={item.media.originalFilename}
         showMagnifyingGlass={false}
-        className="h-14 w-20 rounded-lg"
+        className="h-14 w-16 shrink-0 rounded-lg sm:w-20"
       />
-      <span className="min-w-0 truncate text-sm font-semibold text-[#172033] dark:text-white">
-        {item.media.title || item.media.originalFilename || 'Média sans titre'}
-      </span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-[#172033] dark:text-white">
+          {item.media.title || item.media.originalFilename || 'Média sans titre'}
+        </p>
+        <p className="mt-0.5 truncate text-[10px] uppercase tracking-[0.12em] text-[#94A3B8]">
+          Position {index + 1}
+        </p>
+      </div>
     </div>
   );
 }
@@ -68,6 +73,7 @@ export default function ReorderMediaModal({ isOpen, onClose, galleryId, initialI
   const [items, setItems] = useState(initialItems);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -80,6 +86,7 @@ export default function ReorderMediaModal({ isOpen, onClose, galleryId, initialI
     const loadAllItems = async () => {
       setItems(initialItems);
       setIsLoading(true);
+      setLoadError(false);
       try {
         const loaded: ReorderItem[] = [];
         let page = 1;
@@ -99,7 +106,10 @@ export default function ReorderMediaModal({ isOpen, onClose, galleryId, initialI
     };
 
     loadAllItems().catch(() => {
-      if (!cancelled) setItems(initialItems);
+      if (!cancelled) {
+        setItems(initialItems);
+        setLoadError(true);
+      }
     });
 
     return () => {
@@ -135,18 +145,40 @@ export default function ReorderMediaModal({ isOpen, onClose, galleryId, initialI
       maxWidth="3xl"
       isLoading={isSaving}
       footer={
-        <div className="flex justify-end gap-3">
-          <button type="button" onClick={onClose} disabled={isSaving} className="rounded-xl px-4 py-2 text-sm font-semibold text-[#64748B] hover:bg-[#F5F7FA]">Annuler</button>
-          <button type="button" onClick={handleSave} disabled={isLoading || isSaving || items.length < 2} className="rounded-xl bg-[#004A87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#00345F] disabled:opacity-50">{isSaving ? 'Enregistrement...' : 'Enregistrer'}</button>
+        <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+          <button type="button" onClick={onClose} disabled={isSaving} className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-[#64748B] hover:bg-[#F5F7FA] sm:w-auto">Annuler</button>
+          <button type="button" onClick={handleSave} disabled={isLoading || isSaving || items.length < 2} className="w-full rounded-xl bg-[#004A87] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#00345F] disabled:opacity-50 sm:w-auto">{isSaving ? 'Enregistrement...' : 'Enregistrer l’ordre'}</button>
         </div>
       }
     >
+      <div className="mb-4 flex items-start gap-3 rounded-xl border border-[#D8EAF6] bg-[#F5F9FC] p-3 text-sm text-[#334155] dark:border-white/10 dark:bg-white/[0.04] dark:text-white/75">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#004A87]" />
+        <div className="min-w-0">
+          <p className="font-semibold">Définissez l’ordre de la galerie</p>
+          <p className="mt-0.5 text-xs text-[#64748B] dark:text-white/55">
+            Utilisez la poignée à gauche de chaque média, puis enregistrez vos changements.
+          </p>
+        </div>
+      </div>
+
+      {loadError && !isLoading && (
+        <p className="mb-3 rounded-lg bg-[#FFF1E5] px-3 py-2 text-xs font-medium text-[#9A4D00]">
+          Certains médias n’ont pas pu être chargés. L’ordre actuel est affiché.
+        </p>
+      )}
+
+      {!isLoading && (
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#64748B] dark:text-white/50">
+          {items.length} {items.length === 1 ? 'média' : 'médias'}
+        </p>
+      )}
+
       {isLoading ? (
         <div className="flex min-h-48 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#004A87]" /></div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={items.map((item) => item.id)} strategy={rectSortingStrategy}>
-            <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-1">
+            <div className="max-h-[50vh] space-y-2 overflow-y-auto pr-1 sm:max-h-[60vh]">
               {items.map((item, index) => <SortableRow key={item.id} item={item} index={index} />)}
             </div>
           </SortableContext>
