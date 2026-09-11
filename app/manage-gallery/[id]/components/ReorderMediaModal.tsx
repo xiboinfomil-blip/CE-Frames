@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import BaseModal from '@/components/BaseModal';
+import MediaViewport from '@/components/media-viewport';
+import { MEDIA_TYPES } from '@/db/schema';
 import { DndContext, DragEndEvent, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -13,6 +14,8 @@ interface ReorderItem {
   mediaId: string;
   media: {
     thumbnailUrl: string;
+    fullResUrl: string;
+    type: string;
     title?: string | null;
     originalFilename?: string | null;
   };
@@ -45,12 +48,14 @@ function SortableRow({ item, index }: { item: ReorderItem; index: number }) {
         <GripVertical className="h-5 w-5" />
       </button>
       <span className="w-8 text-center text-xs font-bold text-[#64748B]">{index + 1}</span>
-      <Image
-        src={item.media.thumbnailUrl}
-        alt={item.media.title || item.media.originalFilename || 'Média'}
-        width={80}
-        height={56}
-        className="h-14 w-20 rounded-lg object-cover"
+      <MediaViewport
+        mediaType={item.media.type as typeof MEDIA_TYPES[number]}
+        fullResUrl={item.media.fullResUrl}
+        thumbnailUrl={item.media.thumbnailUrl}
+        caption={item.media.title}
+        originalFilename={item.media.originalFilename}
+        showMagnifyingGlass={false}
+        className="h-14 w-20 rounded-lg"
       />
       <span className="min-w-0 truncate text-sm font-semibold text-[#172033] dark:text-white">
         {item.media.title || item.media.originalFilename || 'Média sans titre'}
