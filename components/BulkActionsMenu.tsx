@@ -8,6 +8,7 @@ interface BulkActionsMenuProps {
   totalCount: number;
   onSelectAll: () => void;
   onBulkAction: () => void;
+  onReorder?: () => void;
   actionLabel: string;
   selectedLabel?: string;
 }
@@ -18,6 +19,7 @@ export default function BulkActionsMenu({
   onSelectAll,
   onBulkAction,
   actionLabel,
+  onReorder,
   selectedLabel = 'Sélectionnés',
 }: BulkActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +73,20 @@ export default function BulkActionsMenu({
             <Check className="h-4 w-4 text-[#004A87]" />
             {allSelected ? 'Tout désélectionner' : 'Sélectionner tout'}
           </button>
+
+          {onReorder && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                onReorder();
+                setIsOpen(false);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#334155] transition hover:bg-[#EAF4FB] dark:text-white/80 dark:hover:bg-white/[0.06]"
+            >
+              Réorganiser les médias
+            </button>
+          )}
 
           <button
             type="button"

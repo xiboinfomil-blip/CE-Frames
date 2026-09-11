@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Swal, { SweetAlertOptions } from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 import MediaCard from './components/MediaCard';
 import AddMediaModal from './components/AddMediaModal';
+import ReorderMediaModal from './components/ReorderMediaModal';
 import MediaLibraryHeader, {
   FilterOption,
   SortOption,
@@ -17,31 +18,7 @@ import CardGrid from '@/components/displayGrid';
 import { CustomButton } from '@/components/ui/CustomButton';
 import GalleryLightbox, { type MediaItem as LightboxMediaItem } from '@/components/GalleryLightbox';
 
-import {
-  FolderOpen,
-  GripVertical,
-} from 'lucide-react';
-
-// DnD Kit Imports
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-
-import {
-  arrayMove,
-  sortableKeyboardCoordinates,
-  SortableContext,
-  rectSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-
-import { CSS } from '@dnd-kit/utilities';
+import { FolderOpen } from 'lucide-react';
 
 interface GalleryData {
   id: string;
@@ -142,101 +119,6 @@ const SORT_OPTIONS: SortOption[] = [
 ];
 
 // ============================================================
-// Sortable Wrapper Component
-// ============================================================
-
-function SortableMediaCard({
-  item,
-  index,
-  onRemove,
-  onManualOrder,
-  onPreview,
-  isSelected,
-  onToggleSelect,
-}: {
-  item: MediaItem;
-  index: number;
-  onRemove: (id: string) => void;
-  onManualOrder: (id: string) => void;
-  onPreview: () => void;
-  isSelected: boolean;
-  onToggleSelect: (id: string) => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: item.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(
-      transform
-    ),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 50 : 'auto',
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`
-        relative
-        group
-        ${isDragging
-          ? 'cursor-grabbing'
-          : 'cursor-grab'}
-      `}
-    >
-      {/* Visual Drag Handle Indicator */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="
-          absolute
-          top-3
-          left-3
-          z-20
-          p-1.5
-          rounded-lg
-          bg-[#00345F]/75
-          backdrop-blur-md
-          text-white
-          opacity-0
-          group-hover:opacity-100
-          transition-all
-          duration-200
-          hover:bg-[#004A87]/90
-          cursor-grab
-          active:cursor-grabbing
-          touch-none
-          shadow-md
-        "
-        aria-label="Glisser pour réordonner"
-      >
-        <GripVertical className="w-4 h-4" />
-      </div>
-
-      <MediaCard
-        media={item.media}
-        onRemove={onRemove}
-        onManualOrder={onManualOrder}
-        onPreview={onPreview}
-        priority={index < 6}
-        isSelected={isSelected}
-        onSelect={onToggleSelect}
-      />
-    </div>
-  );
-}
-
-// ============================================================
 // Main Component
 // ============================================================
 
@@ -252,6 +134,8 @@ export default function ManageGalleryClient({
   const searchParams = useSearchParams();
 
   const [isAddModalOpen, setIsAddModalOpen] =
+    useState(false);
+  const [isReorderModalOpen, setIsReorderModalOpen] =
     useState(false);
 
   // Use the server-provided values as the initial state for this client view.
@@ -352,15 +236,15 @@ export default function ManageGalleryClient({
 
   const applyNewOrder = useCallback(
     async (
-      newItems: MediaItem[],
-      previousItems: MediaItem[]
+      orderedMediaIds: string[]
     ) => {
-      setLocalMediaItems(newItems);
-
-      const orderedMediaIds =
-        newItems.map(
-          (item) => item.mediaId
-        );
+      setLocalMediaItems((current) =>
+        [...current].sort(
+          (a, b) =>
+            orderedMediaIds.indexOf(a.mediaId) -
+            orderedMediaIds.indexOf(b.mediaId)
+        )
+      );
 
       try {
         const res = await fetch(
@@ -406,244 +290,17 @@ export default function ManageGalleryClient({
           },
         });
 
-        setLocalMediaItems(
-          previousItems
-        );
+        router.refresh();
       }
     },
-    [gallery.id]
+    [gallery.id, router]
   );
 
-  // ==========================================================
-  // DnD Sensors Configuration
-  // ==========================================================
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-
-    useSensor(KeyboardSensor, {
-      coordinateGetter:
-        sortableKeyboardCoordinates,
-    })
-  );
-
-  // ==========================================================
-  // DnD Handlers
-  // ==========================================================
-
-  const handleDragEnd = async (
-    event: DragEndEvent
-  ) => {
-    const { active, over } = event;
-
-    if (
-      !over ||
-      active.id === over.id
-    ) {
-      return;
-    }
-
-    const oldIndex =
-      localMediaItems.findIndex(
-        (item) =>
-          item.id === active.id
-      );
-
-    const newIndex =
-      localMediaItems.findIndex(
-        (item) =>
-          item.id === over.id
-      );
-
-    if (
-      oldIndex === -1 ||
-      newIndex === -1
-    ) {
-      return;
-    }
-
-    const newItems = arrayMove(
-      localMediaItems,
-      oldIndex,
-      newIndex
-    );
-
-    await applyNewOrder(
-      newItems,
-      localMediaItems
-    );
-  };
-
-  // ==========================================================
-  // Manual Order Handler
-  // ==========================================================
-
-  const handleManualOrder = useCallback(
-    async (mediaId: string) => {
-      const currentIndex =
-        localMediaItems.findIndex(
-          (item) =>
-            item.id === mediaId
-        );
-
-      if (currentIndex === -1) {
-        return;
-      }
-
-      const swalOptions: SweetAlertOptions =
-        {
-          title: 'Définir la position',
-          text: `Saisissez une position entre 1 et ${localMediaItems.length}`,
-          icon: 'question',
-
-          input: 'number',
-
-          inputAttributes: {
-            min: '1',
-            max: String(
-              localMediaItems.length
-            ),
-            step: '1',
-          },
-
-          inputValue: String(
-            currentIndex + 1
-          ),
-
-          showCancelButton: true,
-
-          confirmButtonText:
-            'Mettre à jour',
-
-          cancelButtonText:
-            'Annuler',
-
-          confirmButtonColor:
-            '#004A87',
-
-          cancelButtonColor:
-            '#EAF4FB',
-
-          background: 'var(--page-background)',
-          color: 'var(--page-foreground)',
-
-          customClass: {
-            popup:
-              'rounded-2xl shadow-2xl border border-[#E2E8F0]',
-
-            title:
-              'font-semibold text-[#172033] dark:text-white',
-
-            input:
-              'border-[#E2E8F0] dark:border-white/10 bg-white dark:bg-[#0E1C2D] text-[#172033] dark:text-white rounded-xl focus:border-[#004A87] focus:ring-[#FF8201]',
-
-            confirmButton:
-              'px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-[#00345F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201]',
-
-            cancelButton:
-              'px-5 py-2.5 rounded-xl text-sm font-medium text-[#00345F] dark:text-white hover:bg-[#EAF4FB] dark:hover:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8201]',
-          },
-        };
-
-      const result =
-        await Swal.fire(
-          swalOptions
-        );
-
-      if (
-        !result.isConfirmed ||
-        !result.value
-      ) {
-        return;
-      }
-
-      const targetPosition =
-        parseInt(
-          result.value as string,
-          10
-        );
-
-      if (
-        isNaN(targetPosition) ||
-        targetPosition < 1 ||
-        targetPosition >
-          localMediaItems.length
-      ) {
-        Swal.fire({
-          title: 'Position invalide',
-          text: `Veuillez saisir un nombre entre 1 et ${localMediaItems.length}.`,
-          icon: 'error',
-          confirmButtonText: 'Fermer',
-          confirmButtonColor:
-            '#004A87',
-          background: 'var(--page-background)',
-          color: 'var(--page-foreground)',
-          customClass: {
-            popup:
-              'rounded-2xl shadow-2xl border border-[#E2E8F0]',
-            confirmButton:
-              'px-5 py-2.5 rounded-xl text-sm font-semibold',
-          },
-        });
-
-        return;
-      }
-
-      const targetIndex =
-        targetPosition - 1;
-
-      if (
-        targetIndex === currentIndex
-      ) {
-        return;
-      }
-
-      const newItems = [
-        ...localMediaItems,
-      ];
-
-      const [movedItem] =
-        newItems.splice(
-          currentIndex,
-          1
-        );
-
-      newItems.splice(
-        targetIndex,
-        0,
-        movedItem
-      );
-
-      await applyNewOrder(
-        newItems,
-        localMediaItems
-      );
-
-      if (result.isConfirmed) {
-        Swal.fire({
-          icon: 'success',
-          title:
-            'Position mise à jour',
-          text: `Déplacé à la position ${targetPosition}`,
-          timer: 1500,
-          showConfirmButton: false,
-          background: 'var(--page-background)',
-          color: 'var(--page-foreground)',
-          customClass: {
-            popup:
-              'rounded-2xl shadow-2xl border border-[#E2E8F0]',
-          },
-        });
-      }
+  const handleSaveReorder = useCallback(
+    async (orderedMediaIds: string[]) => {
+      await applyNewOrder(orderedMediaIds);
     },
-    [
-      localMediaItems,
-      applyNewOrder,
-    ]
+    [applyNewOrder]
   );
 
   // ==========================================================
@@ -1253,6 +910,7 @@ export default function ManageGalleryClient({
                   onBulkAction={handleBulkRemoveMedia}
                   actionLabel="Retirer"
                   selectedLabel="sélectionnés"
+                  onReorder={() => setIsReorderModalOpen(true)}
                 />
               }
             />
@@ -1274,150 +932,128 @@ export default function ManageGalleryClient({
             w-full
           "
         >
-          <DndContext
-            sensors={sensors}
-            collisionDetection={
-              closestCenter
-            }
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={localMediaItems.map(
-                (item) => item.id
-              )}
-              strategy={
-                rectSortingStrategy
-              }
-            >
-              <CardGrid<MediaItem>
-                items={localMediaItems}
-                renderItem={(
-                  item,
-                  index
-                ) => (
-                  <SortableMediaCard
-                    item={item}
-                    index={index}
-                    onRemove={handleRemoveMedia}
-                    onManualOrder={handleManualOrder}
-                    onPreview={() => setLightboxIndex(index)}
-                    isSelected={selectedMediaIds.includes(item.mediaId)}
-                    onToggleSelect={handleToggleMediaSelect}
-                  />
-                )}
-                getKey={(
-                  item: MediaItem
-                ) => item.id}
-                emptyState={
-                  <div
-                    className="
-                      flex
-                      flex-col
-                      items-center
-                      justify-center
-                      py-24
-                      text-center
-                      bg-white
-                      rounded-3xl
-                      border
-                      border-[#E2E8F0]
-                      shadow-[0_4px_16px_rgba(0,52,95,0.05)]
-                    "
-                  >
+                <CardGrid<MediaItem>
+                  items={localMediaItems}
+                  renderItem={(
+                    item,
+                    index
+                  ) => (
+                    <MediaCard
+                      media={item.media}
+                      onRemove={handleRemoveMedia}
+                      onPreview={() => setLightboxIndex(index)}
+                      isSelected={selectedMediaIds.includes(item.mediaId)}
+                      onSelect={handleToggleMediaSelect}
+                    />
+                  )}
+                  getKey={(
+                    item: MediaItem
+                  ) => item.id}
+                  emptyState={
                     <div
                       className="
-                        w-20
-                        h-20
-                        bg-[#EAF4FB]
-                        rounded-2xl
                         flex
+                        flex-col
                         items-center
                         justify-center
-                        mb-6
+                        py-24
+                        text-center
+                        bg-white
+                        rounded-3xl
                         border
                         border-[#E2E8F0]
+                        shadow-[0_4px_16px_rgba(0,52,95,0.05)]
                       "
                     >
-                      <FolderOpen
+                      <div
                         className="
-                          w-8
-                          h-8
-                          text-[#004A87]
+                          w-20
+                          h-20
+                          bg-[#EAF4FB]
+                          rounded-2xl
+                          flex
+                          items-center
+                          justify-center
+                          mb-6
+                          border
+                          border-[#E2E8F0]
                         "
-                      />
-                    </div>
-
-                    <h3
-                      className="
-                        text-xl
-                        font-bold
-                        text-[#172033]
-                        tracking-tight
-                      "
-                    >
-                      {mainPagination.total ===
-                      0
-                        ? "L'album CE est vide"
-                        : 'Aucun résultat trouvé'}
-                    </h3>
-
-                    <p
-                      className="
-                        text-[#64748B]
-                        text-sm
-                        mt-2
-                        max-w-xs
-                        font-medium
-                      "
-                    >
-                      {mainPagination.total ===
-                      0
-                        ? 'Commencez la gestion en ajoutant votre premier média.'
-                        : "Essayez d'ajuster vos critères de recherche."}
-                    </p>
-
-                    {mainPagination.total ===
-                      0 && (
-                      <CustomButton
-                        variant="primary"
-                        size="lg"
-                        onClick={() =>
-                          setIsAddModalOpen(
-                            true
-                          )
-                        }
-                        className="mt-8"
-                        leftIcon={
-                          <FolderOpen className="w-4 h-4" />
-                        }
                       >
-                        Ajouter un média
-                      </CustomButton>
-                    )}
-                  </div>
-                }
-                className="
-                  w-full
-                  min-h-100
-                  grid-cols-2
-                  sm:grid-cols-3
-                  md:grid-cols-4
-                  lg:grid-cols-5
-                  xl:grid-cols-6
-                  gap-4
-                  sm:gap-6
-                "
-                ariaLabel="Médias de l'album"
-              />
-            </SortableContext>
-          </DndContext>
+                        <FolderOpen
+                          className="
+                            w-8
+                            h-8
+                            text-[#004A87]
+                          "
+                        />
+                      </div>
 
-          <InfiniteScroll
-            hasMore={mainHasMore}
-            isLoading={isLoadingMain}
-            onLoadMore={loadMoreMain}
-            className="mt-12 h-16"
-          />
+                      <h3
+                        className="
+                          text-xl
+                          font-bold
+                          text-[#172033]
+                          tracking-tight
+                        "
+                      >
+                        {mainPagination.total ===
+                        0
+                          ? "L'album CE est vide"
+                          : 'Aucun résultat trouvé'}
+                      </h3>
+                      <p
+                        className="
+                          text-[#64748B]
+                          text-sm
+                          mt-2
+                          max-w-xs
+                          font-medium
+                        "
+                      >
+                        {mainPagination.total ===
+                        0
+                          ? 'Commencez la gestion en ajoutant votre premier média.'
+                          : "Essayez d'ajuster vos critères de recherche."}
+                      </p>
+                      {mainPagination.total ===
+                        0 && (
+                        <CustomButton
+                          variant="primary"
+                          size="lg"
+                          onClick={() =>
+                            setIsAddModalOpen(
+                              true
+                            )
+                          }
+                          className="mt-8"
+                          leftIcon={
+                            <FolderOpen className="w-4 h-4" />
+                          }
+                        >
+                          Ajouter un média
+                        </CustomButton>
+                      )}
+                    </div>
+                  }
+                  className="
+                    w-full
+                    min-h-100
+                    grid-cols-2
+                    sm:grid-cols-3
+                    md:grid-cols-4
+                    lg:grid-cols-5
+                    xl:grid-cols-6
+                    gap-4
+                    sm:gap-6
+                  "
+                  ariaLabel="Médias de l'album"
+                />
+                <InfiniteScroll
+                  hasMore={mainHasMore}
+                  isLoading={isLoadingMain}
+                  onLoadMore={loadMoreMain}
+                  className="mt-12 h-16"
+                />
         </main>
 
         {/* ===================================================
@@ -1477,6 +1113,14 @@ export default function ManageGalleryClient({
             const previewIndex = localAvailableMedia.findIndex((item) => item.id === media.id);
             if (previewIndex >= 0) setAvailableLightboxIndex(previewIndex);
           }}
+        />
+
+        <ReorderMediaModal
+          isOpen={isReorderModalOpen}
+          onClose={() => setIsReorderModalOpen(false)}
+          galleryId={gallery.id}
+          initialItems={localMediaItems}
+          onSave={handleSaveReorder}
         />
 
         <GalleryLightbox
