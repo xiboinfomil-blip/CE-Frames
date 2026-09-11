@@ -41,6 +41,28 @@ function formatDate(value: Date | string) {
   }).format(new Date(value));
 }
 
+function UserAvatar({ user }: { user: ManagedUser }) {
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || user.username[0] || '?'}`.toUpperCase();
+
+  return (
+    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#E2E8F0] bg-[#EAF4FB] dark:border-white/10 dark:bg-[#00345F]">
+      {user.photoUrl ? (
+        <Image
+          src={user.photoUrl}
+          alt={`Photo de ${user.firstName || ''} ${user.lastName || user.username}`.trim()}
+          fill
+          sizes="44px"
+          className="object-cover"
+        />
+      ) : (
+        <span className="flex h-full w-full items-center justify-center text-xs font-bold text-[#004A87] dark:text-[#9BCBFF]">
+          {initials}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function UsersContent({ initialUsers, currentUserId, initialGroupPhotoUrl }: UsersContentProps) {
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
@@ -182,7 +204,9 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
               <ul className="divide-y divide-[#E2E8F0] dark:divide-white/10">
                 {users.map((user) => (
                   <li key={user.id} className="flex items-start justify-between gap-4 p-5">
-                    <div className="min-w-0">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <UserAvatar user={user} />
+                      <div className="min-w-0">
                       <div className="font-semibold break-words">
                         {user.firstName} {user.lastName}
                         {user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}
@@ -191,6 +215,7 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${ROLE_STYLES[user.role]}`}>{ROLE_LABELS[user.role]}</span>
                         <span className="text-xs text-[#64748B] dark:text-white/45">{formatDate(user.createdAt)}</span>
+                      </div>
                       </div>
                     </div>
                     <div className="flex shrink-0 gap-1">
@@ -223,9 +248,14 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
                 {users.map((user) => (
                   <tr key={user.id} className="transition-colors hover:bg-[#F5F7FA]/80 dark:hover:bg-white/[0.03]">
                     <td className="px-5 py-4">
-                      <div className="font-semibold">{user.firstName} {user.lastName}{user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}</div>
-                      <div className="mt-1 text-xs text-[#64748B] dark:text-white/40">{user.username}</div>
-                      <div className="mt-1 text-sm text-[#64748B] dark:text-white/50">{user.email}</div>
+                      <div className="flex items-center gap-3">
+                        <UserAvatar user={user} />
+                        <div className="min-w-0">
+                          <div className="font-semibold">{user.firstName} {user.lastName}{user.id === currentUserId && <span className="ml-2 text-xs font-medium text-[#FF8201]">Vous</span>}</div>
+                          <div className="mt-1 text-xs text-[#64748B] dark:text-white/40">{user.username}</div>
+                          <div className="mt-1 break-all text-sm text-[#64748B] dark:text-white/50">{user.email}</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-5 py-4">
                       <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${ROLE_STYLES[user.role]}`}>
