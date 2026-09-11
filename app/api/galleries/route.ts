@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
-import { protectGalleryMedia } from '@/lib/gallery-media-proxy';
 import { slugify } from '@/lib/utils';
 import bcrypt from 'bcryptjs'; // ✅ Import bcryptjs
 
@@ -24,17 +23,8 @@ export async function GET(request: NextRequest) {
     ? await galleryHelpers.findPublic({ limit, offset: (page - 1) * limit, search, sortBy: sort, filter, includePrivate: Boolean(session?.user?.id) })
     : await galleryHelpers.findAll({ limit, offset: (page - 1) * limit, search, sortBy: sort === 'title' ? 'name' : sort, filter });
 
-  const items = isPublic
-    ? result.items.map((item) => ({
-        ...item,
-        randomMedia: item.randomMedia
-          ? protectGalleryMedia(item.randomMedia, item.id)
-          : item.randomMedia,
-      }))
-    : result.items;
-
   return NextResponse.json({
-    items,
+    items: result.items,
     pagination: {
       total: result.total,
       currentPage: page,

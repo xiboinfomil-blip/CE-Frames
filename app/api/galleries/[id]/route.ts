@@ -3,13 +3,13 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { galleryHelpers } from '@/lib/db-helpers';
-import {
-  getGallerySecuritySecret,
-  protectGalleryMedia,
-} from '@/lib/gallery-media-proxy';
 
 const ACCESS_COOKIE_PREFIX = 'gallery-access-';
 const ACCESS_DURATION_SECONDS = 60 * 60 * 8;
+
+function getGallerySecuritySecret() {
+  return process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'ce-frames-gallery-fallback-secret-change-in-production';
+}
 
 function accessSignature(galleryId: string, expiresAt: number) {
   return createHmac('sha256', getGallerySecuritySecret())
@@ -63,10 +63,7 @@ export async function GET(
       Object.entries(gallery).filter(([key]) => key !== 'passwordHash')
     );
 
-    safeGallery.items = gallery.items.map((item) => ({
-      ...item,
-      media: item.media ? protectGalleryMedia(item.media, gallery.id) : item.media,
-    }));
+    safeGallery.items = gallery.items;
 
     return NextResponse.json({ gallery: safeGallery });
   } catch (error) {

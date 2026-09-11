@@ -168,7 +168,6 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
               alt=""
               fill
               sizes="100vw"
-              unoptimized={poster.startsWith('/api/gallery-media/')}
               className="
                 pointer-events-none
                 absolute
