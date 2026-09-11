@@ -4,6 +4,25 @@ import { useEffect, useId, useRef, useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark } from 'react-icons/hi2';
 
+const modalStack: symbol[] = [];
+let bodyLockCount = 0;
+let originalBodyOverflow = '';
+
+function lockBodyScroll() {
+  if (bodyLockCount === 0) {
+    originalBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+  bodyLockCount += 1;
+}
+
+function unlockBodyScroll() {
+  bodyLockCount = Math.max(0, bodyLockCount - 1);
+  if (bodyLockCount === 0) {
+    document.body.style.overflow = originalBodyOverflow;
+  }
+}
+
 interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -51,6 +70,8 @@ export default function BaseModal({
   const [isClosing, setIsClosing] = useState(false);
   const isRendered = isOpen || isClosing;
   const hasBeenOpened = useRef(false);
+  const modalId = useRef<symbol>(Symbol('modal'));
+  const isLocked = useRef(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -80,7 +101,14 @@ export default function BaseModal({
 
     const timer = setTimeout(() => {
       setIsClosing(false);
-    }, 280);
+      const stackIndex = modalStack.indexOf(modalId.current);
+      if (stackIndex !== -1) modalStack.splice(stackIndex, 1);
+      if (isLocked.current) {
+        unlockBodyScroll();
+        isLocked.current = false;
+      }
+      previousActiveElement.current?.focus();
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [isOpen]);
@@ -90,7 +118,7 @@ export default function BaseModal({
   // ============================================================
 
   useEffect(() => {
-    if (!isRendered) return;
+    if (!isRendered || modalStack[modalStack.length - 1] !== modalId.current) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isLoading) {
@@ -149,9 +177,9 @@ export default function BaseModal({
     previousActiveElement.current =
       document.activeElement as HTMLElement;
 
-    const originalOverflow = document.body.style.overflow;
-
-    document.body.style.overflow = 'hidden';
+    modalStack.push(modalId.current);
+    lockBodyScroll();
+    isLocked.current = true;
 
     const timer = setTimeout(() => {
       closeBtnRef.current?.focus();
@@ -159,12 +187,20 @@ export default function BaseModal({
 
     return () => {
       clearTimeout(timer);
-
-      document.body.style.overflow = originalOverflow;
-
-      previousActiveElement.current?.focus();
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    const currentModalId = modalId.current;
+    return () => {
+      const stackIndex = modalStack.indexOf(currentModalId);
+      if (stackIndex !== -1) modalStack.splice(stackIndex, 1);
+      if (isLocked.current) {
+        unlockBodyScroll();
+        isLocked.current = false;
+      }
+    };
+  }, []);
 
   if (!isRendered) return null;
 

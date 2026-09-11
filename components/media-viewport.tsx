@@ -116,6 +116,7 @@ const MediaViewport = memo(function MediaViewport({
         {/* Media Preview */}
         {mediaType === 'video' ? (
           <CustomVideo
+            key={`${currentSrc}-${thumbnailUrl}`}
             src={currentSrc}
             poster={thumbnailUrl || undefined}
             hoverPlay={true}
@@ -125,6 +126,7 @@ const MediaViewport = memo(function MediaViewport({
           />
         ) : (
           <CustomImage
+            key={`${currentSrc}-${thumbnailUrl}`}
             src={currentSrc}
             fallbackSrc={thumbnailUrl}
             alt={

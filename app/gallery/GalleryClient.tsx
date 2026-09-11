@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
+import { useState, useEffect, useTransition, useCallback, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { GallerySummary } from '@/types/types'; 
 import MediaLibraryHeader from '@/components/SearchSortFilter';
@@ -45,9 +45,11 @@ export default function GalleryClient({
   const [nextPage, setNextPage] = useState(currentPage + 1);
   const [hasMore, setHasMore] = useState(hasNext);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadRequestRef = useRef(false);
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
+    if (loadRequestRef.current || isLoadingMore || !hasMore) return;
+    loadRequestRef.current = true;
     setIsLoadingMore(true);
     try {
       const params = new URLSearchParams({
@@ -60,12 +62,16 @@ export default function GalleryClient({
       const response = await fetch(`/api/galleries?${params}`);
       if (!response.ok) throw new Error('Failed to load more galleries');
       const data = await response.json();
-      setGalleries((current) => [...current, ...data.items]);
+      setGalleries((current) => {
+        const existingIds = new Set(current.map((item) => item.id));
+        return [...current, ...data.items.filter((item: GallerySummary) => !existingIds.has(item.id))];
+      });
       setHasMore(data.pagination?.hasNext ?? false);
       setNextPage((page) => page + 1);
     } catch (error) {
       console.error('Failed to load more galleries:', error);
     } finally {
+      loadRequestRef.current = false;
       setIsLoadingMore(false);
     }
   }, [filterType, hasMore, isLoadingMore, nextPage, searchQuery, sortBy]);
@@ -106,7 +112,7 @@ export default function GalleryClient({
   };
 
   const handleGalleryClick = (gallery: GallerySummary) => {
-    router.push(`/gallery/${gallery.id}`);
+    router.push(`/gallery/${gallery.slug}`);
   };
 
   const displayedGalleries = galleries;

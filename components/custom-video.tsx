@@ -155,27 +155,7 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
         )}
 
         {/* 1. POSTER THUMBNAIL LAYER */}
-        {poster && !hasError && (
-          isVideoPoster ? (
-            <video
-              src={poster}
-              muted
-              playsInline
-              preload="metadata"
-              className="
-                pointer-events-none
-                absolute
-                inset-0
-                h-full
-                w-full
-                object-cover
-                transition-transform
-                duration-700
-                ease-out
-                group-hover:scale-105
-              "
-            />
-          ) : (
+        {poster && !hasError && !isVideoPoster && (
             <Image
               src={poster}
               alt=""
@@ -194,7 +174,6 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
                 group-hover:scale-105
               "
             />
-          )
         )}
 
         {/* 2. MAIN ACTIVE VIDEO LAYER */}

@@ -1172,8 +1172,7 @@ export default function ManageGalleryClient({
   const handleCloseModal =
     useCallback(() => {
       setIsAddModalOpen(false);
-      router.refresh();
-    }, [router]);
+    }, []);
 
   // ==========================================================
   // Render

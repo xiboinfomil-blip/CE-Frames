@@ -6,6 +6,8 @@ interface InfiniteScrollProps {
   hasMore: boolean;
   isLoading: boolean;
   onLoadMore: () => void;
+  error?: string | null;
+  onRetry?: () => void;
   className?: string;
   root?: Element | null;
   rootSelector?: string;
@@ -15,6 +17,8 @@ export default function InfiniteScroll({
   hasMore,
   isLoading,
   onLoadMore,
+  error = null,
+  onRetry,
   className = 'h-16',
   root = null,
   rootSelector,
@@ -28,7 +32,7 @@ export default function InfiniteScroll({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && !isLoading) {
+        if (entries[0]?.isIntersecting && !isLoading && !error) {
           onLoadMore();
         }
       },
@@ -37,9 +41,15 @@ export default function InfiniteScroll({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, isLoading, onLoadMore, root, rootSelector]);
+  }, [error, hasMore, isLoading, onLoadMore, root, rootSelector]);
 
-  if (!hasMore) return null;
+  if (!hasMore) {
+    return (
+      <div className={`${className} flex items-center justify-center text-xs text-zinc-400`} aria-live="polite">
+        Tous les éléments sont chargés
+      </div>
+    );
+  }
 
   return (
     <div
@@ -50,6 +60,11 @@ export default function InfiniteScroll({
     >
       {isLoading && (
         <span className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-200 border-t-zinc-700" />
+      )}
+      {!isLoading && error && (
+        <button type="button" onClick={onRetry} className="text-sm text-[#004A87] underline underline-offset-4">
+          Réessayer
+        </button>
       )}
     </div>
   );

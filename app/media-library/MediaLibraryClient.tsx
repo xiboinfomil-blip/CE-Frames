@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
@@ -85,6 +85,7 @@ export default function MediaLibraryClient({
   const [nextPage, setNextPage] = useState(pagination.currentPage + 1);
   const [hasMore, setHasMore] = useState(pagination.hasNext);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadRequestRef = useRef(false);
 
   // Transform media array to lightbox slide format
   const slides = useMemo(
@@ -116,7 +117,8 @@ export default function MediaLibraryClient({
   );
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
+    if (loadRequestRef.current || isLoadingMore || !hasMore) return;
+    loadRequestRef.current = true;
     setIsLoadingMore(true);
     try {
       const params = new URLSearchParams({
@@ -128,12 +130,16 @@ export default function MediaLibraryClient({
       const response = await fetch(`/api/media?${params}`);
       if (!response.ok) throw new Error('Failed to load more media');
       const data = await response.json();
-      setMedia((current) => [...current, ...data.items]);
+      setMedia((current) => {
+        const existingIds = new Set(current.map((item) => item.id));
+        return [...current, ...data.items.filter((item: MediaSchema) => !existingIds.has(item.id))];
+      });
       setHasMore(data.pagination?.hasNext ?? false);
       setNextPage((page) => page + 1);
     } catch (error) {
       console.error('Failed to load more media:', error);
     } finally {
+      loadRequestRef.current = false;
       setIsLoadingMore(false);
     }
   }, [filters.search, filters.sortBy, filters.type, hasMore, isLoadingMore, nextPage]);

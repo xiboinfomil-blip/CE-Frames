@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
   useRouter,
   usePathname,
@@ -95,9 +95,11 @@ export default function GalleriesContent({
   const [nextPage, setNextPage] = useState((pagination.currentPage || 1) + 1);
   const [hasMore, setHasMore] = useState(pagination.hasNext ?? false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadRequestRef = useRef(false);
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
+    if (loadRequestRef.current || isLoadingMore || !hasMore) return;
+    loadRequestRef.current = true;
     setIsLoadingMore(true);
     try {
       const params = new URLSearchParams({
@@ -109,12 +111,16 @@ export default function GalleriesContent({
       const response = await fetch(`/api/galleries?${params}`);
       if (!response.ok) throw new Error('Failed to load more galleries');
       const data = await response.json();
-      setGalleries((current) => [...current, ...data.items]);
+      setGalleries((current) => {
+        const existingIds = new Set(current.map((item) => item.id));
+        return [...current, ...data.items.filter((item: GallerySummary) => !existingIds.has(item.id))];
+      });
       setHasMore(data.pagination?.hasNext ?? false);
       setNextPage((page) => page + 1);
     } catch (error) {
       console.error('Failed to load more galleries:', error);
     } finally {
+      loadRequestRef.current = false;
       setIsLoadingMore(false);
     }
   }, [filters.search, filters.sortBy, filters.visibility, hasMore, isLoadingMore, nextPage]);
@@ -203,8 +209,7 @@ export default function GalleriesContent({
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingGallery(null);
-    router.refresh();
-  }, [router]);
+  }, []);
 
   const handleDelete = useCallback(
     async (id: string) => {

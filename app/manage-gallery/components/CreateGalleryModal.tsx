@@ -51,6 +51,7 @@ interface MediaOption {
   type: typeof MEDIA_TYPES[number];
   originalFilename?: string | null;
   caption?: string | null;
+  isUnused?: boolean;
 }
 
 interface PaginationData {
@@ -1009,6 +1010,11 @@ export default function CreateGalleryModal({
                           }
                         `}
                       >
+                        {media.isUnused && (
+                          <span className="absolute left-[-2.6rem] top-5 z-30 w-32 -rotate-45 bg-[#FF8201] py-1 text-center text-[9px] font-black tracking-[0.18em] text-white shadow-md">
+                            UNUSED
+                          </span>
+                        )}
                         <MediaViewport
                           mediaType={media.type}
                           fullResUrl={

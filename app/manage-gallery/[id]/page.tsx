@@ -121,7 +121,8 @@ async function ManageGalleryContent({ params, searchParams }: PageProps) {
     fullResUrl: m.fullResUrl || '',
     title: m.originalFilename || m.caption || 'Sans titre',
     type: m.type as 'image' | 'video' | 'gif',
-    uploadedAt: m.uploadedAt
+    uploadedAt: m.uploadedAt,
+    isUnused: m.isUnused
   }));
 
   // Calculate pagination stats for the modal

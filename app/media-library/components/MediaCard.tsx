@@ -40,6 +40,7 @@ export interface MediaSchema {
   locationName: string | null;
   coordinates: [number, number] | null;
   uploadedAt: string | Date;
+  isUnused?: boolean;
 }
 
 interface MediaCardProps {
@@ -298,6 +299,11 @@ const MediaCard = memo(function MediaCard({
         tabIndex={0}
         aria-label={`Open ${displayName} in lightbox`}
       >
+        {media.isUnused && (
+          <span className="absolute left-[-2.6rem] top-5 z-30 w-32 -rotate-45 bg-[#FF8201] py-1 text-center text-[9px] font-black tracking-[0.18em] text-white shadow-md">
+            UNUSED
+          </span>
+        )}
         {/* ----------------------------------------------------
             Media
             ---------------------------------------------------- */}

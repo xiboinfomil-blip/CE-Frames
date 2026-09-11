@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { galleryMediaHelpers } from '@/lib/db-helpers';
+import { galleryMediaHelpers, mediaHelpers } from '@/lib/db-helpers';
 import { NextResponse } from 'next/server';
 
 type MediaType = 'image' | 'video' | 'gif';
@@ -14,6 +14,7 @@ interface MediaItem {
   uploadedAt: string | Date;
   originalFilename: string | null;
   caption: string | null;
+  isUnused: boolean;
 }
 
 export async function GET(req: Request) {
@@ -40,64 +41,36 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 1. Get media items associated with this gallery
+    // Exclude media already attached to this gallery before paginating.
     const existingItems = await galleryMediaHelpers.getGalleryMediaWithDetails(galleryId);
-    
-    let filteredMedia: MediaItem[] = existingItems.map((item) => {
-      const itemRecord = item as typeof item & { media?: typeof item };
-      // The media data might be nested in 'item.media' or flat on 'item'.
-      const mediaData = itemRecord.media || itemRecord;
-      
-      return {
-        id: mediaData.id,
-        thumbnailUrl: mediaData.thumbnailUrl || '',
-        fullResUrl: mediaData.fullResUrl || '',
-        // Safely access originalFilename, fallback to caption or 'Untitled'
-        title: mediaData.originalFilename || mediaData.caption || 'Untitled',
-        type: mediaData.type,
-        // Safely access uploadedAt, fallback to current date if missing
-        uploadedAt: mediaData.uploadedAt || new Date().toISOString(),
-        originalFilename: mediaData.originalFilename || null,
-        caption: mediaData.caption
-      };
+    const { items, total, hasMore } = await mediaHelpers.findAll({
+      search,
+      filter: type,
+      sortBy,
+      limit,
+      offset,
+      excludeIds: existingItems.map((item) => item.mediaId),
     });
 
-    // Apply Type Filter
-    if (type) {
-      filteredMedia = filteredMedia.filter((m) => m.type === type);
-    }
-
-    // Apply Search Filter
-    if (search) {
-      const lowerSearch = search.toLowerCase();
-      filteredMedia = filteredMedia.filter((m) =>
-        (m.originalFilename && m.originalFilename.toLowerCase().includes(lowerSearch)) ||
-        (m.caption && m.caption.toLowerCase().includes(lowerSearch))
-      );
-    }
-
-    // Apply Sorting
-    filteredMedia.sort((a, b) => {
-      const dateA = new Date(a.uploadedAt).getTime();
-      const dateB = new Date(b.uploadedAt).getTime();
-      
-      if (sortBy === 'oldest') return dateA - dateB;
-      if (sortBy === 'name') return (a.originalFilename || '').localeCompare(b.originalFilename || '');
-      return dateB - dateA; // Newest
-    });
-
-    // Manual Pagination
-    const total = filteredMedia.length;
-    const paginatedMedia = filteredMedia.slice(offset, offset + limit);
-    const totalPages = Math.ceil(total / limit);
+    const paginatedMedia: MediaItem[] = items.map((item) => ({
+      id: item.id,
+      thumbnailUrl: item.thumbnailUrl,
+      fullResUrl: item.fullResUrl,
+      title: item.originalFilename || item.caption || 'Untitled',
+      type: item.type,
+      uploadedAt: item.uploadedAt,
+      originalFilename: item.originalFilename,
+      caption: item.caption,
+      isUnused: item.isUnused,
+    }));
 
     return NextResponse.json({
       items: paginatedMedia,
       pagination: {
         total,
         currentPage: page,
-        totalPages,
-        hasNext: page < totalPages,
+        totalPages: Math.ceil(total / limit),
+        hasNext: hasMore,
         hasPrevious: page > 1
       }
     });

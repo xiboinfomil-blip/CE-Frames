@@ -26,6 +26,7 @@ interface MediaOption {
   title?: string | null;
   type: 'image' | 'video' | 'gif';
   uploadedAt?: Date | string;
+  isUnused?: boolean;
 }
 
 interface PaginationData {
@@ -172,6 +173,11 @@ const MediaCard = memo(function MediaCard({
         }`}
       >
         <div className="aspect-4/3 relative">
+          {media.isUnused && (
+            <span className="absolute left-[-2.6rem] top-5 z-30 w-32 -rotate-45 bg-[#FF8201] py-1 text-center text-[9px] font-black tracking-[0.18em] text-white shadow-md">
+              UNUSED
+            </span>
+          )}
           <MediaViewport
             mediaType={
               media.type as typeof MEDIA_TYPES[number]

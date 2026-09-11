@@ -244,6 +244,7 @@ useState<StorageUsage | null>(null);
 const [rejectedFiles, setRejectedFiles] = useState<string[]>(
 []
 );
+const mediaItemsRef = useRef<MediaItem[]>([]);
 
 const resetModalState = useCallback(() => {
 setMediaItems((prev) => {
@@ -268,14 +269,18 @@ setRemoveMetadata(false);
 }, []);
 
 useEffect(() => {
+mediaItemsRef.current = mediaItems;
+}, [mediaItems]);
+
+useEffect(() => {
 return () => {
-mediaItems.forEach((item) => {
+ mediaItemsRef.current.forEach((item) => {
 if (item.previewUrl) {
 URL.revokeObjectURL(item.previewUrl);
 }
 });
 };
-}, [mediaItems]);
+}, []);
 
 // ---------------------------------------------------------------------------
 // Storage

@@ -8,6 +8,7 @@ import {
   or,
   ilike,
   count,
+  countDistinct,
   notInArray,
   inArray,
   SQL,
@@ -33,6 +34,11 @@ import {
 // ==========================================
 
 type MediaRow = typeof media.$inferSelect;
+type MediaWithUsage = MediaRow & {
+  galleryUsageCount: number;
+  coverUsageCount: number;
+  isUnused: boolean;
+};
 type GalleryRow = typeof galleries.$inferSelect;
 type GalleryMediaRow = typeof galleryMedia.$inferSelect;
 
@@ -255,7 +261,7 @@ export const mediaHelpers = {
     filter?: string;
     sortBy?: 'newest' | 'oldest' | 'name';
     excludeIds?: string[];
-  }): Promise<PaginatedResponse<MediaRow>> => {
+  }): Promise<PaginatedResponse<MediaWithUsage>> => {
     const {
       limit = 50,
       offset = 0,
@@ -335,6 +341,42 @@ export const mediaHelpers = {
       orderBy: orderByClause,
     });
 
+    const usageRows = items.length
+      ? await db
+          .select({
+            mediaId: media.id,
+            galleryUsageCount: countDistinct(galleryMedia.galleryId),
+            coverUsageCount: countDistinct(galleries.id),
+          })
+          .from(media)
+          .leftJoin(galleryMedia, eq(galleryMedia.mediaId, media.id))
+          .leftJoin(galleries, eq(galleries.coverMediaId, media.id))
+          .where(inArray(media.id, items.map((item) => item.id)))
+          .groupBy(media.id)
+      : [];
+
+    const usageByMediaId = new Map(
+      usageRows.map((row) => [
+        row.mediaId,
+        {
+          galleryUsageCount: Number(row.galleryUsageCount),
+          coverUsageCount: Number(row.coverUsageCount),
+        },
+      ])
+    );
+
+    const enrichedItems = items.map((item) => {
+      const usage = usageByMediaId.get(item.id) ?? {
+        galleryUsageCount: 0,
+        coverUsageCount: 0,
+      };
+      return {
+        ...item,
+        ...usage,
+        isUnused: usage.galleryUsageCount === 0 && usage.coverUsageCount === 0,
+      };
+    });
+
     const countResult = await db
       .select({ count: count() })
       .from(media)
@@ -344,7 +386,7 @@ export const mediaHelpers = {
       Number(countResult[0]?.count) || 0;
 
     return {
-      items,
+      items: enrichedItems,
       total,
       hasMore: offset + limit < total,
     };
@@ -463,14 +505,12 @@ getLatestPublic: async (limit = 3) => {
   ): Promise<
     GalleryWithItems | undefined
   > => {
-    if (!isValidUUID(id)) {
-      return undefined;
-    }
-
     const gallery =
       await db.query.galleries.findFirst({
         where: and(
-          eq(galleries.id, id),
+          isValidUUID(id)
+            ? eq(galleries.id, id)
+            : eq(galleries.slug, id),
           not(
             eq(
               galleries.visibility,
@@ -519,13 +559,11 @@ getLatestPublic: async (limit = 3) => {
   ): Promise<
     GalleryWithItems | undefined
   > => {
-    if (!isValidUUID(id)) {
-      return undefined;
-    }
-
     const gallery =
       await db.query.galleries.findFirst({
-        where: eq(galleries.id, id),
+        where: isValidUUID(id)
+          ? eq(galleries.id, id)
+          : eq(galleries.slug, id),
 
         with: {
           coverMedia: true,
