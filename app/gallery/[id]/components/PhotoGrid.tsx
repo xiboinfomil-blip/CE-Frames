@@ -311,6 +311,7 @@ export default function PhotoGrid({
                       alt=""
                       width={512}
                       height={170}
+                      unoptimized
                       draggable={false}
                       className="h-auto w-full opacity-55 mix-blend-multiply"
                     />

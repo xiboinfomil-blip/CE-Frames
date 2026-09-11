@@ -26,6 +26,7 @@ const CustomImage = ({
   const [isLoaded, setIsLoaded] = useState(false);
 
   const currentSrc = imgError ? (fallbackSrc || src) : src;
+  const isProtectedGalleryMedia = currentSrc.startsWith('/api/gallery-media/');
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoaded(true);
@@ -61,6 +62,7 @@ const CustomImage = ({
           alt={alt || 'Photo d’un événement du CE'}
           fill
           quality={quality}
+          unoptimized={isProtectedGalleryMedia || props.unoptimized}
           loading={props.priority ? undefined : loading}
           className={`object-cover transition-opacity duration-500 ease-in-out ${
             isLoaded ? 'opacity-100' : 'opacity-0'

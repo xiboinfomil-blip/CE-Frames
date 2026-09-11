@@ -110,6 +110,7 @@ export default function Footer() {
                 alt="CE Frames"
                 width={130}
                 height={42}
+                unoptimized
                 className="
                   h-auto w-[125px]
                   transition-opacity duration-300

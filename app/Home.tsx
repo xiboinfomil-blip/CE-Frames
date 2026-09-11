@@ -206,7 +206,7 @@ export default function Home({
                 pointer-events-none
                 absolute
                 inset-0
-                bg-[url('https://grainy-gradients.vercel.app/noise.svg')]
+                bg-white/5
                 opacity-[0.035]
               "
             />

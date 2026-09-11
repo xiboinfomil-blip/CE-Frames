@@ -378,6 +378,7 @@ export default function Navbar() {
                 alt="CE Frames"
                 width={32}
                 height={32}
+                unoptimized
                 className="
                   h-6 w-6
                   object-contain

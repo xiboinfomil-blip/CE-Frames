@@ -11,7 +11,7 @@ interface EmptyStateProps {
 export const EmptyState = memo(({ onCreateClick }: EmptyStateProps) => (
   <div className="relative min-h-[40vh] flex flex-col items-center justify-center rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 p-12 shadow-sm overflow-hidden transition-colors duration-300">
     {/* Motifs de fond discrets */}
-    <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+    <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-white/5" />
     
     <div className="text-center max-w-sm relative z-10">
       <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 mb-8 relative shadow-inner transition-transform duration-500 hover:scale-105">
