@@ -46,7 +46,7 @@ export default function UserModal({
   const [email, setEmail] = useState(initialUser?.email || '');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>(initialUser?.role || 'membre');
-  const [photoUrl] = useState(initialUser?.photoUrl || '');
+  const [photoUrl, setPhotoUrl] = useState(initialUser?.photoUrl || '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -133,6 +133,31 @@ export default function UserModal({
       )}
     >
       <form id="user-form" onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <label htmlFor="user-photo" className="pl-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#64748B]">Photo du membre du CE</label>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              {photoUrl ? (
+                <>
+                  <Image src={photoUrl} alt="Aperçu" width={64} height={64} className="h-16 w-16 rounded-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setPhotoUrl('')}
+                    className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+                  >
+                    Supprimer
+                  </button>
+                </>
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF4FB] text-[#004A87] dark:bg-white/10 dark:text-white">
+                  <HiPhoto className="h-6 w-6" />
+                </div>
+              )}
+            </div>
+            <input id="user-photo" name="user-photo" type="file" accept="image/*" className="block w-full text-sm text-[#64748B] file:mr-3 file:rounded-lg file:border-0 file:bg-[#EAF4FB] file:px-3 file:py-2 file:font-semibold file:text-[#004A87]" />
+            <p className="text-xs text-[#64748B]">Une seule photo, 5 Mo maximum.</p>
+          </div>
+        </div>
         <CustomTextfield
           label="Prénom"
           value={firstName}
@@ -197,14 +222,7 @@ export default function UserModal({
             ))}
           </select>
         </div>
-        <div className="space-y-2">
-          <label htmlFor="user-photo" className="pl-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#64748B]">Photo du membre du CE</label>
-          <div className="flex items-center gap-4">
-            {photoUrl ? <Image src={photoUrl} alt="Aperçu" width={64} height={64} className="h-16 w-16 rounded-full object-cover" /> : <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF4FB] text-[#004A87] dark:bg-white/10 dark:text-white"><HiPhoto className="h-6 w-6" /></div>}
-            <input id="user-photo" name="user-photo" type="file" accept="image/*" className="block w-full text-sm text-[#64748B] file:mr-3 file:rounded-lg file:border-0 file:bg-[#EAF4FB] file:px-3 file:py-2 file:font-semibold file:text-[#004A87]" />
-          </div>
-          <p className="text-xs text-[#64748B]">Une seule photo, 5 Mo maximum.</p>
-        </div>
+
         {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-500/10 dark:text-red-300">{error}</p>}
       </form>
     </BaseModal>

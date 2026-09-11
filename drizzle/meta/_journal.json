@@ -43,6 +43,13 @@
       "when": 1789041620861,
       "tag": "0005_ce_roles_and_group_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789052400000,
+      "tag": "0006_add_galleries_updated_at",
+      "breakpoints": true
     }
   ]
 }

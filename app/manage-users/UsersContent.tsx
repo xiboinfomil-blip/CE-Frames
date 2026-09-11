@@ -72,6 +72,8 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
   const [editingUser, setEditingUser] = useState<ManagedUser | null>(null);
   const [groupPhotoUrl, setGroupPhotoUrl] = useState<string | null>(initialGroupPhotoUrl);
   const [isUploadingGroupPhoto, setIsUploadingGroupPhoto] = useState(false);
+  const [isDeletingGroupPhoto, setIsDeletingGroupPhoto] = useState(false);
+  const [isDeletingGroupPhoto, setIsDeletingGroupPhoto] = useState(false);
 
   const uploadGroupPhoto = async (file: File) => {
     if (!file.type.startsWith('image/')) throw new Error('La photo doit être une image.');
@@ -103,6 +105,64 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
       await Swal.fire({ title: 'Photo impossible', text: error instanceof Error ? error.message : 'Une erreur est survenue.', icon: 'error', confirmButtonColor: '#004A87' });
     } finally {
       setIsUploadingGroupPhoto(false);
+    }
+  };
+
+  const handleDeleteGroupPhoto = async () => {
+    const result = await Swal.fire({
+      title: 'Supprimer la photo de groupe ?',
+      text: 'Cette action est irréversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#EAF4FB',
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
+    });
+
+    if (!result.isConfirmed) return;
+
+    setIsDeletingGroupPhoto(true);
+    try {
+      const response = await fetch('/api/ce-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ groupPhotoUrl: null }) });
+      if (!response.ok) throw new Error('Suppression impossible.');
+      setGroupPhotoUrl(null);
+      router.refresh();
+    } catch (error) {
+      await Swal.fire({ title: 'Erreur', text: error instanceof Error ? error.message : 'Une erreur est survenue.', icon: 'error', confirmButtonColor: '#004A87' });
+    } finally {
+      setIsDeletingGroupPhoto(false);
+    }
+  };
+
+  const handleDeleteGroupPhoto = async () => {
+    const result = await Swal.fire({
+      title: 'Supprimer la photo de groupe ?',
+      text: 'Cette action est irréversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#EAF4FB',
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      background: 'var(--page-background)',
+      color: 'var(--page-foreground)',
+    });
+
+    if (!result.isConfirmed) return;
+
+    setIsDeletingGroupPhoto(true);
+    try {
+      const response = await fetch('/api/ce-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ groupPhotoUrl: null }) });
+      if (!response.ok) throw new Error('Suppression impossible.');
+      setGroupPhotoUrl(null);
+      router.refresh();
+    } catch (error) {
+      await Swal.fire({ title: 'Erreur', text: error instanceof Error ? error.message : 'Une erreur est survenue.', icon: 'error', confirmButtonColor: '#004A87' });
+    } finally {
+      setIsDeletingGroupPhoto(false);
     }
   };
 
@@ -293,14 +353,26 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
                 Photo de groupe
               </div>
               <h2 className="text-lg font-bold">Image du CE</h2>
-              <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Cette image apparaîtra en haut de la page À propos.</p>
+              <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Cette image apparaîtra en haut de la section À propos.</p>
             </div>
 
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
-              <HiPhoto className="h-5 w-5" />
-              {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
-              <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto} onChange={(event) => { const file = event.target.files?.[0]; if (file) handleGroupPhoto(file); }} />
-            </label>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
+                <HiPhoto className="h-5 w-5" />
+                {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
+                <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto || isDeletingGroupPhoto} onChange={(event) => { const file = event.currentTarget.files?.[0]; if (file) handleGroupPhoto(file); }} />
+              </label>
+              {groupPhotoUrl && (
+                <button
+                  type="button"
+                  onClick={handleDeleteGroupPhoto}
+                  disabled={isDeletingGroupPhoto || isUploadingGroupPhoto}
+                  className="rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+                >
+                  {isDeletingGroupPhoto ? 'Suppression…' : 'Supprimer'}
+                </button>
+              )}
+            </div>
           </div>
 
           {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FA] dark:border-white/10"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
