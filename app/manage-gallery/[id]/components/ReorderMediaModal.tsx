@@ -50,7 +50,7 @@ function SortableRow({ item, index }: { item: ReorderItem; index: number }) {
       <span className="w-6 shrink-0 text-center text-xs font-bold text-[#64748B] sm:w-8">{index + 1}</span>
       <MediaViewport
         mediaType={item.media.type as typeof MEDIA_TYPES[number]}
-        fullResUrl={item.media.fullResUrl}
+        fullResUrl={item.media.fullResUrl || item.media.thumbnailUrl}
         thumbnailUrl={item.media.thumbnailUrl}
         caption={item.media.title}
         originalFilename={item.media.originalFilename}
