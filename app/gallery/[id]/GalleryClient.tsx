@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PasswordGate from '@/components/PasswordGate';
 import GalleryHeader from './components/GalleryHeader';
 import PhotoGrid from './components/PhotoGrid';
@@ -33,6 +33,35 @@ export default function GalleryClient({
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+  useEffect(() => {
+    const preventMediaDownload = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const isGalleryMedia = target.closest(
+        '[data-gallery-media], .yarl__slide_image, .yarl__slide video'
+      );
+
+      if (isGalleryMedia) event.preventDefault();
+    };
+
+    const preventSaveShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', preventMediaDownload);
+    document.addEventListener('dragstart', preventMediaDownload);
+    document.addEventListener('keydown', preventSaveShortcut);
+
+    return () => {
+      document.removeEventListener('contextmenu', preventMediaDownload);
+      document.removeEventListener('dragstart', preventMediaDownload);
+      document.removeEventListener('keydown', preventSaveShortcut);
+    };
+  }, []);
 
   const handleUnlock = async (password: string) => {
     setError('');

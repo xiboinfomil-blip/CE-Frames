@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import PhotoAlbum from 'react-photo-album';
 import 'react-photo-album/styles.css';
 import MediaViewport from '@/components/media-viewport';
@@ -116,7 +117,11 @@ export default function PhotoGrid({
         : 'masonry';
 
   return (
-    <div className="w-full -mx-1 sm:-mx-2">
+    <div
+      className="w-full -mx-1 select-none sm:-mx-2"
+      onContextMenu={(event) => event.preventDefault()}
+      onDragStart={(event) => event.preventDefault()}
+    >
       <PhotoAlbum
         photos={sanitizedPhotos}
         layout={albumLayout}
@@ -259,7 +264,10 @@ export default function PhotoGrid({
                     Media
                     ----------------------------------------- */}
 
-                <div className="relative w-full h-full">
+                <div
+                  className="relative w-full h-full"
+                  data-gallery-media
+                >
                   <MediaViewport
                     mediaType={detectedType}
                     fullResUrl={
@@ -293,6 +301,20 @@ export default function PhotoGrid({
                       20vw
                     "
                   />
+
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                  >
+                    <Image
+                      src="/Logo name.png"
+                      alt=""
+                      width={512}
+                      height={170}
+                      draggable={false}
+                      className="w-[58%] max-w-[240px] opacity-35 mix-blend-multiply"
+                    />
+                  </div>
                 </div>
 
                 {/* -----------------------------------------

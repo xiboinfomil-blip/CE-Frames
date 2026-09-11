@@ -60,6 +60,22 @@ export default function GalleryLightbox({
   const [currentIndex, setCurrentIndex] = useState(index);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  useEffect(() => {
+    if (index < 0) return;
+
+    const preventMediaContextMenu = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      if (target.closest('.yarl__slide_image, .yarl__slide video')) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', preventMediaContextMenu);
+    return () => document.removeEventListener('contextmenu', preventMediaContextMenu);
+  }, [index]);
+
   // ---------------------------------------------------
   // Normalize mixed image / video slides
   // ---------------------------------------------------
@@ -248,6 +264,8 @@ export default function GalleryLightbox({
 
         .yarl__slide_image,
         .yarl__slide video {
+          user-select: none !important;
+          -webkit-user-drag: none !important;
           border-radius: 8px !important;
 
           box-shadow: ${
@@ -261,6 +279,22 @@ export default function GalleryLightbox({
                 0 0 0 1px rgba(234, 244, 251, 0.12)
               `
           } !important;
+        }
+
+        .yarl__slide:has(.yarl__slide_image)::after,
+        .yarl__slide:has(video)::after {
+          content: '';
+          position: absolute;
+          z-index: 2;
+          top: 50%;
+          left: 50%;
+          width: min(42vw, 280px);
+          aspect-ratio: 3 / 1;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          background: url('/Logo name.png') center / contain no-repeat;
+          opacity: 0.28;
+          mix-blend-mode: multiply;
         }
 
         /* ---------------------------------------------
