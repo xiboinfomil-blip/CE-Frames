@@ -670,7 +670,7 @@ const MediaCard = memo(function MediaCard({
 
                         <div className="flex flex-col">
                           <span>
-                            Changer l'ordre
+                            Changer l&apos;ordre
                           </span>
 
                           <span
@@ -769,7 +769,7 @@ const MediaCard = memo(function MediaCard({
                               text-red-400
                             "
                           >
-                            Retirer de l'album
+                            Retirer de l&apos;album
                           </span>
                         </div>
                       </button>

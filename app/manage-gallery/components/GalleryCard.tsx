@@ -654,7 +654,7 @@ export const GalleryCard = memo(function GalleryCard({
                       <Trash2 className="h-4 w-4" />
                     </span>
 
-                    <span>Supprimer l'album</span>
+                    <span>Supprimer l&apos;album</span>
                   </button>
                 </div>
               )}

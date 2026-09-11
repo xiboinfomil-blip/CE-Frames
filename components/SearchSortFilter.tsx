@@ -1,11 +1,13 @@
 'use client';
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
+  HiAdjustmentsHorizontal,
   HiMagnifyingGlass,
   HiFunnel,
   HiXMark,
   HiChevronDown,
+  HiChevronUp,
 } from 'react-icons/hi2';
 
 // --- Types ---
@@ -46,6 +48,8 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
   totalItems,
   showCount = true,
 }: MediaLibraryHeaderProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
@@ -81,7 +85,27 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
 
         {/* Floating Control Deck */}
         <div className="bg-white/95 dark:bg-[#102238]/95 backdrop-blur-xl border border-[#E2E8F0] dark:border-white/10 shadow-2xl shadow-[#00345F]/10 rounded-2xl p-3 md:p-4 flex flex-col gap-3.5 transition-all duration-300">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
+          <button
+            type="button"
+            onClick={() => setIsExpanded((expanded) => !expanded)}
+            aria-expanded={isExpanded}
+            aria-controls="search-sort-filter-controls"
+            className="flex w-full items-center justify-between gap-3 rounded-xl px-2 py-1 text-left text-sm font-semibold text-[#00345F] transition-colors hover:bg-[#EAF4FB] dark:text-white dark:hover:bg-white/5"
+          >
+            <span className="flex items-center gap-2">
+              <HiAdjustmentsHorizontal className="h-5 w-5 text-[#FF8201]" />
+              <span>Recherche et filtres</span>
+            </span>
+            {isExpanded ? (
+              <HiChevronUp className="h-4 w-4 text-[#64748B]" />
+            ) : (
+              <HiChevronDown className="h-4 w-4 text-[#64748B]" />
+            )}
+          </button>
+
+          {isExpanded && (
+            <div id="search-sort-filter-controls" className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
             <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-end">
               {hasSearch && (
                 <div className="flex w-full flex-1 flex-col gap-1 md:max-w-[420px]">
@@ -231,7 +255,9 @@ const MediaLibraryHeader = memo(function MediaLibraryHeader({
                 </div>
               )}
             </div>
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

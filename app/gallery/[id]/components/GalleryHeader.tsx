@@ -1,11 +1,14 @@
 import { GalleryDetail } from '@/types/types';
-import { Calendar, Lock, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Calendar, Lock, Image as ImageIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface GalleryHeaderProps {
   gallery: GalleryDetail;
 }
 
 export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
+  const router = useRouter();
+
   // Formatage de la date en français (ex: 8 sept. 2026)
   const formattedDate = new Date(gallery.eventDate || gallery.createdAt).toLocaleDateString('fr-FR', {
     month: 'short',
@@ -80,6 +83,16 @@ export default function GalleryHeader({ gallery }: GalleryHeaderProps) {
 
           {/* Droite : Statut d'accès & Actions */}
           <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => router.push('/gallery')}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-[#004A87] transition-colors hover:bg-[#EAF4FB] dark:text-white dark:hover:bg-white/10"
+              aria-label="Retourner aux galeries"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Retour</span>
+            </button>
+
             {gallery.visibility === 'password_protected' && (
               <div
                 className="
