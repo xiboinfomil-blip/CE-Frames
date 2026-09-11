@@ -57,6 +57,9 @@ export async function GET(
     const mediaId = routeParams.mediaId;
     const galleryId = routeParams.galleryId || request.nextUrl.searchParams.get('galleryId');
     const token = routeParams.token || request.nextUrl.searchParams.get('token');
+    const variant = request.nextUrl.searchParams.get('variant') === 'thumbnail'
+      ? 'thumbnail'
+      : 'full';
 
     if (!galleryId || !verifyGalleryMediaToken(galleryId, mediaId, token) || !isSameSiteRequest(request)) {
       return new NextResponse('Forbidden', { status: 403 });
@@ -78,8 +81,11 @@ export async function GET(
       return new NextResponse('Not found', { status: 404 });
     }
 
-    const range = request.headers.get('range');
-    const upstream = await fetch(galleryMedia.media.fullResUrl, {
+    const range = variant === 'full' ? request.headers.get('range') : null;
+    const sourceUrl = variant === 'thumbnail'
+      ? galleryMedia.media.thumbnailUrl
+      : galleryMedia.media.fullResUrl;
+    const upstream = await fetch(sourceUrl, {
       headers: range ? { range } : undefined,
       cache: 'no-store',
     });

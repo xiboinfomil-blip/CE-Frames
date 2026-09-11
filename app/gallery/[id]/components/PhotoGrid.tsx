@@ -270,7 +270,9 @@ export default function PhotoGrid({
                   <MediaViewport
                     mediaType={detectedType}
                     fullResUrl={
-                      displaySrc as string
+                      detectedType === 'image'
+                        ? displayThumb as string
+                        : displaySrc as string
                     }
                     thumbnailUrl={
                       displayThumb as string

@@ -184,7 +184,7 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
             {...props}
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             disablePictureInPicture
             onLoadedMetadata={handleReady}
             onLoadedData={handleReady}

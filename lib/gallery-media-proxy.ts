@@ -42,9 +42,14 @@ export function verifyGalleryMediaToken(
   return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
 }
 
-export function galleryMediaUrl(galleryId: string, mediaId: string, type: 'image' | 'video' | 'gif') {
+export function galleryMediaUrl(
+  galleryId: string,
+  mediaId: string,
+  type: 'image' | 'video' | 'gif',
+  variant: 'full' | 'thumbnail' = 'full'
+) {
   const token = createGalleryMediaToken(galleryId, mediaId);
-  return `/api/gallery-media/${mediaId}/${galleryId}/${token}/${type}`;
+  return `/api/gallery-media/${mediaId}/${galleryId}/${token}/${type}?variant=${variant}`;
 }
 
 export function protectGalleryMedia<T extends {
@@ -55,7 +60,7 @@ export function protectGalleryMedia<T extends {
 }>(media: T, galleryId: string): T {
   return {
     ...media,
-    fullResUrl: galleryMediaUrl(galleryId, media.id, media.type),
-    thumbnailUrl: galleryMediaUrl(galleryId, media.id, media.type),
+    fullResUrl: galleryMediaUrl(galleryId, media.id, media.type, 'full'),
+    thumbnailUrl: galleryMediaUrl(galleryId, media.id, media.type, 'thumbnail'),
   };
 }
