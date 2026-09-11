@@ -39,13 +39,29 @@ function hasGalleryAccess(request: NextRequest, galleryId: string) {
 }
 
 function isSameSiteRequest(request: NextRequest) {
-  const siteOrigin = new URL(request.url).origin;
+  const requestOrigin = new URL(request.url).origin;
+  const configuredOrigins = [
+    process.env.AUTH_URL,
+    process.env.NEXTAUTH_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  ].filter((value): value is string => Boolean(value)).map((value) => {
+    try {
+      return new URL(value).origin;
+    } catch {
+      return null;
+    }
+  }).filter((value): value is string => Boolean(value));
+  const allowedOrigins = new Set([requestOrigin, ...configuredOrigins]);
   const origin = request.headers.get('origin');
   const referer = request.headers.get('referer');
   const fetchSite = request.headers.get('sec-fetch-site');
+  const fetchDestination = request.headers.get('sec-fetch-dest');
 
-  if (origin && origin !== siteOrigin) return false;
-  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site') {
+  if (origin && !allowedOrigins.has(origin)) return false;
+  if (fetchSite !== 'same-origin' && fetchSite !== 'same-site') {
+    return false;
+  }
+  if (fetchDestination && fetchDestination !== 'image' && fetchDestination !== 'video') {
     return false;
   }
 
@@ -54,7 +70,7 @@ function isSameSiteRequest(request: NextRequest) {
   if (!referer) return false;
 
   try {
-    return new URL(referer).origin === siteOrigin;
+    return allowedOrigins.has(new URL(referer).origin);
   } catch {
     return false;
   }
