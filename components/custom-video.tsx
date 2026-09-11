@@ -72,6 +72,11 @@ const CustomVideo = forwardRef<HTMLVideoElement, CustomVideoProps>(
 
       const video = internalRef.current;
 
+      // Preload video metadata if not already loaded for faster playback
+      if (video.readyState < 1) {
+        video.load();
+      }
+
       // Guarantee browser autoplay policies pass
       video.muted = true;
 

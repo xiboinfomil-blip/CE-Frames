@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { HiOutlineUser, HiOutlineLockClosed, HiArrowRight, HiExclamationCircle } from 'react-icons/hi2';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
 import { CustomButton } from '@/components/ui/CustomButton';
 
 export default function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  searchParams.get('callbackUrl');
+  const callbackUrl = searchParams.get('callbackUrl') || '/manage-gallery';
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,11 +24,22 @@ export default function LoginForm() {
     setError(null);
     
     try {
-      // Intégration NextAuth ou API CE
-      // await signIn('credentials', { email, password, callbackUrl });
-      await new Promise(resolve => setTimeout(resolve, 1500)); 
-    } catch {
-      setError('Identifiants invalides. Veuillez réessayer.');
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+      
+      if (!result?.ok) {
+        setError(result?.error || 'Identifiants invalides. Veuillez réessayer.');
+        return;
+      }
+      
+      // Redirect to callback URL on success
+      router.push(callbackUrl);
+    } catch (err) {
+      setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }

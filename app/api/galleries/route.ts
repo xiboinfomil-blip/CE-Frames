@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     ? await galleryHelpers.findPublic({ limit, offset: (page - 1) * limit, search, sortBy: sort, filter, includePrivate: Boolean(session?.user?.id) })
     : await galleryHelpers.findAll({ limit, offset: (page - 1) * limit, search, sortBy: sort === 'title' ? 'name' : sort, filter });
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     items: result.items,
     pagination: {
       total: result.total,
@@ -31,6 +31,16 @@ export async function GET(request: NextRequest) {
       hasNext: result.hasMore,
     },
   });
+
+  // Add cache headers for public galleries to reduce database queries
+  if (isPublic) {
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=300, stale-while-revalidate=600'
+    );
+  }
+
+  return response;
 }
 
 export async function POST(request: NextRequest) {
@@ -60,6 +70,14 @@ export async function POST(request: NextRequest) {
 
     const baseSlug = slugify(title);
     const slug = `${baseSlug}-${Date.now().toString(36)}`;
+
+    // Validate that password_protected galleries require a password
+    if (visibility === 'password_protected' && !password?.trim()) {
+      return NextResponse.json(
+        { message: 'Password is required for password-protected galleries' },
+        { status: 400 }
+      );
+    }
 
     // ✅ 2. Hash the password ONLY if visibility is password_protected and a password is provided
     let hashedPassword: string | null = null;

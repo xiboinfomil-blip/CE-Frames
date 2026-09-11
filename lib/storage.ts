@@ -129,90 +129,106 @@ export async function extractExifData(file: File): Promise<{
 }
 
 /**
- * Uploads a file to Cloudinary
+ * Uploads a file to Cloudinary with retry logic for improved reliability
  */
-export async function uploadToCloudinary(file: File): Promise<UploadResult> {
-  try {
-    // Convert File to Buffer
-    const buffer = await file.arrayBuffer();
-    const base64Data = Buffer.from(buffer).toString('base64');
-    const dataUri = `data:${file.type};base64,${base64Data}`;
+export async function uploadToCloudinary(file: File, retries = 3): Promise<UploadResult> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      // Convert File to Buffer
+      const buffer = await file.arrayBuffer();
+      const base64Data = Buffer.from(buffer).toString('base64');
+      const dataUri = `data:${file.type};base64,${base64Data}`;
 
-    // Determine resource type
-    const resourceType = file.type.startsWith('video') ? 'video' : 'image';
+      // Determine resource type
+      const resourceType = file.type.startsWith('video') ? 'video' : 'image';
 
-    // Upload to Cloudinary
-    const uploadResult = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
-      cloudinary.uploader.upload(
-        dataUri,
-        {
-          resource_type: resourceType,
-          folder: 'user-media', // Optional: organize uploads in a folder
-          // Automatic optimization and format selection
-          transformation: [
-            { quality: 'auto:good' },
-            { fetch_format: 'auto' }
-          ],
-          // For videos, generate a thumbnail
-          ...(resourceType === 'video' && {
-            eager: [
-              { width: 300, height: 200, crop: 'fill', format: 'jpg' }
-            ]
-          })
-        },
-        (error, result: CloudinaryUploadResult | undefined) => {
-          if (error) reject(error);
-          else if (result) resolve(result);
-          else reject(new Error('Cloudinary returned no upload result'));
-        }
-      );
-    });
-
-    // Extract metadata
-    const width = uploadResult.width || 0;
-    const height = uploadResult.height || 0;
-    const duration = uploadResult.duration || undefined;
-    const format = uploadResult.format || 'unknown';
-    const fileSize = uploadResult.bytes || 0;
-    const publicId = uploadResult.public_id;
-
-    // Generate thumbnail URL
-    let thumbnailUrl: string;
-    if (resourceType === 'video') {
-      // For videos, use Cloudinary's video thumbnail generation
-      thumbnailUrl = cloudinary.url(publicId, {
-        resource_type: 'video',
-        width: 300,
-        height: 200,
-        crop: 'fill',
-        format: 'jpg',
-        start_offset: 'auto', // Auto-select a good frame
+      // Upload to Cloudinary
+      const uploadResult = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
+        cloudinary.uploader.upload(
+          dataUri,
+          {
+            resource_type: resourceType,
+            folder: 'user-media', // Optional: organize uploads in a folder
+            // Automatic optimization and format selection
+            transformation: [
+              { quality: 'auto:good' },
+              { fetch_format: 'auto' }
+            ],
+            // For videos, generate a thumbnail
+            ...(resourceType === 'video' && {
+              eager: [
+                { width: 300, height: 200, crop: 'fill', format: 'jpg' }
+              ]
+            })
+          },
+          (error, result: CloudinaryUploadResult | undefined) => {
+            if (error) reject(error);
+            else if (result) resolve(result);
+            else reject(new Error('Cloudinary returned no upload result'));
+          }
+        );
       });
-    } else {
-      // For images, create a smaller version
-      thumbnailUrl = cloudinary.url(publicId, {
-        resource_type: 'image',
-        width: 300,
-        height: 200,
-        crop: 'fill',
-        quality: 'auto:good',
-      });
+
+      // Extract metadata
+      const width = uploadResult.width || 0;
+      const height = uploadResult.height || 0;
+      const duration = uploadResult.duration || undefined;
+      const format = uploadResult.format || 'unknown';
+      const fileSize = uploadResult.bytes || 0;
+      const publicId = uploadResult.public_id;
+
+      // Generate thumbnail URL
+      let thumbnailUrl: string;
+      if (resourceType === 'video') {
+        // For videos, use Cloudinary's video thumbnail generation
+        thumbnailUrl = cloudinary.url(publicId, {
+          resource_type: 'video',
+          width: 300,
+          height: 200,
+          crop: 'fill',
+          format: 'jpg',
+          start_offset: 'auto', // Auto-select a good frame
+        });
+      } else {
+        // For images, create a smaller version
+        thumbnailUrl = cloudinary.url(publicId, {
+          resource_type: 'image',
+          width: 300,
+          height: 200,
+          crop: 'fill',
+          quality: 'auto:good',
+        });
+      }
+
+      return {
+        url: uploadResult.secure_url,
+        thumbnailUrl,
+        width,
+        height,
+        duration,
+        format,
+        fileSize,
+        publicId,
+      };
+    } catch (error) {
+      lastError = error as Error;
+      
+      // Don't retry if this is the last attempt
+      if (attempt === retries - 1) {
+        break;
+      }
+      
+      // Exponential backoff: 2^attempt seconds (1s, 2s, 4s, etc.)
+      const delayMs = Math.pow(2, attempt) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delayMs));
     }
-
-    return {
-      url: uploadResult.secure_url,
-      thumbnailUrl,
-      width,
-      height,
-      duration,
-      format,
-      fileSize,
-      publicId,
-    };
-  } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload file to Cloudinary');
   }
+  
+  // All retries exhausted
+  console.error('Cloudinary upload failed after ' + retries + ' attempts:', lastError);
+  throw new Error(`Failed to upload file to Cloudinary after ${retries} attempts: ${lastError?.message || 'Unknown error'}`);
 }
 
 /**

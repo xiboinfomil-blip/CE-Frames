@@ -46,10 +46,15 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.username = user.username;
         token.role = user.role;
-      } else if (token.id) {
-        const currentUser = await userHelpers.findById(token.id);
-        token.username = currentUser?.username;
-        token.role = currentUser?.role;
+        token.iat = Math.floor(Date.now() / 1000);  // Track when issued
+      } else if (token.id && token.iat && (Math.floor(Date.now() / 1000) - (token.iat as number)) > 3600) {
+        // Only refresh from DB after 1 hour to reduce unnecessary queries
+        const currentUser = await userHelpers.findById(token.id as string);
+        if (currentUser) {
+          token.username = currentUser.username;
+          token.role = currentUser.role;
+          token.iat = Math.floor(Date.now() / 1000);
+        }
       }
       return token;
     },

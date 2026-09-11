@@ -122,6 +122,11 @@ export default function MediaLibraryClient({
     if (loadRequestRef.current || isLoadingMore || !hasMore) return;
     loadRequestRef.current = true;
     setIsLoadingMore(true);
+    
+    // Create abort controller with timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
     try {
       const params = new URLSearchParams({
         page: String(nextPage),
@@ -129,7 +134,11 @@ export default function MediaLibraryClient({
         sortBy: filters.sortBy || 'newest',
       });
       if (filters.type) params.set('type', filters.type);
-      const response = await fetch(`/api/media?${params}`);
+      
+      const response = await fetch(`/api/media?${params}`, {
+        signal: controller.signal,
+      });
+      
       if (!response.ok) throw new Error('Failed to load more media');
       const data = await response.json();
       setMedia((current) => {
@@ -139,8 +148,12 @@ export default function MediaLibraryClient({
       setHasMore(data.pagination?.hasNext ?? false);
       setNextPage((page) => page + 1);
     } catch (error) {
-      console.error('Failed to load more media:', error);
+      // Only log actual errors, not abort errors
+      if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        console.error('Failed to load more media:', error);
+      }
     } finally {
+      clearTimeout(timeoutId);
       loadRequestRef.current = false;
       setIsLoadingMore(false);
     }

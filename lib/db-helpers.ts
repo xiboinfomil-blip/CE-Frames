@@ -95,7 +95,7 @@ export const userHelpers = {
     });
   },
 
-  findAll: async (search?: string) => {
+  findAll: async (search?: string, limit = 100, offset = 0) => {
     const searchTerm = search?.trim();
 
     return await db.query.users.findMany({
@@ -119,6 +119,8 @@ export const userHelpers = {
         createdAt: true,
       },
       orderBy: [asc(users.username)],
+      limit,
+      offset,
     });
   },
 

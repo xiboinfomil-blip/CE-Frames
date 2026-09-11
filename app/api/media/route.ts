@@ -181,11 +181,31 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
-    await Promise.all(mediaItems.map((item) => mediaHelpers.delete(item.id)));
-    
-    return NextResponse.json({ success: true, deleted: mediaItems.length });
+    // Track which deletions succeeded - delete from Cloudinary first
+    const cloudinaryErrors: string[] = [];
+    const successfulIds: string[] = [];
+
+    for (const item of mediaItems) {
+      try {
+        await mediaHelpers.delete(item.id);
+        successfulIds.push(item.id);
+      } catch (error) {
+        cloudinaryErrors.push(item.id);
+        console.error(`Failed to delete media ${item.id}:`, error);
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      deleted: successfulIds.length,
+      failed: cloudinaryErrors.length,
+      failedIds: cloudinaryErrors.length > 0 ? cloudinaryErrors : undefined
+    });
   } catch (error) {
     console.error('Media deletion error:', error);
-    return NextResponse.json({ error: 'Failed to delete media' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to delete media', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 });
   }
 }

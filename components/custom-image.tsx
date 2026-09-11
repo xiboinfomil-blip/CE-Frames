@@ -66,7 +66,9 @@ const CustomImage = ({
           alt={alt || 'Photo d’un événement du CE'}
           fill
           quality={quality}
-          unoptimized={props.unoptimized}
+          priority={props.priority || false}
+          sizes={props.sizes || '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'}
+          unoptimized={false}
           loading={props.priority ? undefined : loading}
           className={`object-cover transition-opacity duration-500 ease-in-out ${
             isLoaded ? 'opacity-100' : 'opacity-0'

@@ -13,6 +13,7 @@ import {
   point,
   primaryKey,
   pgEnum,
+  index,
 } from 'drizzle-orm/pg-core';
 
 // ==========================================
@@ -86,7 +87,9 @@ export const media = pgTable('media', {
   coordinates: point('coordinates'), // Postgres native point type for maps (x, y)
   
   uploadedAt: timestamp('uploaded_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  uploadedAtIdx: index('media_uploaded_at_idx').on(table.uploadedAt),
+}));
 
 // GALLERIES (No user reference)
 export const galleries = pgTable('galleries', {
@@ -105,7 +108,11 @@ export const galleries = pgTable('galleries', {
   layoutStyle: layoutStyleEnum('layout_style').default('masonry').notNull(), 
   
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  visibilityCreatedIdx: index('galleries_visibility_created_idx')
+    .on(table.visibility, table.createdAt),
+}));
 
 // GALLERY_MEDIA (Junction table for ordering)
 export const galleryMedia = pgTable('gallery_media', {
@@ -114,6 +121,8 @@ export const galleryMedia = pgTable('gallery_media', {
   position: integer('position').notNull(),
 }, (table) => ({
   pk: primaryKey({ columns: [table.galleryId, table.mediaId] }),
+  galleryPositionIdx: index('gallery_media_gallery_position_idx')
+    .on(table.galleryId, table.position),
 }));
 
 

@@ -9,6 +9,7 @@ export default function Skeleton({
 }) {
   
   // Base shimmer overlay using CSS keyframes injected safely
+  // Respects prefers-reduced-motion for accessibility
   const shimmerStyle = `
     @keyframes skeleton-shimmer {
       0% { transform: translateX(-100%); }
@@ -16,6 +17,12 @@ export default function Skeleton({
     }
     .animate-shimmer {
       animation: skeleton-shimmer 1.8s infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .animate-shimmer {
+        animation: none;
+        background: linear-gradient(90deg, transparent, rgba(0, 74, 135, 0.1), transparent);
+      }
     }
   `;
 
