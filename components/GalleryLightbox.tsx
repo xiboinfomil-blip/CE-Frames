@@ -202,7 +202,7 @@ export default function GalleryLightbox({
           closeOnPullDown: true,
         }}
         video={{
-          autoPlay: false,
+          autoPlay: true,
           controls: true,
           playsInline: true,
         }}

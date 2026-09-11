@@ -147,11 +147,8 @@ export default function PhotoGrid({
                 return 5;
               },
             })}
-        onClick={({ index }) => onPhotoClick(index)}
         render={{
           photo: (props, context) => {
-            const { onClick } = props;
-
             const {
               index,
               photo: photoData,
@@ -220,12 +217,10 @@ export default function PhotoGrid({
                   ) {
                     e.preventDefault();
 
-                    onClick?.(
-                      e as unknown as React.MouseEvent
-                    );
+                    onPhotoClick(index);
                   }
                 }}
-                onClick={onClick}
+                onClick={() => onPhotoClick(index)}
                 className="
                   group
                   relative
