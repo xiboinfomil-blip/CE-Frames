@@ -42,10 +42,22 @@ function isSameSiteRequest(request: NextRequest) {
   const siteOrigin = new URL(request.url).origin;
   const origin = request.headers.get('origin');
   const referer = request.headers.get('referer');
+  const fetchSite = request.headers.get('sec-fetch-site');
 
   if (origin && origin !== siteOrigin) return false;
-  if (referer && new URL(referer).origin !== siteOrigin) return false;
-  return true;
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site') {
+    return false;
+  }
+
+  // A copied URL opened directly has no page referrer. Requiring one blocks
+  // direct address-bar, curl, and external hotlink requests.
+  if (!referer) return false;
+
+  try {
+    return new URL(referer).origin === siteOrigin;
+  } catch {
+    return false;
+  }
 }
 
 export async function GET(
