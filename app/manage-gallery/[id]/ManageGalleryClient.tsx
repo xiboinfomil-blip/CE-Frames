@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
+import { getVideoMimeType } from '@/lib/utils';
 
 import MediaCard from './components/MediaCard';
 import AddMediaModal from './components/AddMediaModal';
@@ -161,7 +162,7 @@ export default function ManageGalleryClient({
   const lightboxSlides = localMediaItems.map((item) => ({
     type: item.media.type === 'video' ? 'video' : 'image',
     src: item.media.type === 'video' ? undefined : item.media.fullResUrl,
-    sources: item.media.type === 'video' ? [{ src: item.media.fullResUrl, type: 'video/mp4' as const }] : undefined,
+    sources: item.media.type === 'video' ? [{ src: item.media.fullResUrl, type: getVideoMimeType(item.media.fullResUrl, item.media.mimeType) }] : undefined,
     poster: item.media.type === 'video' ? item.media.thumbnailUrl : undefined,
     width: item.media.width || 800,
     height: item.media.height || 600,
@@ -173,7 +174,7 @@ export default function ManageGalleryClient({
   const availableLightboxSlides = localAvailableMedia.map((item) => ({
     type: item.type === 'video' ? 'video' : 'image',
     src: item.type === 'video' ? undefined : item.fullResUrl,
-    sources: item.type === 'video' ? [{ src: item.fullResUrl, type: 'video/mp4' as const }] : undefined,
+    sources: item.type === 'video' ? [{ src: item.fullResUrl, type: getVideoMimeType(item.fullResUrl, item.mimeType) }] : undefined,
     poster: item.type === 'video' ? item.thumbnailUrl : undefined,
     width: 1200,
     height: 800,

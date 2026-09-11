@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import { getVideoMimeType } from '@/lib/utils';
 import PasswordGate from '@/components/PasswordGate';
 import GalleryHeader from './components/GalleryHeader';
 import PhotoGrid from './components/PhotoGrid';
@@ -110,7 +111,7 @@ export default function GalleryClient({
       return {
         ...basePhoto,
         type: 'video' as const,
-        sources: [{ src: fullResUrl, type: 'video/mp4' }],
+        sources: [{ src: fullResUrl, type: getVideoMimeType(fullResUrl, media.mimeType) }],
         poster: thumbnailUrl,
       };
     }

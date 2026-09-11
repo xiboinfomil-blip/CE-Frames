@@ -9,6 +9,7 @@ import 'yet-another-react-lightbox/styles.css';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Video from 'yet-another-react-lightbox/plugins/video';
+import { getVideoMimeType } from '@/lib/utils';
 
 // -----------------------------------------------------
 // Types
@@ -105,7 +106,7 @@ export default function GalleryLightbox({
               src: srcString,
               type:
                 extended.sources?.[0]?.type ||
-                'video/mp4',
+                getVideoMimeType(srcString),
             },
           ],
           poster: extended.poster,

@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
+import { getVideoMimeType } from '@/lib/utils';
 
 import MediaCard, { MediaSchema } from '@/app/media-library/components/MediaCard';
 import EditMediaModal from '@/app/media-library/components/EditMediaModal';
@@ -102,7 +103,7 @@ export default function MediaLibraryClient({
             ? [
                 {
                   src: item.fullResUrl,
-                  type: 'video/mp4' as const,
+                  type: getVideoMimeType(item.fullResUrl, item.mimeType),
                 },
               ]
             : undefined,
