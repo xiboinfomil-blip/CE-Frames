@@ -111,7 +111,7 @@ export default function GalleryClient({
       return {
         ...basePhoto,
         type: 'video' as const,
-        sources: [{ src: fullResUrl, type: getVideoMimeType(fullResUrl, media.mimeType) }],
+        sources: [{ src: fullResUrl, type: getVideoMimeType(fullResUrl) }],
         poster: thumbnailUrl,
       };
     }

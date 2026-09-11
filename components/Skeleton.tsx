@@ -1,12 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { ReactElement } from 'react';
+
+type SkeletonVariant = 'grid-card' | 'text-line' | 'avatar' | 'thumbnail';
+
+interface SkeletonProps {
+  className?: string;
+  variant?: SkeletonVariant;
+  count?: number;
+}
 
 export default function Skeleton({
   className = '',
   variant = 'grid-card',
   count = 1,
-}) {
+}: SkeletonProps): ReactElement {
   
   // Base shimmer overlay using CSS keyframes injected safely
   // Respects prefers-reduced-motion for accessibility

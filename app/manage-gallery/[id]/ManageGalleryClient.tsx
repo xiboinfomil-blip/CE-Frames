@@ -162,7 +162,7 @@ export default function ManageGalleryClient({
   const lightboxSlides = localMediaItems.map((item) => ({
     type: item.media.type === 'video' ? 'video' : 'image',
     src: item.media.type === 'video' ? undefined : item.media.fullResUrl,
-    sources: item.media.type === 'video' ? [{ src: item.media.fullResUrl, type: getVideoMimeType(item.media.fullResUrl, item.media.mimeType) }] : undefined,
+    sources: item.media.type === 'video' ? [{ src: item.media.fullResUrl, type: getVideoMimeType(item.media.fullResUrl) }] : undefined,
     poster: item.media.type === 'video' ? item.media.thumbnailUrl : undefined,
     width: item.media.width || 800,
     height: item.media.height || 600,
@@ -174,7 +174,7 @@ export default function ManageGalleryClient({
   const availableLightboxSlides = localAvailableMedia.map((item) => ({
     type: item.type === 'video' ? 'video' : 'image',
     src: item.type === 'video' ? undefined : item.fullResUrl,
-    sources: item.type === 'video' ? [{ src: item.fullResUrl, type: getVideoMimeType(item.fullResUrl, item.mimeType) }] : undefined,
+    sources: item.type === 'video' ? [{ src: item.fullResUrl, type: getVideoMimeType(item.fullResUrl) }] : undefined,
     poster: item.type === 'video' ? item.thumbnailUrl : undefined,
     width: 1200,
     height: 800,
