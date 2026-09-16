@@ -15,6 +15,7 @@ import {
 
 import { CustomButton } from '@/components/ui/CustomButton';
 import { CustomTextfield } from '@/components/ui/CustomTextfield';
+import GroupPhotoCropModal from './components/GroupPhotoCropModal';
 import UserModal, { ManagedUser } from './components/UserModal';
 
 interface UsersContentProps {
@@ -81,6 +82,7 @@ export default function UsersContent({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<ManagedUser | null>(null);
   const [groupPhotoUrl, setGroupPhotoUrl] = useState<string | null>(initialGroupPhotoUrl);
+  const [groupPhotoToCrop, setGroupPhotoToCrop] = useState<File | null>(null);
   const [isUploadingGroupPhoto, setIsUploadingGroupPhoto] = useState(false);
   const [isDeletingGroupPhoto, setIsDeletingGroupPhoto] = useState(false);
   const [currentUserPhotoUrl, setCurrentUserPhotoUrl] = useState<string | null>(currentUser.photoUrl);
@@ -117,6 +119,35 @@ export default function UsersContent({
     } finally {
       setIsUploadingGroupPhoto(false);
     }
+  };
+
+  const handleGroupPhotoSelection = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      void Swal.fire({
+        title: 'Photo impossible',
+        text: 'La photo doit être une image.',
+        icon: 'error',
+        confirmButtonColor: '#004A87',
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      void Swal.fire({
+        title: 'Photo impossible',
+        text: 'La photo ne doit pas dépasser 10 Mo.',
+        icon: 'error',
+        confirmButtonColor: '#004A87',
+      });
+      return;
+    }
+
+    setGroupPhotoToCrop(file);
+  };
+
+  const handleGroupPhotoCrop = async (file: File) => {
+    setGroupPhotoToCrop(null);
+    await handleGroupPhoto(file);
   };
 
   const handleDeleteGroupPhoto = async () => {
@@ -417,7 +448,7 @@ export default function UsersContent({
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
                   <HiPhoto className="h-5 w-5" />
                   {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
-                  <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto || isDeletingGroupPhoto} onChange={(event) => { const file = event.currentTarget.files?.[0]; if (file) handleGroupPhoto(file); }} />
+                  <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto || isDeletingGroupPhoto || !!groupPhotoToCrop} onChange={(event) => { const input = event.currentTarget; const file = input.files?.[0]; input.value = ''; if (file) handleGroupPhotoSelection(file); }} />
                 </label>
               )}
               {groupPhotoUrl && (
@@ -448,6 +479,15 @@ export default function UsersContent({
             loadUsers();
             router.refresh();
           }}
+        />
+      )}
+
+      {groupPhotoToCrop && (
+        <GroupPhotoCropModal
+          isOpen
+          file={groupPhotoToCrop}
+          onClose={() => setGroupPhotoToCrop(null)}
+          onConfirm={handleGroupPhotoCrop}
         />
       )}
     </main>

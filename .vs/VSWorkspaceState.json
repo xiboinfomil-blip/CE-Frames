@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app"
+    "\\app",
+    "\\db"
   ],
+  "SelectedNode": "\\db\\schema.ts",
   "PreviewInSolutionExplorer": false
 }
