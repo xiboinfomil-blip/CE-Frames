@@ -131,7 +131,6 @@ export const userHelpers = {
         id: true,
         firstName: true,
         lastName: true,
-        role: true,
         photoUrl: true,
       },
       orderBy: [asc(users.lastName), asc(users.firstName), asc(users.username)],

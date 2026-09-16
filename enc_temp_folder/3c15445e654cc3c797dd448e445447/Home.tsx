@@ -13,7 +13,6 @@ import {
 
 import MediaViewport from '@/components/media-viewport';
 import { LatestPublicGallery } from '@/lib/db-helpers';
-import { type UserRole } from '@/db/schema';
 
 // ============================================================
 // PROPS
@@ -23,7 +22,6 @@ interface CeMember {
   id: string;
   firstName: string | null;
   lastName: string | null;
-  role: UserRole;
   photoUrl: string | null;
 }
 
@@ -36,12 +34,6 @@ interface HomeProps {
   ceMembers?: CeMember[];
   ceProfile?: CeProfile;
 }
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  admin: 'Administrateur',
-  president: 'Président(e)',
-  membre: 'Membre',
-};
 
 // ============================================================
 // FADE IN
@@ -1211,7 +1203,7 @@ export default function Home({
                             dark:text-white/50
                           "
                         >
-                          {ROLE_LABELS[member.role]}
+                          Membre du Comité d&apos;Entreprise
                         </p>
                       </div>
                     </div>
