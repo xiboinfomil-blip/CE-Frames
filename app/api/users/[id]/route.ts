@@ -5,6 +5,7 @@ import { count, eq } from 'drizzle-orm';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { userHelpers } from '@/lib/db-helpers';
+import { deleteFromCloudinary, extractPublicIdFromUrl } from '@/lib/storage';
 import { USER_ROLES, users, type UserRole } from '@/db/schema';
 
 interface RouteContext {
@@ -46,6 +47,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
+    const existingUser = await userHelpers.findById(id);
+    if (!existingUser) {
+      return NextResponse.json({ error: 'Utilisateur introuvable.' }, { status: 404 });
+    }
+
     const body = await request.json();
     const updates: {
       username?: string;
@@ -114,6 +120,21 @@ export async function PATCH(request: Request, context: RouteContext) {
     const [user] = await userHelpers.update(id, updates);
     if (!user) {
       return NextResponse.json({ error: 'Utilisateur introuvable.' }, { status: 404 });
+    }
+
+    if (
+      updates.photoUrl !== undefined &&
+      existingUser.photoUrl &&
+      existingUser.photoUrl !== updates.photoUrl
+    ) {
+      const publicId = extractPublicIdFromUrl(existingUser.photoUrl);
+      if (publicId) {
+        try {
+          await deleteFromCloudinary(publicId);
+        } catch (cleanupError) {
+          console.error('User photo cleanup failed:', cleanupError);
+        }
+      }
     }
 
     return NextResponse.json({ user });

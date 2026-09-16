@@ -259,10 +259,28 @@ export async function deleteFromCloudinary(publicId: string, resourceType: 'imag
  */
 export function extractPublicIdFromUrl(url: string): string | null {
   try {
-    // Cloudinary URLs follow this pattern:
-    // https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{version}/{public_id}.{format}
-    const match = url.match(/\/upload\/(?:v\d+\/)?([^/.]+)(?:\.[a-z]+)?$/);
-    return match ? match[1] : null;
+    // Cloudinary URLs may contain folders and optional transformations.
+    const uploadMarker = '/upload/';
+    const uploadIndex = url.indexOf(uploadMarker);
+    if (uploadIndex < 0) return null;
+
+    const path = url.slice(uploadIndex + uploadMarker.length).split(/[?#]/, 1)[0];
+    const parts = path.split('/').filter(Boolean);
+    if (parts.length === 0) return null;
+
+    // Remove transformations and the version segment when present.
+    const versionIndex = parts.findIndex((part) => /^v\d+$/.test(part));
+    if (versionIndex >= 0) {
+      parts.splice(0, versionIndex + 1);
+    }
+
+    if (parts.length === 0) return null;
+
+    const filename = parts.pop() as string;
+    const extensionIndex = filename.lastIndexOf('.');
+    parts.push(extensionIndex > 0 ? filename.slice(0, extensionIndex) : filename);
+
+    return parts.join('/') || null;
   } catch {
     return null;
   }

@@ -51,7 +51,7 @@ export const NAV_ITEMS = [
     mobile: true,
     mobileGroup: 'extra',
     auth: 'authenticated',
-    roles: ['admin'],
+    roles: ['admin', 'president', 'membre'],
     type: 'link',
     activePaths: ['/manage-users'],
   },

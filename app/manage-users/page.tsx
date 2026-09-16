@@ -18,13 +18,24 @@ export default async function ManageUsersPage() {
   }
 
   const currentUser = await userHelpers.findById(session.user.id);
-  if (currentUser?.role !== 'admin') {
+  if (!currentUser) {
     redirect('/');
   }
 
-  const users = await userHelpers.findAll();
+  const canManageUsers = currentUser.role === 'admin';
+  const canManageGroupPhoto = currentUser.role === 'admin' || currentUser.role === 'president';
+  const users = canManageUsers ? await userHelpers.findAll() : [];
 
-  const ceProfile = await userHelpers.getCeProfile();
+  const ceProfile = canManageGroupPhoto ? await userHelpers.getCeProfile() : null;
 
-  return <UsersContent initialUsers={users} currentUserId={currentUser.id} initialGroupPhotoUrl={ceProfile?.groupPhotoUrl || null} />;
+  return (
+    <UsersContent
+      initialUsers={users}
+      currentUser={currentUser}
+      currentUserId={currentUser.id}
+      canManageUsers={canManageUsers}
+      canManageGroupPhoto={canManageGroupPhoto}
+      initialGroupPhotoUrl={ceProfile?.groupPhotoUrl || null}
+    />
+  );
 }

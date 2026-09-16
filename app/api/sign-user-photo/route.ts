@@ -3,10 +3,12 @@ import { getServerSession } from 'next-auth/next';
 import { v2 as cloudinary } from 'cloudinary';
 
 import { authOptions } from '@/lib/auth';
+import { userHelpers } from '@/lib/db-helpers';
 
 export async function POST() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== 'admin') {
+  const user = session?.user?.id ? await userHelpers.findById(session.user.id) : null;
+  if (!user || user.role !== 'admin') {
     return NextResponse.json({ error: 'Accès non autorisé' }, { status: 403 });
   }
 

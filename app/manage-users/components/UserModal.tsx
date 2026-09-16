@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { HiAtSymbol, HiKey, HiPhoto, HiUser } from 'react-icons/hi2';
 
 import BaseModal from '@/components/BaseModal';
@@ -49,6 +49,14 @@ export default function UserModal({
   const [photoUrl, setPhotoUrl] = useState(initialUser?.photoUrl || '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const removePhoto = () => {
+    setPhotoUrl('');
+    if (photoInputRef.current) {
+      photoInputRef.current.value = '';
+    }
+  };
 
   const uploadPhoto = async (file: File) => {
     if (!file.type.startsWith('image/')) throw new Error('La photo doit être une image.');
@@ -142,7 +150,7 @@ export default function UserModal({
                   <Image src={photoUrl} alt="Aperçu" width={64} height={64} className="h-16 w-16 rounded-full object-cover" />
                   <button
                     type="button"
-                    onClick={() => setPhotoUrl('')}
+                    onClick={removePhoto}
                     className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
                   >
                     Supprimer
@@ -154,7 +162,7 @@ export default function UserModal({
                 </div>
               )}
             </div>
-            <input id="user-photo" name="user-photo" type="file" accept="image/*" className="block w-full text-sm text-[#64748B] file:mr-3 file:rounded-lg file:border-0 file:bg-[#EAF4FB] file:px-3 file:py-2 file:font-semibold file:text-[#004A87]" />
+            <input ref={photoInputRef} id="user-photo" name="user-photo" type="file" accept="image/*" className="block w-full text-sm text-[#64748B] file:mr-3 file:rounded-lg file:border-0 file:bg-[#EAF4FB] file:px-3 file:py-2 file:font-semibold file:text-[#004A87]" />
             <p className="text-xs text-[#64748B]">Une seule photo, 5 Mo maximum.</p>
           </div>
         </div>

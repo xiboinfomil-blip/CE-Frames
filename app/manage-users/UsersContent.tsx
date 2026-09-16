@@ -19,7 +19,10 @@ import UserModal, { ManagedUser } from './components/UserModal';
 
 interface UsersContentProps {
   initialUsers: ManagedUser[];
+  currentUser: ManagedUser;
   currentUserId: string;
+  canManageUsers: boolean;
+  canManageGroupPhoto: boolean;
   initialGroupPhotoUrl: string | null;
 }
 
@@ -63,7 +66,14 @@ function UserAvatar({ user }: { user: ManagedUser }) {
   );
 }
 
-export default function UsersContent({ initialUsers, currentUserId, initialGroupPhotoUrl }: UsersContentProps) {
+export default function UsersContent({
+  initialUsers,
+  currentUser,
+  currentUserId,
+  canManageUsers,
+  canManageGroupPhoto,
+  initialGroupPhotoUrl,
+}: UsersContentProps) {
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState('');
@@ -73,7 +83,8 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
   const [groupPhotoUrl, setGroupPhotoUrl] = useState<string | null>(initialGroupPhotoUrl);
   const [isUploadingGroupPhoto, setIsUploadingGroupPhoto] = useState(false);
   const [isDeletingGroupPhoto, setIsDeletingGroupPhoto] = useState(false);
-  const [isDeletingGroupPhoto, setIsDeletingGroupPhoto] = useState(false);
+  const [currentUserPhotoUrl, setCurrentUserPhotoUrl] = useState<string | null>(currentUser.photoUrl);
+  const [isDeletingOwnPhoto, setIsDeletingOwnPhoto] = useState(false);
 
   const uploadGroupPhoto = async (file: File) => {
     if (!file.type.startsWith('image/')) throw new Error('La photo doit être une image.');
@@ -137,10 +148,10 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
     }
   };
 
-  const handleDeleteGroupPhoto = async () => {
+  const handleDeleteOwnPhoto = async () => {
     const result = await Swal.fire({
-      title: 'Supprimer la photo de groupe ?',
-      text: 'Cette action est irréversible.',
+      title: 'Supprimer votre photo ?',
+      text: 'Votre profil affichera vos initiales à la place.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
@@ -153,20 +164,32 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
 
     if (!result.isConfirmed) return;
 
-    setIsDeletingGroupPhoto(true);
+    setIsDeletingOwnPhoto(true);
     try {
-      const response = await fetch('/api/ce-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ groupPhotoUrl: null }) });
-      if (!response.ok) throw new Error('Suppression impossible.');
-      setGroupPhotoUrl(null);
+      const response = await fetch('/api/users/me/photo', { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Suppression impossible.');
+
+      setCurrentUserPhotoUrl(null);
+      setUsers((currentUsers) => currentUsers.map((user) => (
+        user.id === currentUserId ? { ...user, photoUrl: null } : user
+      )));
       router.refresh();
     } catch (error) {
-      await Swal.fire({ title: 'Erreur', text: error instanceof Error ? error.message : 'Une erreur est survenue.', icon: 'error', confirmButtonColor: '#004A87' });
+      await Swal.fire({
+        title: 'Action impossible',
+        text: error instanceof Error ? error.message : 'Une erreur est survenue.',
+        icon: 'error',
+        confirmButtonColor: '#004A87',
+      });
     } finally {
-      setIsDeletingGroupPhoto(false);
+      setIsDeletingOwnPhoto(false);
     }
   };
 
   const loadUsers = async (term = search) => {
+    if (!canManageUsers) return;
+
     setIsLoading(true);
     try {
       const params = term.trim() ? `?search=${encodeURIComponent(term.trim())}` : '';
@@ -232,14 +255,45 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
               <HiUsers className="h-6 w-6" />
               <span className="text-xs font-bold uppercase tracking-[0.18em]">Administration</span>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Utilisateurs</h1>
-            <p className="mt-2 max-w-xl text-sm text-[#64748B] dark:text-white/55">Gérez les accès de votre équipe et les permissions de chaque compte.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{canManageUsers ? 'Utilisateurs' : 'Mon profil'}</h1>
+            <p className="mt-2 max-w-xl text-sm text-[#64748B] dark:text-white/55">
+              {canManageUsers
+                ? 'Gérez les accès de votre équipe et les permissions de chaque compte.'
+                : 'Gérez votre photo de profil.'}
+            </p>
           </div>
-          <CustomButton onClick={openCreate} leftIcon={<HiPlus className="h-5 w-5" />}>
-            Ajouter un utilisateur
-          </CustomButton>
+          {canManageUsers && (
+            <CustomButton onClick={openCreate} leftIcon={<HiPlus className="h-5 w-5" />}>
+              Ajouter un utilisateur
+            </CustomButton>
+          )}
         </header>
 
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl shadow-[#00345F]/5 dark:border-white/10 dark:bg-[#102238]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <UserAvatar user={{ ...currentUser, photoUrl: currentUserPhotoUrl }} />
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#64748B] dark:text-white/55">Ma photo</div>
+                <h2 className="mt-1 text-lg font-bold">{currentUser.firstName} {currentUser.lastName}</h2>
+                <p className="mt-1 text-sm text-[#64748B] dark:text-white/55">Vous pouvez supprimer votre propre photo à tout moment.</p>
+              </div>
+            </div>
+            {currentUserPhotoUrl && (
+              <button
+                type="button"
+                onClick={handleDeleteOwnPhoto}
+                disabled={isDeletingOwnPhoto}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+              >
+                <HiTrash className="h-4 w-4" />
+                {isDeletingOwnPhoto ? 'Suppression…' : 'Supprimer ma photo'}
+              </button>
+            )}
+          </div>
+        </section>
+
+        {canManageUsers && (
         <section className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-xl shadow-[#00345F]/5 dark:border-white/10 dark:bg-[#102238]">
           <div className="flex flex-col gap-4 border-b border-[#E2E8F0] p-5 dark:border-white/10 sm:flex-row sm:items-end">
             <div className="max-w-lg flex-1">
@@ -344,7 +398,9 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
             </table>
           </div>
         </section>
+        )}
 
+        {canManageGroupPhoto && (
         <section className="mt-6 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl shadow-[#00345F]/5 dark:border-white/10 dark:bg-[#102238]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -357,11 +413,13 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
-                <HiPhoto className="h-5 w-5" />
-                {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
-                <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto || isDeletingGroupPhoto} onChange={(event) => { const file = event.currentTarget.files?.[0]; if (file) handleGroupPhoto(file); }} />
-              </label>
+              {canManageUsers && (
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#EAF4FB] px-4 py-3 text-sm font-bold text-[#004A87] transition hover:bg-[#DCEEF9] dark:bg-white/10 dark:text-white dark:hover:bg-white/15">
+                  <HiPhoto className="h-5 w-5" />
+                  {isUploadingGroupPhoto ? 'Envoi en cours…' : 'Téléverser une photo'}
+                  <input type="file" accept="image/*" className="hidden" disabled={isUploadingGroupPhoto || isDeletingGroupPhoto} onChange={(event) => { const file = event.currentTarget.files?.[0]; if (file) handleGroupPhoto(file); }} />
+                </label>
+              )}
               {groupPhotoUrl && (
                 <button
                   type="button"
@@ -377,18 +435,21 @@ export default function UsersContent({ initialUsers, currentUserId, initialGroup
 
           {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FA] dark:border-white/10"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
         </section>
+        )}
       </div>
 
-      <UserModal
-        key={`${isModalOpen}-${editingUser?.id || 'new'}`}
-        isOpen={isModalOpen}
-        initialUser={editingUser}
-        onClose={() => setIsModalOpen(false)}
-        onSaved={() => {
-          loadUsers();
-          router.refresh();
-        }}
-      />
+      {canManageUsers && (
+        <UserModal
+          key={`${isModalOpen}-${editingUser?.id || 'new'}`}
+          isOpen={isModalOpen}
+          initialUser={editingUser}
+          onClose={() => setIsModalOpen(false)}
+          onSaved={() => {
+            loadUsers();
+            router.refresh();
+          }}
+        />
+      )}
     </main>
   );
 }
