@@ -9,6 +9,8 @@ import {
   Images,
   Aperture,
   Users,
+  Crown,
+  UserRound,
 } from 'lucide-react';
 
 import MediaViewport from '@/components/media-viewport';
@@ -79,6 +81,80 @@ const FadeIn = ({
   );
 };
 
+const getMemberName = (member: CeMember) =>
+  [member.firstName, member.lastName].filter(Boolean).join(' ') ||
+  'Membre du CE';
+
+const MemberAvatar = ({
+  member,
+  name,
+  className = '',
+}: {
+  member: CeMember;
+  name: string;
+  className?: string;
+}) => {
+  const initials = [member.firstName, member.lastName]
+    .filter(Boolean)
+    .map((part) => part?.[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'C';
+
+  return (
+    <div
+      className={`
+        relative
+        aspect-square
+        overflow-hidden
+        bg-[#EAF4FB]
+        dark:bg-[#00345F]
+        ${className}
+      `}
+    >
+      {member.photoUrl ? (
+        <Image
+          src={member.photoUrl}
+          alt={name}
+          width={480}
+          height={480}
+          className="
+            h-full
+            w-full
+            object-cover
+            transition-transform
+            duration-500
+
+            group-hover:scale-110
+          "
+        />
+      ) : (
+        <div
+          className="
+            flex
+            h-full
+            w-full
+            items-center
+            justify-center
+            bg-gradient-to-br
+            from-[#EAF4FB]
+            to-[#D4E5F4]
+            text-5xl
+            font-black
+            text-[#004A87]
+
+            dark:from-[#00345F]
+            dark:to-[#002D4F]
+            dark:text-white
+          "
+        >
+          {initials}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ============================================================
 // HOME
 // ============================================================
@@ -89,6 +165,12 @@ export default function Home({
   ceProfile,
 }: HomeProps) {
   const heroGallery = latestGalleries?.[0];
+  const presidents = ceMembers.filter(
+    (member) => member.role === 'president'
+  );
+  const members = ceMembers.filter(
+    (member) => member.role !== 'president'
+  );
 
   return (
     <main
@@ -1033,191 +1115,391 @@ export default function Home({
           {/* ============================================ */}
 
           {ceMembers && ceMembers.length > 0 ? (
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-6
-
-                sm:grid-cols-2
-                lg:grid-cols-3
-                xl:grid-cols-4
-              "
-            >
-              {ceMembers.map((member, index) => {
-                const name = [member.firstName, member.lastName]
-                  .filter(Boolean)
-                  .join(' ') || 'Membre du CE';
-
-                return (
-                  <FadeIn
-                    key={member.id}
-                    delay={150 + index * 50}
-                    className="h-full"
-                  >
-                    <div
-                      className="
-                        group
-                        relative
-                        flex
-                        h-full
-                        flex-col
-                        overflow-hidden
-                        rounded-2xl
-                        border
-                        border-[#E2E8F0]
-                        bg-white
-                        shadow-sm
-                        transition-all
-                        duration-300
-
-                        hover:-translate-y-1
-                        hover:border-[#FF8201]/30
-                        hover:shadow-lg
-                        hover:shadow-[#FF8201]/10
-
-                        dark:border-white/10
-                        dark:bg-[#102238]
-                        dark:shadow-black/20
-                      "
-                    >
-                      {/* ================================== */}
-                      {/* PHOTO */}
-                      {/* ================================== */}
-
+            <div className="space-y-14">
+              {presidents.length > 0 && (
+                <FadeIn delay={150}>
+                  <div>
+                    <div className="mb-6 flex items-center gap-4">
                       <div
                         className="
-                          relative
-                          overflow-hidden
-                          bg-[#EAF4FB]
+                          flex
+                          h-12
+                          w-12
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-2xl
+                          bg-[#FFF1E5]
+                          text-[#FF8201]
+                          shadow-sm
 
-                          dark:bg-[#00345F]
+                          dark:bg-[#FF8201]/15
                         "
                       >
-                        {member.photoUrl ? (
-                          <Image
-                            src={member.photoUrl}
-                            alt={name}
-                            width={480}
-                            height={480}
-                            className="
-                              aspect-square
-                              w-full
-                              object-cover
-                              transition-transform
-                              duration-500
-
-                              group-hover:scale-110
-                            "
-                          />
-                        ) : (
-                          <div
-                            className="
-                              flex
-                              aspect-square
-                              w-full
-                              items-center
-                              justify-center
-                              bg-linear-to-br
-                              from-[#EAF4FB]
-                              to-[#D4E5F4]
-                              text-5xl
-                              font-black
-                              text-[#004A87]
-                              transition-all
-                              duration-300
-
-                              group-hover:from-[#D4E5F4]
-                              group-hover:to-[#B8D8ED]
-
-                              dark:from-[#00345F]
-                              dark:to-[#002D4F]
-                              dark:text-white
-                            "
-                          >
-                            {(
-                              member.firstName?.[0] ||
-                              member.lastName?.[0] ||
-                              'C'
-                            ).toUpperCase()}
-                          </div>
-                        )}
-
-                        {/* Orange accent bar */}
-                        <div
-                          className="
-                            absolute
-                            left-0
-                            top-0
-                            h-1
-                            w-0
-                            bg-[#FF8201]
-                            transition-all
-                            duration-500
-
-                            group-hover:w-full
-                          "
-                        />
+                        <Crown className="h-6 w-6" />
                       </div>
 
-                      {/* ================================== */}
-                      {/* CONTENT */}
-                      {/* ================================== */}
-
-                      <div className="flex flex-1 flex-col p-6">
-                        <div
+                      <div>
+                        <p
                           className="
-                            mb-2
-                            flex
-                            items-center
-                            gap-1.5
+                            text-[10px]
+                            font-bold
+                            uppercase
+                            tracking-[0.18em]
                             text-[#FF8201]
                           "
                         >
-                          <Users className="h-4 w-4" />
-
-                          <span
-                            className="
-                              text-[10px]
-                              font-bold
-                              uppercase
-                              tracking-[0.15em]
-                            "
-                          >
-                            CE
-                          </span>
-                        </div>
-
+                          Direction du comité
+                        </p>
                         <h3
                           className="
-                            mb-2
-                            text-lg
+                            mt-1
+                            text-2xl
                             font-black
-                            leading-tight
+                            tracking-tight
                             text-[#172033]
 
                             dark:text-white
                           "
                         >
-                          {name}
+                          La présidence du CE
                         </h3>
+                      </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 gap-6">
+                      {presidents.map((member) => {
+                        const name = getMemberName(member);
+
+                        return (
+                          <div
+                            key={member.id}
+                            className="
+                              group
+                              relative
+                              overflow-hidden
+                              rounded-[2rem]
+                              border
+                              border-[#FFB15C]/45
+                              bg-gradient-to-br
+                              from-[#00345F]
+                              via-[#004A87]
+                              to-[#002B50]
+                              p-1
+                              shadow-xl
+                              shadow-[#00345F]/20
+                              transition-all
+                              duration-300
+
+                              hover:-translate-y-1
+                              hover:shadow-2xl
+                              hover:shadow-[#00345F]/30
+
+                              dark:border-[#FFB15C]/40
+                              dark:shadow-black/30
+                            "
+                          >
+                            <div
+                              className="
+                                pointer-events-none
+                                absolute
+                                -right-16
+                                -top-20
+                                h-56
+                                w-56
+                                rounded-full
+                                bg-[#FF8201]/20
+                                blur-3xl
+                              "
+                            />
+
+                            <div
+                              className="
+                                relative
+                                flex
+                                flex-col
+                                items-center
+                                gap-8
+                                rounded-[1.75rem]
+                                bg-[#00345F]/75
+                                px-6
+                                py-8
+
+                                sm:flex-row
+                                sm:px-10
+                                sm:py-10
+                              "
+                            >
+                              <MemberAvatar
+                                member={member}
+                                name={name}
+                                className="
+                                  w-40
+                                  shrink-0
+                                  rounded-full
+                                  border-4
+                                  border-[#FFB15C]
+                                  shadow-xl
+                                  shadow-black/25
+
+                                  sm:w-48
+                                "
+                              />
+
+                              <div className="text-center sm:text-left">
+                                <div
+                                  className="
+                                    mb-4
+                                    inline-flex
+                                    items-center
+                                    gap-2
+                                    rounded-full
+                                    border
+                                    border-[#FFB15C]/45
+                                    bg-[#FF8201]/15
+                                    px-3
+                                    py-1.5
+                                    text-[#FFD3A6]
+                                  "
+                                >
+                                  <Crown className="h-4 w-4" />
+                                  <span
+                                    className="
+                                      text-[10px]
+                                      font-bold
+                                      uppercase
+                                      tracking-[0.16em]
+                                    "
+                                  >
+                                    Président(e) du CE
+                                  </span>
+                                </div>
+
+                                <h3
+                                  className="
+                                    text-2xl
+                                    font-black
+                                    leading-tight
+                                    text-white
+
+                                    sm:text-3xl
+                                  "
+                                >
+                                  {name}
+                                </h3>
+
+                                <p
+                                  className="
+                                    mt-3
+                                    max-w-2xl
+                                    text-sm
+                                    leading-relaxed
+                                    text-white/70
+                                  "
+                                >
+                                  Porte la voix du Comité d&apos;Entreprise et
+                                  coordonne les actions du collectif.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </FadeIn>
+              )}
+
+              {members.length > 0 && (
+                <div>
+                  <FadeIn delay={presidents.length > 0 ? 250 : 150}>
+                    <div className="mb-6 flex items-center gap-4">
+                      <div
+                        className="
+                          flex
+                          h-12
+                          w-12
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-2xl
+                          bg-[#EAF4FB]
+                          text-[#004A87]
+                          shadow-sm
+
+                          dark:bg-[#00345F]
+                          dark:text-white
+                        "
+                      >
+                        <Users className="h-6 w-6" />
+                      </div>
+
+                      <div>
                         <p
                           className="
-                            text-sm
-                            font-medium
-                            text-[#64748B]
+                            text-[10px]
+                            font-bold
+                            uppercase
+                            tracking-[0.18em]
+                            text-[#004A87]
 
-                            dark:text-white/50
+                            dark:text-[#8CC8F0]
                           "
                         >
-                          {ROLE_LABELS[member.role]}
+                          L&apos;équipe du comité
                         </p>
+                        <h3
+                          className="
+                            mt-1
+                            text-2xl
+                            font-black
+                            tracking-tight
+                            text-[#172033]
+
+                            dark:text-white
+                          "
+                        >
+                          Les membres du CE
+                        </h3>
                       </div>
                     </div>
                   </FadeIn>
-                );
-              })}
+
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      gap-6
+
+                      sm:grid-cols-2
+                      lg:grid-cols-3
+                      xl:grid-cols-4
+                    "
+                  >
+                    {members.map((member, index) => {
+                      const name = getMemberName(member);
+
+                      return (
+                        <FadeIn
+                          key={member.id}
+                          delay={(presidents.length > 0 ? 300 : 150) + index * 50}
+                          className="h-full"
+                        >
+                          <div
+                            className="
+                              group
+                              relative
+                              flex
+                              h-full
+                              flex-col
+                              overflow-hidden
+                              rounded-2xl
+                              border
+                              border-[#E2E8F0]
+                              bg-white
+                              shadow-sm
+                              transition-all
+                              duration-300
+
+                              hover:-translate-y-1
+                              hover:border-[#004A87]/25
+                              hover:shadow-lg
+                              hover:shadow-[#004A87]/10
+
+                              dark:border-white/10
+                              dark:bg-[#102238]
+                              dark:shadow-black/20
+                            "
+                          >
+                            <MemberAvatar
+                              member={member}
+                              name={name}
+                              className="w-full"
+                            />
+
+                            <div
+                              className="
+                                absolute
+                                left-0
+                                top-0
+                                h-1
+                                w-0
+                                bg-[#FF8201]
+                                transition-all
+                                duration-500
+
+                                group-hover:w-full
+                              "
+                            />
+
+                            <div className="flex flex-1 flex-col p-6">
+                              <div className="mb-4 flex flex-wrap items-center gap-2">
+                                <span
+                                  className="
+                                    inline-flex
+                                    items-center
+                                    gap-1.5
+                                    rounded-full
+                                    border
+                                    border-[#004A87]/15
+                                    bg-[#EAF4FB]
+                                    px-3
+                                    py-1.5
+                                    text-[#004A87]
+
+                                    dark:border-[#8CC8F0]/20
+                                    dark:bg-[#00345F]
+                                    dark:text-[#B9E0F8]
+                                  "
+                                >
+                                  <UserRound className="h-3.5 w-3.5" />
+                                  <span
+                                    className="
+                                      text-[10px]
+                                      font-bold
+                                      uppercase
+                                      tracking-[0.14em]
+                                    "
+                                  >
+                                    {ROLE_LABELS[member.role]}
+                                  </span>
+                                </span>
+
+                                <span
+                                  className="
+                                    text-[10px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.14em]
+                                    text-[#94A3B8]
+
+                                    dark:text-white/40
+                                  "
+                                >
+                                  Comité d&apos;Entreprise
+                                </span>
+                              </div>
+
+                              <h3
+                                className="
+                                  text-lg
+                                  font-black
+                                  leading-tight
+                                  text-[#172033]
+
+                                  dark:text-white
+                                "
+                              >
+                                {name}
+                              </h3>
+                            </div>
+                          </div>
+                        </FadeIn>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <FadeIn>
