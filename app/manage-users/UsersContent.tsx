@@ -464,7 +464,7 @@ export default function UsersContent({
             </div>
           </div>
 
-          {groupPhotoUrl && <div className="relative mt-4 h-72 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FA] dark:border-white/10"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill className="object-cover" /></div>}
+          {groupPhotoUrl && <div className="relative mt-4 aspect-[12/5] w-full overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FA] dark:border-white/10"><Image src={groupPhotoUrl} alt="Photo du groupe CE" fill sizes="(max-width: 1280px) 100vw, 1200px" className="object-cover" /></div>}
         </section>
         )}
       </div>

@@ -1329,6 +1329,8 @@ export default function Home({
               <div
                 className="
                   relative
+                  aspect-[12/5]
+                  w-full
                   overflow-hidden
                   rounded-3xl
                   bg-[#00345F]
@@ -1340,14 +1342,9 @@ export default function Home({
                 <Image
                   src={ceProfile.groupPhotoUrl}
                   alt="Membres du Comité d'Entreprise"
-                  width={1200}
-                  height={500}
-                  className="
-                    h-auto
-                    w-full
-                    max-h-[28rem]
-                    object-cover
-                  "
+                  fill
+                  sizes="(max-width: 1280px) 100vw, 1200px"
+                  className="object-cover"
                   priority
                 />
               </div>
